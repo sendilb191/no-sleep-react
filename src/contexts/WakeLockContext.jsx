@@ -1,0 +1,160 @@
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
+
+const WakeLockContext = createContext();
+
+export const useWakeLock = () => {
+  const context = useContext(WakeLockContext);
+  if (!context) {
+    throw new Error('useWakeLock must be used within a WakeLockProvider');
+  }
+  return context;
+};
+
+export const WakeLockProvider = ({ children }) => {
+  const [isWakeLockEnabled, setIsWakeLockEnabled] = useState(false);
+  const [wakeLockSupported, setWakeLockSupported] = useState(false);
+  const [wakeLockStatus, setWakeLockStatus] = useState('Initializing...');
+  const wakeLockRef = useRef(null);
+  const videoRef = useRef(null);
+
+  // Check if Wake Lock API is supported
+  useEffect(() => {
+    if ('wakeLock' in navigator) {
+      setWakeLockSupported(true);
+      setWakeLockStatus('Ready - Native API Available');
+    } else {
+      setWakeLockSupported(false);
+      setWakeLockStatus('Ready - Video Fallback Available');
+    }
+  }, []);
+
+  // Create invisible video element for fallback
+  useEffect(() => {
+    if (!wakeLockSupported) {
+      const video = document.createElement('video');
+      video.setAttribute('muted', '');
+      video.setAttribute('playsinline', '');
+      video.setAttribute('loop', '');
+      video.setAttribute('data-wakelock', 'true');
+      video.style.position = 'fixed';
+      video.style.top = '-1000px';
+      video.style.left = '-1000px';
+      video.style.width = '1px';
+      video.style.height = '1px';
+      video.style.opacity = '0';
+
+      // Create a tiny video data URL
+      video.src =
+        'data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMWF2YzEAAAAIZnJlZQAAAsdtZGF0AAAC6wYF//+r3EXpvebZSLeWLNgg2SPu73gyNjQgLSBjb3JlIDE1OSByMjk5MSAxNzcxYjU1IC0gSC4yNjQvTVBFRy00IEFWQyBjb2RlYyAtIENvcHlsZWZ0IDIwMDMtMjAxOSAtIGh0dHA6Ly93d3cudmlkZW9sYW4ub3JnL3gyNjQuaHRtbCAtIG9wdGlvbnM6IGNhYmFjPTEgcmVmPTMgZGVibG9jaz0xOjA6MCBhbmFseXNlPTB4MzoweDExMyBtZT1oZXggc3VibWU9NyBwc3k9MSBwc3lfcmQ9MS4wMDowLjAwIG1peGVkX3JlZj0xIG1lX3JhbmdlPTE2IGNocm9tYV9tZT0xIHRyZWxsaXM9MSA4eDhkY3Q9MSBjcW09MCBkZWFkem9uZT0yMSwxMSBmYXN0X3Bza2lwPTEgY2hyb21hX3FwX29mZnNldD0tMiB0aHJlYWRzPTEgbG9va2FoZWFkX3RocmVhZHM9MSBzbGljZWRfdGhyZWFkcz0wIG5yPTAgZGVjaW1hdGU9MSBpbnRlcmxhY2VkPTAgYmx1cmF5X2NvbXBhdD0wIGNvbnN0cmFpbmVkX2ludHJhPTAgYmZyYW1lcz0zIGJfcHlyYW1pZD0yIGJfYWRhcHQ9MSBiX2JpYXM9MCBkaXJlY3Q9MSB3ZWlnaHRiPTEgb3Blbl9nb3A9MCB3ZWlnaHRwPTIga2V5aW50PTI1MCBrZXlpbnRfbWluPTI1IHNjZW5lY3V0PTQwIGludHJhX3JlZnJlc2g9MCByY19sb29rYWhlYWQ9NDAgcmM9Y3JmIGNyZj0yMy4wIHFjb21wPTAuNjAgcWNvbXBfb2Zmc2V0PTQuMDAgcWNvbXBfYWRhcHQ9MS4wMCBxY29tcF9tdWx0aXBsZWNrPTEuMDAgcWNvbXBfbXVsdGlwbGVjcF8zcGFzcz0xLjAwIGNvbXBsZXhpdHlfYmx1cj0yMCBxYmx1cj0wLjUgcXN0YXJ0PTAgcXN0ZXA9NCBpcF9yYXRpbz0xLjQwIGFxPTE6MS4wMACAAAAAOWWIhAA3//72rvzLK0cLlS4dWXuzUfLoSXL9iDB9aAAAAwAAAwAAJuABAAH5UAAAAgAA8w==';
+
+      document.body.appendChild(video);
+      videoRef.current = video;
+    }
+
+    return () => {
+      if (videoRef.current && !wakeLockSupported) {
+        document.body.removeChild(videoRef.current);
+      }
+    };
+  }, [wakeLockSupported]);
+
+  const requestWakeLock = async () => {
+    try {
+      if (wakeLockSupported) {
+        // Use Wake Lock API
+        wakeLockRef.current = await navigator.wakeLock.request('screen');
+        setWakeLockStatus('Wake Lock Active');
+
+        // Listen for wake lock release
+        wakeLockRef.current.addEventListener('release', () => {
+          setWakeLockStatus('Wake Lock Released');
+          setIsWakeLockEnabled(false);
+        });
+      } else {
+        // Fallback method using invisible video
+        if (videoRef.current) {
+          await videoRef.current.play();
+          setWakeLockStatus('Video Fallback Active');
+        } else {
+          throw new Error('Fallback method not available');
+        }
+      }
+      setIsWakeLockEnabled(true);
+    } catch (error) {
+      console.error('Failed to request wake lock:', error);
+      setWakeLockStatus(`Error: ${error.message}`);
+      setIsWakeLockEnabled(false);
+    }
+  };
+
+  const releaseWakeLock = async () => {
+    try {
+      if (wakeLockSupported && wakeLockRef.current) {
+        await wakeLockRef.current.release();
+        wakeLockRef.current = null;
+      } else if (videoRef.current) {
+        videoRef.current.pause();
+      }
+      setWakeLockStatus(
+        wakeLockSupported
+          ? 'Ready - Native API Available'
+          : 'Ready - Video Fallback Available'
+      );
+      setIsWakeLockEnabled(false);
+    } catch (error) {
+      console.error('Failed to release wake lock:', error);
+      setWakeLockStatus(`Error: ${error.message}`);
+    }
+  };
+
+  const toggleWakeLock = () => {
+    if (isWakeLockEnabled) {
+      releaseWakeLock();
+    } else {
+      requestWakeLock();
+    }
+  };
+
+  // Handle page visibility changes
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (
+        document.visibilityState === 'visible' &&
+        isWakeLockEnabled &&
+        wakeLockSupported
+      ) {
+        // Re-request wake lock when page becomes visible again
+        requestWakeLock();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [isWakeLockEnabled, wakeLockSupported]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (wakeLockRef.current) {
+        wakeLockRef.current.release();
+      }
+    };
+  }, []);
+
+  const value = {
+    isWakeLockEnabled,
+    wakeLockSupported,
+    wakeLockStatus,
+    requestWakeLock,
+    releaseWakeLock,
+    toggleWakeLock,
+  };
+
+  return (
+    <WakeLockContext.Provider value={value}>
+      {children}
+    </WakeLockContext.Provider>
+  );
+};

@@ -1,33 +1,34 @@
 import { useEffect, useState } from 'react';
+import ToggleButton from '../components/shared/ToggleButton';
+import { useWakeLock } from '../contexts/WakeLockContext';
 import './SettingsPage.less';
 
 function SettingsPage() {
   const [autoEnable, setAutoEnable] = useState(false);
-  const [notifications, setNotifications] = useState(true);
   const [fallbackMethod, setFallbackMethod] = useState('video');
+
+  // Use shared wake lock context
+  const {
+    isWakeLockEnabled,
+    wakeLockSupported,
+    wakeLockStatus,
+    toggleWakeLock,
+  } = useWakeLock();
 
   // Load settings from localStorage on mount
   useEffect(() => {
     const savedAutoEnable =
       localStorage.getItem('nosleep-auto-enable') === 'true';
-    const savedNotifications =
-      localStorage.getItem('nosleep-notifications') !== 'false';
     const savedFallbackMethod =
       localStorage.getItem('nosleep-fallback') || 'video';
 
     setAutoEnable(savedAutoEnable);
-    setNotifications(savedNotifications);
     setFallbackMethod(savedFallbackMethod);
   }, []);
 
   const handleAutoEnableChange = enabled => {
     setAutoEnable(enabled);
     localStorage.setItem('nosleep-auto-enable', enabled.toString());
-  };
-
-  const handleNotificationsChange = enabled => {
-    setNotifications(enabled);
-    localStorage.setItem('nosleep-notifications', enabled.toString());
   };
 
   const handleFallbackMethodChange = method => {
@@ -37,11 +38,9 @@ function SettingsPage() {
 
   const resetSettings = () => {
     setAutoEnable(false);
-    setNotifications(true);
     setFallbackMethod('video');
 
     localStorage.removeItem('nosleep-auto-enable');
-    localStorage.removeItem('nosleep-notifications');
     localStorage.removeItem('nosleep-fallback');
   };
 
@@ -78,15 +77,19 @@ function SettingsPage() {
 
           <div className='setting-row'>
             <div className='setting-info'>
-              <p className='setting-title'>Show status notifications</p>
+              <p className='setting-title'>Wake Lock Control</p>
+              <p className='setting-description'>
+                {wakeLockStatus} •{' '}
+                {wakeLockSupported ? 'Native API' : 'Video Fallback'}
+              </p>
             </div>
             <div className='setting-control'>
-              <input
-                id='notifications'
-                type='checkbox'
-                checked={notifications}
-                onChange={e => handleNotificationsChange(e.target.checked)}
-                className='form-checkbox'
+              <ToggleButton
+                isActive={isWakeLockEnabled}
+                onToggle={toggleWakeLock}
+                activeLabel='🔓 Release'
+                inactiveLabel='🔒 Enable'
+                size='medium'
               />
             </div>
           </div>
