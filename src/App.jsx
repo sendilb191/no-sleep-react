@@ -1,6 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
 import './App.less';
-import Navigation from './components/Navigation';
+import Navigation from './components/shared/Navigation';
 import { SmartRouter } from './components/SmartRouter';
 import { WakeLockProvider } from './contexts/WakeLockContext';
 import AboutPage from './pages/AboutPage';
