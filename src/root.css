@@ -1,108 +1,53 @@
-/* CSS Root Variables - Default Theme */
+/* CSS Root Variables - Ultra Simple 3-Color System */
 :root {
-  /* Colors - Primary */
-  --primary-color: #646cff;
-  --primary-hover: #535bf2;
-  --primary-light: rgba(100, 108, 255, 0.1);
+  /* Core Colors (Only 3 colors) */
+  --bg-color: #ffffff; /* White - Background */
+  --text-color: #000000; /* Black - Text */
+  --border-color: #333333; /* Dark Gray - Borders */
 
-  /* Colors - Secondary */
-  --secondary-color: #4ecdc4;
-  --secondary-hover: #44a08d;
-  --secondary-light: rgba(78, 205, 196, 0.1);
+  /* Derived Colors */
+  --bg-primary: var(--bg-color);
+  --bg-secondary: #f8f8f8;
+  --bg-tertiary: #f0f0f0;
 
-  /* Colors - Accent */
-  --accent-color: #ff6b6b;
-  --accent-hover: #ee5a24;
-  --accent-light: rgba(255, 107, 107, 0.1);
+  /* Text Colors */
+  --text-primary: var(--text-color);
+  --text-secondary: #666666;
 
-  /* Colors - Background */
-  --bg-primary: #242424;
-  --bg-secondary: rgba(255, 255, 255, 0.05);
-  --bg-tertiary: rgba(0, 0, 0, 0.1);
-  --bg-overlay: rgba(0, 0, 0, 0.8);
-
-  /* Colors - Text */
-  --text-primary: rgba(255, 255, 255, 0.87);
-  --text-secondary: rgba(255, 255, 255, 0.6);
-  --text-muted: rgba(255, 255, 255, 0.4);
-
-  /* Colors - Status */
-  --success-color: #4ecdc4;
-  --warning-color: #f39c12;
-  --error-color: #ff6b6b;
-  --info-color: #646cff;
-
-  /* Spacing */
-  --spacing-xs: 0.25rem;
+  /* Spacing - Only used ones */
   --spacing-sm: 0.5rem;
   --spacing-md: 1rem;
   --spacing-lg: 1.5rem;
   --spacing-xl: 2rem;
-  --spacing-xxl: 3rem;
 
-  /* Border Radius */
-  --radius-sm: 4px;
+  /* Border Radius - Only used ones */
   --radius-md: 8px;
   --radius-lg: 12px;
-  --radius-xl: 16px;
-  --radius-full: 50%;
 
-  /* Shadows */
+  /* Shadows - Simplified */
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 15px rgba(0, 0, 0, 0.2);
-  --shadow-lg: 0 6px 20px rgba(0, 0, 0, 0.3);
-  --shadow-primary: 0 4px 15px rgba(100, 108, 255, 0.4);
-  --shadow-secondary: 0 4px 15px rgba(78, 205, 196, 0.4);
-  --shadow-accent: 0 4px 15px rgba(255, 107, 107, 0.4);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.15);
 
-  /* Typography */
-  --font-size-xs: 0.75rem;
+  /* Typography - Only used ones */
+  --font-family: 'Courier New', Consolas, Monaco, monospace;
   --font-size-sm: 0.875rem;
   --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
   --font-size-xl: 1.25rem;
   --font-size-2xl: 1.5rem;
-  --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-bold: 700;
 
-  /* Transitions */
-  --transition-fast: 0.15s ease;
+  /* Transitions - Only used ones */
   --transition-base: 0.3s ease;
-  --transition-slow: 0.5s ease;
-
-  /* Z-index */
-  --z-dropdown: 1000;
-  --z-modal: 1050;
-  --z-tooltip: 1100;
 }
 
-/* CSS Root Variables - Light Theme (Standard Alternative) */
-[data-theme='light'] {
-  /* Colors - Background */
-  --bg-primary: #ffffff;
-  --bg-secondary: rgba(0, 0, 0, 0.05);
-  --bg-tertiary: rgba(0, 0, 0, 0.1);
-  --bg-overlay: rgba(255, 255, 255, 0.9);
-
-  /* Colors - Text */
-  --text-primary: rgba(0, 0, 0, 0.87);
-  --text-secondary: rgba(0, 0, 0, 0.6);
-  --text-muted: rgba(0, 0, 0, 0.4);
-
-  /* Shadows (lighter for light theme) */
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 15px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 6px 20px rgba(0, 0, 0, 0.15);
+/* Global Monospace Font */
+* {
+  font-family: var(--font-family);
 }
 
-/* High Contrast Theme (Accessibility) */
-[data-theme='high-contrast'] {
-  --primary-color: #0000ff;
-  --secondary-color: #008080;
-  --accent-color: #ff0000;
-  --text-primary: #000000;
-  --text-secondary: #333333;
-  --bg-primary: #ffffff;
-  --bg-secondary: #f0f0f0;
+body {
+  font-family: var(--font-family);
+  margin: 0;
+  padding: 0;
 }

@@ -1,0 +1,134 @@
+/* Settings Page Specific Styles */
+/* Uses .page class from page.less for base layout */
+
+.settings-nav {
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: var(--spacing-xl);
+
+  .nav-item {
+    padding: var(--spacing-md) 0;
+    margin-right: var(--spacing-xl);
+    border-bottom: 2px solid transparent;
+    color: var(--text-secondary);
+    font-weight: var(--font-weight-medium);
+
+    &.active {
+      color: var(--text-color);
+      border-bottom-color: var(--text-color);
+    }
+  }
+}
+
+.settings-content {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: var(--spacing-xl);
+}
+
+.settings-sidebar {
+  .sidebar-nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    .nav-link {
+      display: block;
+      padding: var(--spacing-sm) var(--spacing-md);
+      color: var(--text-secondary);
+      text-decoration: none;
+      border-radius: var(--radius-md);
+      margin-bottom: var(--spacing-sm);
+
+      &:hover {
+        background: var(--bg-secondary);
+        color: var(--text-color);
+      }
+
+      &.active {
+        background: var(--text-color);
+        color: var(--bg-color);
+      }
+    }
+  }
+}
+
+.settings-main {
+  .settings-section {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-xl);
+    background: var(--bg-primary);
+
+    .section-header {
+      padding: var(--spacing-md) var(--spacing-lg);
+      border-bottom: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+      border-radius: var(--radius-md) var(--radius-md) 0 0;
+
+      h3 {
+        margin: 0;
+        font-size: var(--font-size-xl);
+        font-weight: var(--font-weight-bold);
+        color: var(--text-color);
+      }
+
+      .section-description {
+        margin: var(--spacing-sm) 0 0 0;
+        color: var(--text-secondary);
+        font-size: var(--font-size-sm);
+      }
+    }
+
+    .section-body {
+      padding: var(--spacing-lg);
+    }
+  }
+}
+
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: var(--spacing-md) 0;
+  border-bottom: 1px solid var(--bg-tertiary);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .setting-info {
+    flex: 1;
+
+    .setting-title {
+      font-weight: var(--font-weight-medium);
+      color: var(--text-color);
+      margin: 0 0 var(--spacing-sm) 0;
+    }
+
+    .setting-description {
+      color: var(--text-secondary);
+      font-size: var(--font-size-sm);
+      margin: 0;
+    }
+  }
+
+  .setting-control {
+    margin-left: var(--spacing-lg);
+  }
+}
+
+.danger-zone {
+  border: 1px solid #d73a49;
+  border-radius: var(--radius-md);
+  margin-top: var(--spacing-xl);
+
+  .section-header {
+    background: #ffeef0;
+    border-bottom: 1px solid #d73a49;
+
+    h3 {
+      color: #d73a49;
+    }
+  }
+}

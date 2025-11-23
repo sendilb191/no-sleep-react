@@ -1,0 +1,98 @@
+/* Standard Button Styles */
+
+/* GitHub-like Button Base */
+.btn {
+  min-width: 120px;
+  height: 36px;
+  padding: 0 var(--spacing-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition-base);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  background: var(--bg-primary);
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+
+  &:not(:disabled):hover {
+    transform: translateY(-2px);
+  }
+
+  /* Primary Solid Button */
+  &.btn-primary {
+    background: var(--text-color);
+    color: var(--bg-color);
+    border-color: var(--text-color);
+
+    &:hover:not(:disabled) {
+      background: var(--border-color);
+      border-color: var(--border-color);
+      box-shadow: var(--shadow-md);
+    }
+  }
+
+  /* Outline Variants - All use same 3-color system */
+  &.btn-outline {
+    background: transparent;
+    color: var(--text-color);
+    border-color: var(--border-color);
+
+    &:hover:not(:disabled) {
+      background: var(--text-color);
+      color: var(--bg-color);
+    }
+  }
+
+  /* Gradient Variants - Using grayscale */
+  &.btn-gradient {
+    border: 1px solid var(--border-color);
+
+    &.btn-active {
+      background: linear-gradient(
+        135deg,
+        var(--text-color),
+        var(--border-color)
+      );
+      color: var(--bg-color);
+      box-shadow: var(--shadow-md);
+    }
+
+    &.btn-inactive {
+      background: linear-gradient(
+        135deg,
+        var(--bg-tertiary),
+        var(--bg-secondary)
+      );
+      color: var(--text-color);
+    }
+
+    &:hover:not(:disabled) {
+      box-shadow: var(--shadow-md);
+    }
+  }
+}
+
+/* Button Layout Containers */
+.toggle-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+  align-items: center;
+}
+
+.settings-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--spacing-xl);
+}
