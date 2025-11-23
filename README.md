@@ -1,15 +1,19 @@
-# React HTML Builder 🚀
+# No Sleep React App 🚀
 
-A simple, self-contained React application built with Vite that compiles to a single HTML file. Perfect for demos, prototypes, or when you need a portable React app without external dependencies.
+A self-contained React application that prevents your screen from going to sleep. Built with Vite and compiles to a single HTML file for easy sharing and deployment.
 
 ## ✨ Features
 
+- **Wake Lock Support**: Uses Wake Lock API with video fallback for older browsers
+- **Smart Routing**: Automatic BrowserRouter/HashRouter switching for clean URLs
+- **Easy Launcher**: One-click launcher scripts for clean local URLs
 - **Single File Output**: Builds to one self-contained HTML file
 - **No CORS Issues**: Works when opened directly in browsers
 - **Offline Capable**: No external dependencies or network requests
-- **Modern React**: Built with React 18 and modern hooks
+- **Cross-Browser Compatible**: Supports Chrome, Firefox, Safari, and Edge
+- **Modern React**: Built with React 18, React Router, and modern hooks
 - **Fast Development**: Powered by Vite with Hot Module Replacement (HMR)
-- **Auto Browser Opening**: Development server opens browser automatically
+- **Responsive Design**: Works on desktop, tablet, and mobile devices
 
 ## 🛠️ Built With
 
@@ -39,35 +43,85 @@ cd react-html-builder
 npm install
 ```
 
-3. Start the development server:
+3. **Quick Launch** (Recommended):
+
+```bash
+npm run launch
+# or simply
+npm start
+```
+
+**Or for development:**
 
 ```bash
 npm run dev
 ```
 
-The app will automatically open in your browser at `http://localhost:5173/`
+The launcher provides clean URLs like `http://localhost:3333/settings` instead of ugly hash URLs!
 
 ## 📜 Available Scripts
 
+### 🚀 **Launchers** (Clean URLs)
+
+- `npm run launch` / `npm start` - **Launch with clean URLs** ⭐
+- `./launch.bat` - Windows launcher script
+- `./launch.sh` - Unix/Mac launcher script
+
+### 🔧 **Development**
+
 - `npm run dev` - Start development server with hot reload
+
+### 📦 **Building**
+
 - `npm run build` - Build the app for production (creates single HTML file)
-- `npm run preview` - Preview the built app locally
+- `npm run build:production` - Enhanced build with additional optimizations
+
+### 🌐 **Preview/Testing**
+
+- `npm run preview` - Preview the built app via Vite's preview server
+- `npm run serve:dist` - Serve built app with simple Node.js server
+
+### 🎨 **Code Quality**
+
+- `npm run format` - Format code with Prettier
+- `npm run format:check` - Check code formatting
 
 ## 📁 Project Structure
 
 ```
-react-html-builder/
+no-sleep-react/
 ├── public/
-│   └── vite.svg
 ├── src/
-│   ├── App.jsx          # Main App component
-│   ├── App.css          # App styles
-│   ├── main.jsx         # Entry point
-│   └── index.css        # Global styles
-├── index.html           # HTML template
-├── package.json         # Dependencies and scripts
-├── vite.config.js       # Vite configuration
-└── README.md           # This file
+│   ├── components/      # Reusable UI components
+│   │   ├── Navigation.jsx
+│   │   └── shared/
+│   │       └── ToggleButton.jsx
+│   ├── contexts/        # React contexts
+│   │   └── WakeLockContext.jsx
+│   ├── pages/          # Route components
+│   │   ├── MainPage.jsx
+│   │   ├── SettingsPage.jsx
+│   │   └── AboutPage.jsx
+│   ├── styles/         # Shared styles
+│   │   ├── buttons.less
+│   │   ├── forms.less
+│   │   └── page.less
+│   ├── utils/          # Utility functions
+│   │   ├── browser.js  # Browser feature detection
+│   │   ├── routing.js  # Routing utilities
+│   │   └── index.js    # Exports
+│   ├── App.jsx         # Main App component
+│   ├── App.less        # App styles
+│   ├── main.jsx        # Entry point
+│   └── root.css        # Global styles
+├── scripts/            # Build scripts
+│   └── build.js        # Enhanced build script
+├── docs/              # Documentation
+│   └── ROUTING.md     # Routing documentation
+├── index.html         # HTML template
+├── package.json       # Dependencies and scripts
+├── vite.config.js     # Vite configuration
+└── README.md         # This file
 ```
 
 ## 🎯 Key Configuration

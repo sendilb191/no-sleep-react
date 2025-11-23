@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { checkFeatureSupport, getBrowserInfo } from '../utils/browser.js';
 
 const WakeLockContext = createContext();
 
@@ -19,12 +20,26 @@ export const WakeLockProvider = ({ children }) => {
 
   // Check if Wake Lock API is supported
   useEffect(() => {
-    if ('wakeLock' in navigator) {
+    const featureSupport = checkFeatureSupport();
+    const browserInfo = getBrowserInfo();
+
+    if (
+      featureSupport.wakeLock.supported &&
+      featureSupport.secureContext.supported
+    ) {
       setWakeLockSupported(true);
       setWakeLockStatus('Ready - Native API Available');
     } else {
       setWakeLockSupported(false);
-      setWakeLockStatus('Ready - Video Fallback Available');
+      let statusMessage = 'Ready - Video Fallback Available';
+
+      if (!featureSupport.secureContext.supported) {
+        statusMessage = 'Requires HTTPS or localhost';
+      } else if (!featureSupport.wakeLock.supported) {
+        statusMessage = `Fallback mode - ${browserInfo.isChrome ? 'Chrome' : browserInfo.isFirefox ? 'Firefox' : browserInfo.isSafari ? 'Safari' : 'Browser'} detected`;
+      }
+
+      setWakeLockStatus(statusMessage);
     }
   }, []);
 

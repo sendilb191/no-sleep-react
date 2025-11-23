@@ -7,8 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "launch": "node scripts/launcher.js",
+    "start": "node scripts/launcher.js"
   },
   "dependencies": {
     "react": "^18.2.0",

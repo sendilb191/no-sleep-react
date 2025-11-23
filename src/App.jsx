@@ -1,6 +1,7 @@
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import './App.less';
 import Navigation from './components/Navigation';
+import { SmartRouter } from './components/SmartRouter';
 import { WakeLockProvider } from './contexts/WakeLockContext';
 import AboutPage from './pages/AboutPage';
 import MainPage from './pages/MainPage';
@@ -9,7 +10,7 @@ import SettingsPage from './pages/SettingsPage';
 function App() {
   return (
     <WakeLockProvider>
-      <Router>
+      <SmartRouter>
         <div className='app'>
           <Navigation />
           <main className='main-content'>
@@ -20,7 +21,7 @@ function App() {
             </Routes>
           </main>
         </div>
-      </Router>
+      </SmartRouter>
     </WakeLockProvider>
   );
 }
