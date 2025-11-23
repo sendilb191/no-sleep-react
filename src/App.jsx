@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import './App.css';
+import { useEffect, useRef, useState } from 'react';
+import './App.less';
 
 function App() {
   const [isWakeLockEnabled, setIsWakeLockEnabled] = useState(false);
