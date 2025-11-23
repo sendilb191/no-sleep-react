@@ -76,16 +76,16 @@ The project uses `vite-plugin-singlefile` to create a single, self-contained HTM
 
 ```javascript
 // vite.config.js
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import { viteSingleFile } from "vite-plugin-singlefile";
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { viteSingleFile } from 'vite-plugin-singlefile';
 
 export default defineConfig({
   plugins: [react(), viteSingleFile()],
   server: {
     open: true,
   },
-  base: "./",
+  base: './',
 });
 ```
 
@@ -111,7 +111,7 @@ You can:
 Create new components in the `src/` folder and import them into `App.jsx`:
 
 ```jsx
-import MyComponent from "./MyComponent";
+import MyComponent from './MyComponent';
 
 function App() {
   return (
