@@ -162,4 +162,80 @@
       margin-left: var(--spacing-md);
     }
   }
+
+  .battery-settings {
+    text-align: center;
+
+    .battery-display {
+      margin-bottom: var(--spacing-md);
+
+      .battery-main {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-sm);
+        font-size: var(--font-size-sm);
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-sm);
+
+        .battery-icon {
+          font-size: var(--font-size-base);
+        }
+
+        .battery-text {
+          font-weight: var(--font-weight-medium);
+        }
+      }
+
+      .battery-details {
+        font-size: var(--font-size-sm);
+        color: var(--text-secondary);
+
+        .battery-level-bar {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: var(--spacing-sm);
+          margin: var(--spacing-sm) 0;
+
+          .battery-bar {
+            width: 100px;
+            height: 8px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            overflow: hidden;
+
+            .battery-fill {
+              height: 100%;
+              background: var(--text-primary);
+              transition: var(--transition-base);
+            }
+          }
+
+          .battery-percentage {
+            font-weight: var(--font-weight-medium);
+          }
+        }
+
+        .battery-time {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: var(--spacing-sm);
+          margin-top: var(--spacing-sm);
+        }
+      }
+    }
+
+    .battery-info-text {
+      margin-top: var(--spacing-md);
+
+      p {
+        font-size: var(--font-size-sm);
+        color: var(--text-secondary);
+        line-height: 1.4;
+        margin: 0;
+      }
+    }
+  }
 }

@@ -68,7 +68,7 @@ function AboutPage() {
 
       <div className='github-section'>
         <div className='section-header'>
-          <h2>Technical Details</h2>
+          <h2>Wake Lock Technical Details</h2>
         </div>
         <div className='section-body'>
           <div className='tech-details'>
@@ -94,6 +94,39 @@ function AboutPage() {
                 Monitors page visibility changes and automatically re-enables
                 wake lock when the tab becomes active again, ensuring continuous
                 protection.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className='github-section'>
+        <div className='section-header'>
+          <h2>Battery Technical Details</h2>
+        </div>
+        <div className='section-body'>
+          <div className='tech-details'>
+            <div className='detail-item'>
+              <h4>Battery Status API</h4>
+              <p>
+                Uses the Battery Status API to display current battery level and
+                charging status. Provides real-time updates when battery
+                conditions change.
+              </p>
+            </div>
+            <div className='detail-item'>
+              <h4>Health Notifications</h4>
+              <p>
+                Automatically notifies users when battery is charging and above
+                95% to help preserve battery health and longevity.
+              </p>
+            </div>
+            <div className='detail-item'>
+              <h4>Cross-Platform Support</h4>
+              <p>
+                Works across different devices including laptops, tablets, and
+                mobile devices. Gracefully handles browsers that don't support
+                the Battery API.
               </p>
             </div>
           </div>

@@ -1,8 +1,17 @@
 import { Link } from 'react-router-dom';
+import { useBattery } from '../hooks/useBattery';
 import './MainPage.less';
 
 function MainPage({ wakeLock }) {
   const { isWakeLockEnabled, wakeLockSupported, wakeLockStatus } = wakeLock;
+  const {
+    batteryInfo,
+    getBatteryIcon,
+    getBatteryStatus,
+    formatTime,
+    notification,
+    dismissNotification,
+  } = useBattery();
 
   return (
     <div className='page main-page'>
@@ -13,9 +22,26 @@ function MainPage({ wakeLock }) {
         </p>
       </div>
 
+      {notification && (
+        <div className={`notification notification-${notification.type}`}>
+          <div className='notification-content'>
+            <span className='notification-icon'>
+              {notification.type === 'warning' ? '⚠️' : 'ℹ️'}
+            </span>
+            <span className='notification-message'>{notification.message}</span>
+            <button
+              onClick={dismissNotification}
+              className='notification-dismiss'
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className='github-section'>
         <div className='section-header'>
-          <h2>System Status</h2>
+          <h2>Wake Lock Status</h2>
         </div>
         <div className='section-body'>
           <div className='status-grid'>
@@ -43,6 +69,44 @@ function MainPage({ wakeLock }) {
                 </Link>
               </span>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div className='github-section'>
+        <div className='section-header'>
+          <h2>Battery Status</h2>
+        </div>
+        <div className='section-body'>
+          <div className='status-grid'>
+            <div className='status-item'>
+              <span className='status-label'>Battery Level</span>
+              <span className='status-value'>
+                {getBatteryIcon()} {getBatteryStatus()}
+              </span>
+            </div>
+            {batteryInfo.supported && batteryInfo.level !== null && (
+              <>
+                {batteryInfo.charging &&
+                  batteryInfo.chargingTime !== Infinity && (
+                    <div className='status-item'>
+                      <span className='status-label'>Charging Time</span>
+                      <span className='status-value'>
+                        ⚡ Full in: {formatTime(batteryInfo.chargingTime)}
+                      </span>
+                    </div>
+                  )}
+                {!batteryInfo.charging &&
+                  batteryInfo.dischargingTime !== Infinity && (
+                    <div className='status-item'>
+                      <span className='status-label'>Battery Life</span>
+                      <span className='status-value'>
+                        🔋 Time left: {formatTime(batteryInfo.dischargingTime)}
+                      </span>
+                    </div>
+                  )}
+              </>
+            )}
           </div>
         </div>
       </div>
