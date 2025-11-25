@@ -67,33 +67,30 @@ function MainPage({ wakeLock }) {
               <span className='status-label'>Battery Level</span>
               <span className='status-value'>
                 {getBatteryIcon()} {getBatteryStatus()}
-                {batteryInfo.supported && batteryInfo.level !== null && (
+                {/* {batteryInfo.supported && batteryInfo.level !== null && (
                   <>
                     {batteryInfo.charging &&
                       batteryInfo.chargingTime !== Infinity && (
                         <span>
-                          {' '}
                           • ⚡ Full in: {formatTime(batteryInfo.chargingTime)}
                         </span>
                       )}
-                    {!batteryInfo.charging &&
-                      batteryInfo.dischargingTime !== Infinity && (
-                        <span>
-                          {' '}
-                          • 🔋 Time left:{' '}
-                          {formatTime(batteryInfo.dischargingTime)}
-                        </span>
-                      )}
                   </>
-                )}
+                )} */}
               </span>
             </div>
             <div className='status-item'>
-              <span className='status-label'>Control Location</span>
+              <span className='status-label'>Time left</span>
               <span className='status-value'>
-                <Link to='/settings' className='settings-link'>
-                  → Settings Page
-                </Link>
+                {/* {getBatteryIcon()} {getBatteryStatus()} */}
+                {batteryInfo.supported && batteryInfo.level !== null && (
+                  <>
+                    {!batteryInfo.charging &&
+                      batteryInfo.dischargingTime !== Infinity && (
+                        <span>{formatTime(batteryInfo.dischargingTime)}</span>
+                      )}
+                  </>
+                )}
               </span>
             </div>
           </div>
@@ -121,14 +118,6 @@ function MainPage({ wakeLock }) {
             <div className='status-item'>
               <span className='status-label'>Ready State</span>
               <span className='status-value'>{wakeLockStatus}</span>
-            </div>
-            <div className='status-item'>
-              <span className='status-label'>Control Location</span>
-              <span className='status-value'>
-                <Link to='/settings' className='settings-link'>
-                  → Settings Page
-                </Link>
-              </span>
             </div>
           </div>
         </div>
