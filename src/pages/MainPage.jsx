@@ -41,6 +41,52 @@ function MainPage({ wakeLock }) {
 
       <div className='github-section'>
         <div className='section-header'>
+          <h2>Battery Status</h2>
+        </div>
+        <div className='section-body'>
+          <div className='status-grid'>
+            <div className='status-item'>
+              <span className='status-label'>Battery Level</span>
+              <span className='status-value'>
+                {getBatteryIcon()} {getBatteryStatus()}
+              </span>
+            </div>
+            {batteryInfo.supported && batteryInfo.level !== null && (
+              <div className='status-item'>
+                <span className='status-label'>Current Status</span>
+                <span className='status-value'>
+                  {batteryInfo.charging ? '🔌 Charging' : '🔋 Not charging'}
+                </span>
+              </div>
+            )}
+            {batteryInfo.supported && batteryInfo.level !== null && (
+              <>
+                {batteryInfo.charging &&
+                  batteryInfo.chargingTime !== Infinity && (
+                    <div className='status-item'>
+                      <span className='status-label'>Charging Time</span>
+                      <span className='status-value'>
+                        ⚡ Full in: {formatTime(batteryInfo.chargingTime)}
+                      </span>
+                    </div>
+                  )}
+                {!batteryInfo.charging &&
+                  batteryInfo.dischargingTime !== Infinity && (
+                    <div className='status-item'>
+                      <span className='status-label'>Battery Life</span>
+                      <span className='status-value'>
+                        🔋 Time left: {formatTime(batteryInfo.dischargingTime)}
+                      </span>
+                    </div>
+                  )}
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className='github-section'>
+        <div className='section-header'>
           <h2>Wake Lock Status</h2>
         </div>
         <div className='section-body'>
@@ -69,44 +115,6 @@ function MainPage({ wakeLock }) {
                 </Link>
               </span>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <div className='github-section'>
-        <div className='section-header'>
-          <h2>Battery Status</h2>
-        </div>
-        <div className='section-body'>
-          <div className='status-grid'>
-            <div className='status-item'>
-              <span className='status-label'>Battery Level</span>
-              <span className='status-value'>
-                {getBatteryIcon()} {getBatteryStatus()}
-              </span>
-            </div>
-            {batteryInfo.supported && batteryInfo.level !== null && (
-              <>
-                {batteryInfo.charging &&
-                  batteryInfo.chargingTime !== Infinity && (
-                    <div className='status-item'>
-                      <span className='status-label'>Charging Time</span>
-                      <span className='status-value'>
-                        ⚡ Full in: {formatTime(batteryInfo.chargingTime)}
-                      </span>
-                    </div>
-                  )}
-                {!batteryInfo.charging &&
-                  batteryInfo.dischargingTime !== Infinity && (
-                    <div className='status-item'>
-                      <span className='status-label'>Battery Life</span>
-                      <span className='status-value'>
-                        🔋 Time left: {formatTime(batteryInfo.dischargingTime)}
-                      </span>
-                    </div>
-                  )}
-              </>
-            )}
           </div>
         </div>
       </div>

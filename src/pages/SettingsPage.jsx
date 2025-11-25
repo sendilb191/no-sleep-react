@@ -140,7 +140,7 @@ function SettingsPage({ wakeLock }) {
         </p>
       </div>
 
-      <div className='github-section compact-settings'>
+      <div className='github-section compact-section'>
         <div className='section-header'>
           <h3>Wake Lock Configuration</h3>
         </div>
@@ -218,7 +218,7 @@ function SettingsPage({ wakeLock }) {
         </div>
       </div>
 
-      <div className='github-section compact-settings'>
+      <div className='github-section compact-section'>
         <div className='section-header'>
           <h3>Battery Configuration</h3>
         </div>
