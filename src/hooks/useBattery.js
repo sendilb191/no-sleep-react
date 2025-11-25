@@ -234,7 +234,6 @@ export const useBattery = () => {
     getBatteryStatus,
     formatTime,
     requestNotificationPermission,
-    areNotificationsEnabled,
     showNotification,
   };
 };

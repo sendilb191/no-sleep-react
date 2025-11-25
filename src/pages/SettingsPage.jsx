@@ -9,10 +9,6 @@ function SettingsPage({ wakeLock }) {
   const [fallbackMethod, setFallbackMethod] = useState('video');
   const [batteryNotifications, setBatteryNotifications] = useState(true);
   const {
-    batteryInfo,
-    getBatteryIcon,
-    getBatteryStatus,
-    formatTime,
     notificationPermission,
     requestNotificationPermission,
     showNotification,
@@ -66,11 +62,6 @@ function SettingsPage({ wakeLock }) {
 
   const handleTestNotification = async () => {
     try {
-      console.log('=== Testing Notification ===');
-      console.log('Notification API supported:', 'Notification' in window);
-      console.log('Current permission:', Notification.permission);
-      console.log('showNotification available:', !!showNotification);
-
       // Check if Notification API is supported
       if (!('Notification' in window)) {
         const msg = 'Notifications are not supported in this browser';
@@ -81,19 +72,14 @@ function SettingsPage({ wakeLock }) {
 
       // Check current permission
       let permission = Notification.permission;
-      console.log('Initial permission state:', permission);
 
       // Request permission if needed
       if (permission === 'default') {
-        console.log('Requesting notification permission...');
         permission = await Notification.requestPermission();
-        console.log('Permission after request:', permission);
       }
 
       if (permission === 'granted') {
-        console.log('Permission granted, creating notification...');
-
-        // Create test notification without icon to avoid 404
+        // Create test notification
         const notification = new Notification('Test Notification', {
           body: 'Push notifications are working! 🔋',
           tag: 'test-notification',
@@ -101,18 +87,12 @@ function SettingsPage({ wakeLock }) {
           silent: false,
         });
 
-        console.log('Notification object created:', notification);
-
-        // Add event listeners for debugging
-        notification.onshow = () => console.log('Notification shown');
-        notification.onclick = () => console.log('Notification clicked');
-        notification.onclose = () => console.log('Notification closed');
+        // Add error listener for debugging
         notification.onerror = e => console.error('Notification error:', e);
 
         // Auto-close after 5 seconds
         setTimeout(() => {
           notification.close();
-          console.log('Auto-closing notification after 5 seconds');
         }, 5000);
 
         // Also show in-app feedback
@@ -121,7 +101,6 @@ function SettingsPage({ wakeLock }) {
             'Test notification sent! Check your system tray. 🎉',
             'info'
           );
-          console.log('In-app notification triggered');
         } else {
           console.warn('showNotification function not available');
           alert('Test notification sent! (showNotification unavailable)');
