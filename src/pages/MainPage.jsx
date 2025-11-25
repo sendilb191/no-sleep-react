@@ -1,9 +1,8 @@
-import { useWakeLock } from '../contexts/WakeLockContext';
+import { Link } from 'react-router-dom';
 import './MainPage.less';
 
-function MainPage() {
-  const { isWakeLockEnabled, wakeLockSupported, wakeLockStatus } =
-    useWakeLock();
+function MainPage({ wakeLock }) {
+  const { isWakeLockEnabled, wakeLockSupported, wakeLockStatus } = wakeLock;
 
   return (
     <div className='page main-page'>
@@ -38,22 +37,12 @@ function MainPage() {
             </div>
             <div className='status-item'>
               <span className='status-label'>Control Location</span>
-              <span className='status-value'>→ Settings Page</span>
+              <span className='status-value'>
+                <Link to='/settings' className='settings-link'>
+                  → Settings Page
+                </Link>
+              </span>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <div className='github-section'>
-        <div className='section-header'>
-          <h2>Information</h2>
-        </div>
-        <div className='section-body'>
-          <div className='feature-list'>
-            <li>Wake lock controls are available in Settings</li>
-            <li>Status updates automatically when active</li>
-            <li>Supports both native API and video fallback</li>
-            <li>Works across all modern browsers</li>
           </div>
         </div>
       </div>

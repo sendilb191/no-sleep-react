@@ -26,6 +26,20 @@ function AboutPage() {
 
       <div className='github-section'>
         <div className='section-header'>
+          <h2>Features</h2>
+        </div>
+        <div className='section-body'>
+          <ul className='feature-list'>
+            <li>Wake lock controls are available in Settings</li>
+            <li>Status updates automatically when active</li>
+            <li>Supports both native API and video fallback</li>
+            <li>Works across all modern browsers</li>
+          </ul>
+        </div>
+      </div>
+
+      <div className='github-section'>
+        <div className='section-header'>
           <h2>Browser Compatibility</h2>
         </div>
         <div className='section-body'>
@@ -93,19 +107,29 @@ function AboutPage() {
         <div className='section-body'>
           <div className='app-info'>
             <div className='info-row'>
-              <span className='info-label'>Version:</span>
+              <span className='info-label'>Application</span>
+              <span className='info-value'>No Sleep React App</span>
+            </div>
+            <div className='info-row'>
+              <span className='info-label'>Version</span>
               <span className='info-value'>1.0.0</span>
             </div>
             <div className='info-row'>
-              <span className='info-label'>Framework:</span>
+              <span className='info-label'>Description</span>
+              <span className='info-value'>
+                Prevents screen sleep using Wake Lock API
+              </span>
+            </div>
+            <div className='info-row'>
+              <span className='info-label'>Framework</span>
               <span className='info-value'>React 18.2</span>
             </div>
             <div className='info-row'>
-              <span className='info-label'>Build Tool:</span>
+              <span className='info-label'>Build Tool</span>
               <span className='info-value'>Vite 6.4</span>
             </div>
             <div className='info-row'>
-              <span className='info-label'>Styling:</span>
+              <span className='info-label'>Styling</span>
               <span className='info-value'>LESS CSS</span>
             </div>
           </div>

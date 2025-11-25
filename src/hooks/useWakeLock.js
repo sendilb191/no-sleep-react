@@ -1,20 +1,12 @@
-import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { checkFeatureSupport, getBrowserInfo } from '../utils/browser.js';
 
-const WakeLockContext = createContext();
-
+// Hook that contains all wake lock logic
 export const useWakeLock = () => {
-  const context = useContext(WakeLockContext);
-  if (!context) {
-    throw new Error('useWakeLock must be used within a WakeLockProvider');
-  }
-  return context;
-};
-
-export const WakeLockProvider = ({ children }) => {
   const [isWakeLockEnabled, setIsWakeLockEnabled] = useState(false);
   const [wakeLockSupported, setWakeLockSupported] = useState(false);
   const [wakeLockStatus, setWakeLockStatus] = useState('Initializing...');
+  const [userWantsWakeLock, setUserWantsWakeLock] = useState(false); // Track user intention
   const wakeLockRef = useRef(null);
   const videoRef = useRef(null);
 
@@ -73,7 +65,7 @@ export const WakeLockProvider = ({ children }) => {
     };
   }, [wakeLockSupported]);
 
-  const requestWakeLock = async () => {
+  const requestWakeLock = useCallback(async () => {
     try {
       if (wakeLockSupported) {
         // Use Wake Lock API
@@ -82,8 +74,9 @@ export const WakeLockProvider = ({ children }) => {
 
         // Listen for wake lock release
         wakeLockRef.current.addEventListener('release', () => {
-          setWakeLockStatus('Wake Lock Released');
+          setWakeLockStatus('Wake Lock Released (will auto-resume)');
           setIsWakeLockEnabled(false);
+          // Don't change userWantsWakeLock - keep user intention
         });
       } else {
         // Fallback method using invisible video
@@ -95,14 +88,15 @@ export const WakeLockProvider = ({ children }) => {
         }
       }
       setIsWakeLockEnabled(true);
+      setUserWantsWakeLock(true);
     } catch (error) {
       console.error('Failed to request wake lock:', error);
       setWakeLockStatus(`Error: ${error.message}`);
       setIsWakeLockEnabled(false);
     }
-  };
+  }, [wakeLockSupported]);
 
-  const releaseWakeLock = async () => {
+  const releaseWakeLock = useCallback(async () => {
     try {
       if (wakeLockSupported && wakeLockRef.current) {
         await wakeLockRef.current.release();
@@ -116,29 +110,30 @@ export const WakeLockProvider = ({ children }) => {
           : 'Ready - Video Fallback Available'
       );
       setIsWakeLockEnabled(false);
+      setUserWantsWakeLock(false);
     } catch (error) {
       console.error('Failed to release wake lock:', error);
       setWakeLockStatus(`Error: ${error.message}`);
     }
-  };
+  }, [wakeLockSupported]);
 
-  const toggleWakeLock = () => {
-    if (isWakeLockEnabled) {
+  const toggleWakeLock = useCallback(() => {
+    if (userWantsWakeLock) {
       releaseWakeLock();
     } else {
       requestWakeLock();
     }
-  };
+  }, [userWantsWakeLock, requestWakeLock, releaseWakeLock]);
 
   // Handle page visibility changes
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (
         document.visibilityState === 'visible' &&
-        isWakeLockEnabled &&
-        wakeLockSupported
+        userWantsWakeLock &&
+        !isWakeLockEnabled
       ) {
-        // Re-request wake lock when page becomes visible again
+        // Re-request wake lock when page becomes visible again if user wants it
         requestWakeLock();
       }
     };
@@ -147,7 +142,7 @@ export const WakeLockProvider = ({ children }) => {
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [isWakeLockEnabled, wakeLockSupported]);
+  }, [userWantsWakeLock, isWakeLockEnabled, requestWakeLock]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -158,18 +153,12 @@ export const WakeLockProvider = ({ children }) => {
     };
   }, []);
 
-  const value = {
-    isWakeLockEnabled,
+  return {
+    isWakeLockEnabled: userWantsWakeLock, // Return user intention for UI consistency
     wakeLockSupported,
     wakeLockStatus,
     requestWakeLock,
     releaseWakeLock,
     toggleWakeLock,
   };
-
-  return (
-    <WakeLockContext.Provider value={value}>
-      {children}
-    </WakeLockContext.Provider>
-  );
 };
