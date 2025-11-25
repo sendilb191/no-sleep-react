@@ -8,6 +8,7 @@ function SettingsPage({ wakeLock }) {
   const [autoEnable, setAutoEnable] = useState(false);
   const [fallbackMethod, setFallbackMethod] = useState('video');
   const [batteryNotifications, setBatteryNotifications] = useState(true);
+  const [notificationFrequency, setNotificationFrequency] = useState('5min');
   const {
     notificationPermission,
     requestNotificationPermission,
@@ -30,10 +31,13 @@ function SettingsPage({ wakeLock }) {
       localStorage.getItem('nosleep-fallback') || 'video';
     const savedBatteryNotifications =
       localStorage.getItem('nosleep-battery-notifications') !== 'false';
+    const savedNotificationFrequency =
+      localStorage.getItem('nosleep-notification-frequency') || '5min';
 
     setAutoEnable(savedAutoEnable);
     setFallbackMethod(savedFallbackMethod);
     setBatteryNotifications(savedBatteryNotifications);
+    setNotificationFrequency(savedNotificationFrequency);
   }, []);
 
   const handleAutoEnableChange = enabled => {
@@ -54,6 +58,11 @@ function SettingsPage({ wakeLock }) {
     if (enabled && notificationPermission !== 'granted') {
       await requestNotificationPermission();
     }
+  };
+
+  const handleNotificationFrequencyChange = frequency => {
+    setNotificationFrequency(frequency);
+    localStorage.setItem('nosleep-notification-frequency', frequency);
   };
 
   const handleRequestPermission = async () => {
@@ -125,10 +134,12 @@ function SettingsPage({ wakeLock }) {
     setAutoEnable(false);
     setFallbackMethod('video');
     setBatteryNotifications(true);
+    setNotificationFrequency('5min');
 
     localStorage.removeItem('nosleep-auto-enable');
     localStorage.removeItem('nosleep-fallback');
     localStorage.removeItem('nosleep-battery-notifications');
+    localStorage.removeItem('nosleep-notification-frequency');
   };
 
   return (
@@ -245,42 +256,83 @@ function SettingsPage({ wakeLock }) {
           </div>
 
           {batteryNotifications && (
-            <div className='setting-row'>
-              <div className='setting-info'>
-                <p className='setting-title'>Browser Push Notifications</p>
-                <p className='setting-description'>
-                  Status:{' '}
-                  {notificationPermission === 'granted'
-                    ? '✅ Allowed'
-                    : notificationPermission === 'denied'
-                      ? '❌ Blocked'
-                      : notificationPermission === 'default'
-                        ? '⏳ Not requested'
-                        : '❓ Not supported'}
-                  {notificationPermission === 'denied' &&
-                    ' (Enable in browser settings)'}
-                </p>
+            <>
+              <div className='setting-row'>
+                <div className='setting-info'>
+                  <p className='setting-title'>Notification Frequency</p>
+                  <p className='setting-description'>
+                    How often to remind you when battery is above 95% and
+                    charging
+                  </p>
+                </div>
+                <div className='setting-control'>
+                  <CustomDropdown
+                    id='frequency-select'
+                    value={notificationFrequency}
+                    onChange={handleNotificationFrequencyChange}
+                    options={[
+                      {
+                        value: 'once',
+                        label: 'Once Only',
+                        description: 'Single notification when reaching 95%',
+                      },
+                      {
+                        value: '1min',
+                        label: 'Every 1 Minute',
+                        description: 'Frequent reminders while charging',
+                      },
+                      {
+                        value: '5min',
+                        label: 'Every 5 Minutes',
+                        description: 'Regular reminders (recommended)',
+                      },
+                      {
+                        value: '30min',
+                        label: 'Every 30 Minutes',
+                        description: 'Occasional reminders',
+                      },
+                    ]}
+                    placeholder='Select frequency'
+                  />
+                </div>
               </div>
-              <div className='setting-control'>
-                {notificationPermission !== 'granted' &&
-                  notificationPermission !== 'denied' && (
+              <div className='setting-row'>
+                <div className='setting-info'>
+                  <p className='setting-title'>Browser Push Notifications</p>
+                  <p className='setting-description'>
+                    Status:{' '}
+                    {notificationPermission === 'granted'
+                      ? '✅ Allowed'
+                      : notificationPermission === 'denied'
+                        ? '❌ Blocked'
+                        : notificationPermission === 'default'
+                          ? '⏳ Not requested'
+                          : '❓ Not supported'}
+                    {notificationPermission === 'denied' &&
+                      ' (Enable in browser settings)'}
+                  </p>
+                </div>
+                <div className='setting-control'>
+                  {notificationPermission !== 'granted' &&
+                    notificationPermission !== 'denied' && (
+                      <button
+                        onClick={handleRequestPermission}
+                        className='btn btn-primary'
+                      >
+                        🔔 Allow Notifications
+                      </button>
+                    )}
+                  {notificationPermission === 'granted' && (
                     <button
-                      onClick={handleRequestPermission}
-                      className='btn btn-primary'
+                      onClick={handleTestNotification}
+                      className='btn btn-outline'
                     >
-                      🔔 Allow Notifications
+                      🧪 Test Notification
                     </button>
                   )}
-                {notificationPermission === 'granted' && (
-                  <button
-                    onClick={handleTestNotification}
-                    className='btn btn-outline'
-                  >
-                    🧪 Test Notification
-                  </button>
-                )}
+                </div>
               </div>
-            </div>
+            </>
           )}
         </div>
       </div>

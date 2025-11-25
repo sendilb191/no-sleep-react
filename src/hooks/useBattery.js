@@ -14,6 +14,9 @@ export const useBattery = () => {
   const [notificationPermission, setNotificationPermission] = useState(
     'Notification' in window ? Notification.permission : 'unsupported'
   );
+  const [lastNotificationTime, setLastNotificationTime] = useState(null);
+  const [notifiedForCurrentSession, setNotifiedForCurrentSession] =
+    useState(false);
 
   // Check if Battery API is supported
   const checkBatterySupport = useCallback(() => {
@@ -24,6 +27,41 @@ export const useBattery = () => {
   const areNotificationsEnabled = useCallback(() => {
     return localStorage.getItem('nosleep-battery-notifications') !== 'false';
   }, []);
+
+  // Get notification frequency setting
+  const getNotificationFrequency = useCallback(() => {
+    return localStorage.getItem('nosleep-notification-frequency') || '5min';
+  }, []);
+
+  // Check if enough time has passed for next notification
+  const shouldShowNotification = useCallback(() => {
+    if (!areNotificationsEnabled()) return false;
+
+    const frequency = getNotificationFrequency();
+    const now = Date.now();
+
+    // For 'once' frequency, only show if we haven't notified in this session
+    if (frequency === 'once') {
+      return !notifiedForCurrentSession;
+    }
+
+    // For other frequencies, check time-based cooldown
+    if (!lastNotificationTime) return true;
+
+    const intervals = {
+      '1min': 60 * 1000, // 1 minute
+      '5min': 5 * 60 * 1000, // 5 minutes
+      '30min': 30 * 60 * 1000, // 30 minutes
+    };
+
+    const interval = intervals[frequency] || intervals['5min'];
+    return now - lastNotificationTime >= interval;
+  }, [
+    areNotificationsEnabled,
+    getNotificationFrequency,
+    lastNotificationTime,
+    notifiedForCurrentSession,
+  ]);
 
   // Request notification permission
   const requestNotificationPermission = useCallback(async () => {
@@ -83,12 +121,21 @@ export const useBattery = () => {
         error: null,
       });
 
-      // Check for notification conditions (only if notifications are enabled)
-      if (charging && level > 95 && areNotificationsEnabled()) {
+      // Check for notification conditions with frequency control
+      if (charging && level > 95 && shouldShowNotification()) {
+        const now = Date.now();
+        setLastNotificationTime(now);
+        setNotifiedForCurrentSession(true);
+
         showNotification(
           `Battery is ${level}% and charging. Consider unplugging to preserve battery health.`,
           'warning'
         );
+      }
+
+      // Reset session flag when not charging or below 95%
+      if (!charging || level <= 95) {
+        setNotifiedForCurrentSession(false);
       }
     },
     [showNotification]
@@ -235,5 +282,6 @@ export const useBattery = () => {
     formatTime,
     requestNotificationPermission,
     showNotification,
+    getNotificationFrequency,
   };
 };

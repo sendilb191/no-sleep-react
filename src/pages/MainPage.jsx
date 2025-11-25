@@ -46,41 +46,56 @@ function MainPage({ wakeLock }) {
         <div className='section-body'>
           <div className='status-grid'>
             <div className='status-item'>
+              <span className='status-label'>API Support</span>
+              <span className='status-value'>
+                {batteryInfo.supported
+                  ? '✓ Native Battery API'
+                  : '⚠ Not Available'}
+              </span>
+            </div>
+            <div className='status-item'>
+              <span className='status-label'>Current Status</span>
+              <span className='status-value'>
+                {batteryInfo.supported && batteryInfo.level !== null
+                  ? batteryInfo.charging
+                    ? '🔌 Charging'
+                    : '🔋 Not charging'
+                  : '❓ Unknown'}
+              </span>
+            </div>
+            <div className='status-item'>
               <span className='status-label'>Battery Level</span>
               <span className='status-value'>
                 {getBatteryIcon()} {getBatteryStatus()}
+                {batteryInfo.supported && batteryInfo.level !== null && (
+                  <>
+                    {batteryInfo.charging &&
+                      batteryInfo.chargingTime !== Infinity && (
+                        <span>
+                          {' '}
+                          • ⚡ Full in: {formatTime(batteryInfo.chargingTime)}
+                        </span>
+                      )}
+                    {!batteryInfo.charging &&
+                      batteryInfo.dischargingTime !== Infinity && (
+                        <span>
+                          {' '}
+                          • 🔋 Time left:{' '}
+                          {formatTime(batteryInfo.dischargingTime)}
+                        </span>
+                      )}
+                  </>
+                )}
               </span>
             </div>
-            {batteryInfo.supported && batteryInfo.level !== null && (
-              <div className='status-item'>
-                <span className='status-label'>Current Status</span>
-                <span className='status-value'>
-                  {batteryInfo.charging ? '🔌 Charging' : '🔋 Not charging'}
-                </span>
-              </div>
-            )}
-            {batteryInfo.supported && batteryInfo.level !== null && (
-              <>
-                {batteryInfo.charging &&
-                  batteryInfo.chargingTime !== Infinity && (
-                    <div className='status-item'>
-                      <span className='status-label'>Charging Time</span>
-                      <span className='status-value'>
-                        ⚡ Full in: {formatTime(batteryInfo.chargingTime)}
-                      </span>
-                    </div>
-                  )}
-                {!batteryInfo.charging &&
-                  batteryInfo.dischargingTime !== Infinity && (
-                    <div className='status-item'>
-                      <span className='status-label'>Battery Life</span>
-                      <span className='status-value'>
-                        🔋 Time left: {formatTime(batteryInfo.dischargingTime)}
-                      </span>
-                    </div>
-                  )}
-              </>
-            )}
+            <div className='status-item'>
+              <span className='status-label'>Control Location</span>
+              <span className='status-value'>
+                <Link to='/settings' className='settings-link'>
+                  → Settings Page
+                </Link>
+              </span>
+            </div>
           </div>
         </div>
       </div>
