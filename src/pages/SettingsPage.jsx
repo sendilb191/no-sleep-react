@@ -23,8 +23,10 @@ function SettingsPage({ wakeLock, settings }) {
   // Use wake lock state from props
   const {
     isWakeLockEnabled,
+    userWantsWakeLock,
     wakeLockSupported,
     wakeLockStatus,
+    isToggling,
     toggleWakeLock,
   } = wakeLock;
 
@@ -171,10 +173,11 @@ function SettingsPage({ wakeLock, settings }) {
             </div>
             <div className='setting-control'>
               <ToggleButton
-                isActive={isWakeLockEnabled}
-                onToggle={toggleWakeLock}
+                isActive={userWantsWakeLock}
+                onToggle={() => toggleWakeLock()}
                 activeLabel='🔓 Release'
                 inactiveLabel='🔒 Enable'
+                isLoading={isToggling}
                 size='medium'
               />
             </div>

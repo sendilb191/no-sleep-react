@@ -39,6 +39,7 @@ export const useSettings = () => {
             DEFAULT_SETTINGS.notificationFrequency,
         };
 
+        console.log('Settings loaded from localStorage:', loadedSettings);
         setSettings(loadedSettings);
         setIsLoaded(true);
         hasLoadedRef.current = true;

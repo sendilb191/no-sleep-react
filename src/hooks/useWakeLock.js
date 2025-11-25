@@ -7,8 +7,10 @@ export const useWakeLock = () => {
   const [wakeLockSupported, setWakeLockSupported] = useState(false);
   const [wakeLockStatus, setWakeLockStatus] = useState('Initializing...');
   const [userWantsWakeLock, setUserWantsWakeLock] = useState(false); // Track user intention
+  const [isToggling, setIsToggling] = useState(false); // Prevent multiple toggles
   const wakeLockRef = useRef(null);
   const videoRef = useRef(null);
+  const userWantsWakeLockRef = useRef(false);
 
   // Check if Wake Lock API is supported
   useEffect(() => {
@@ -88,14 +90,12 @@ export const useWakeLock = () => {
         }
       }
       setIsWakeLockEnabled(true);
-      setUserWantsWakeLock(true);
     } catch (error) {
       console.error('Failed to request wake lock:', error);
       setWakeLockStatus(`Error: ${error.message}`);
       setIsWakeLockEnabled(false);
     }
   }, [wakeLockSupported]);
-
   const releaseWakeLock = useCallback(async () => {
     try {
       if (wakeLockSupported && wakeLockRef.current) {
@@ -110,20 +110,74 @@ export const useWakeLock = () => {
           : 'Ready - Video Fallback Available'
       );
       setIsWakeLockEnabled(false);
-      setUserWantsWakeLock(false);
     } catch (error) {
       console.error('Failed to release wake lock:', error);
       setWakeLockStatus(`Error: ${error.message}`);
     }
   }, [wakeLockSupported]);
-
-  const toggleWakeLock = useCallback(() => {
-    if (userWantsWakeLock) {
-      releaseWakeLock();
-    } else {
-      requestWakeLock();
+  const toggleWakeLock = useCallback(async () => {
+    if (isToggling) {
+      console.log('Toggle already in progress, ignoring...');
+      return;
     }
-  }, [userWantsWakeLock, requestWakeLock, releaseWakeLock]);
+
+    setIsToggling(true);
+
+    try {
+      const newWantsWakeLock = !userWantsWakeLock;
+      console.log(
+        'Toggling wake lock from',
+        userWantsWakeLock,
+        'to',
+        newWantsWakeLock,
+        '| Current enabled state:',
+        isWakeLockEnabled
+      );
+
+      // Update user intention first
+      setUserWantsWakeLock(newWantsWakeLock);
+      userWantsWakeLockRef.current = newWantsWakeLock;
+
+      if (newWantsWakeLock) {
+        console.log('Requesting wake lock...');
+        // Inline wake lock request
+        if (wakeLockSupported) {
+          wakeLockRef.current = await navigator.wakeLock.request('screen');
+          setWakeLockStatus('Wake Lock Active');
+          wakeLockRef.current.addEventListener('release', () => {
+            setWakeLockStatus('Wake Lock Released (will auto-resume)');
+            setIsWakeLockEnabled(false);
+          });
+        } else {
+          if (videoRef.current) {
+            await videoRef.current.play();
+            setWakeLockStatus('Video Fallback Active');
+          }
+        }
+        setIsWakeLockEnabled(true);
+      } else {
+        console.log('Releasing wake lock...');
+        // Inline wake lock release
+        if (wakeLockSupported && wakeLockRef.current) {
+          await wakeLockRef.current.release();
+          wakeLockRef.current = null;
+        } else if (videoRef.current) {
+          videoRef.current.pause();
+        }
+        setWakeLockStatus(
+          wakeLockSupported
+            ? 'Ready - Native API Available'
+            : 'Ready - Video Fallback Available'
+        );
+        setIsWakeLockEnabled(false);
+      }
+    } catch (error) {
+      console.error('Failed to toggle wake lock:', error);
+      setWakeLockStatus(`Error: ${error.message}`);
+    } finally {
+      setIsToggling(false);
+    }
+  }, [isToggling, userWantsWakeLock, wakeLockSupported]);
 
   // Handle page visibility changes
   useEffect(() => {
@@ -154,9 +208,11 @@ export const useWakeLock = () => {
   }, []);
 
   return {
-    isWakeLockEnabled: userWantsWakeLock, // Return user intention for UI consistency
+    isWakeLockEnabled, // Return actual wake lock state
+    userWantsWakeLock, // Expose user intention separately
     wakeLockSupported,
     wakeLockStatus,
+    isToggling,
     requestWakeLock,
     releaseWakeLock,
     toggleWakeLock,

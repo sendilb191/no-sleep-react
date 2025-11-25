@@ -20,17 +20,28 @@ function App() {
 
   // Auto-enable wake lock when settings are loaded and autoEnable is true
   useEffect(() => {
+    console.log('App useEffect - Settings check:', {
+      isLoaded: settingsState.isLoaded,
+      autoEnable: settingsState.autoEnable,
+      userWantsWakeLock: wakeLockState.userWantsWakeLock,
+      isWakeLockEnabled: wakeLockState.isWakeLockEnabled,
+    });
+
     if (
       settingsState.isLoaded &&
       settingsState.autoEnable &&
+      !wakeLockState.userWantsWakeLock &&
       !wakeLockState.isWakeLockEnabled
     ) {
-      wakeLockState.requestWakeLock();
+      console.log('Auto-enabling wake lock from settings...');
+      wakeLockState.toggleWakeLock();
     }
   }, [
     settingsState.isLoaded,
     settingsState.autoEnable,
+    wakeLockState.userWantsWakeLock,
     wakeLockState.isWakeLockEnabled,
+    wakeLockState.toggleWakeLock,
   ]);
 
   return (

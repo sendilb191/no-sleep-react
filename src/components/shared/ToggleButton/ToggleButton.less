@@ -45,6 +45,21 @@
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     transition: transform 0.2s ease;
+
+    &.loading {
+      animation: loading-pulse 1s ease-in-out infinite;
+    }
+  }
+
+  /* Loading animation */
+  @keyframes loading-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
   }
 
   /* Toggle Label */
