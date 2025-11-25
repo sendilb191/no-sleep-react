@@ -1,6 +1,23 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 
-export const useBattery = () => {
+export const useBattery = (settings = null) => {
+  // Memoize settings-dependent values to prevent infinite re-renders
+  const batteryNotificationsEnabled = useMemo(() => {
+    if (settings && settings.batteryNotifications !== undefined) {
+      return settings.batteryNotifications;
+    }
+    // Fallback to localStorage for backward compatibility
+    return localStorage.getItem('nosleep-battery-notifications') !== 'false';
+  }, [settings?.batteryNotifications]);
+
+  const notificationFrequency = useMemo(() => {
+    if (settings && settings.notificationFrequency !== undefined) {
+      return settings.notificationFrequency;
+    }
+    // Fallback to localStorage for backward compatibility
+    return localStorage.getItem('nosleep-notification-frequency') || '5min';
+  }, [settings?.notificationFrequency]);
+
   const [batteryInfo, setBatteryInfo] = useState({
     level: null,
     charging: null,
@@ -25,19 +42,19 @@ export const useBattery = () => {
 
   // Check if notifications are enabled
   const areNotificationsEnabled = useCallback(() => {
-    return localStorage.getItem('nosleep-battery-notifications') !== 'false';
-  }, []);
+    return batteryNotificationsEnabled;
+  }, [batteryNotificationsEnabled]);
 
   // Get notification frequency setting
   const getNotificationFrequency = useCallback(() => {
-    return localStorage.getItem('nosleep-notification-frequency') || '5min';
-  }, []);
+    return notificationFrequency;
+  }, [notificationFrequency]);
 
   // Check if enough time has passed for next notification
   const shouldShowNotification = useCallback(() => {
-    if (!areNotificationsEnabled()) return false;
+    if (!batteryNotificationsEnabled) return false;
 
-    const frequency = getNotificationFrequency();
+    const frequency = notificationFrequency;
     const now = Date.now();
 
     // For 'once' frequency, only show if we haven't notified in this session
@@ -56,7 +73,12 @@ export const useBattery = () => {
 
     const interval = intervals[frequency] || intervals['5min'];
     return now - lastNotificationTime >= interval;
-  }, [lastNotificationTime, notifiedForCurrentSession]);
+  }, [
+    batteryNotificationsEnabled,
+    notificationFrequency,
+    lastNotificationTime,
+    notifiedForCurrentSession,
+  ]);
 
   // Request notification permission
   const requestNotificationPermission = useCallback(async () => {
@@ -100,7 +122,7 @@ export const useBattery = () => {
         setNotification(null);
       }, 5000);
     },
-    [areNotificationsEnabled]
+    [batteryNotificationsEnabled]
   );
 
   // Update battery information
@@ -150,7 +172,7 @@ export const useBattery = () => {
     }
 
     // Request notification permission if notifications are enabled
-    if (areNotificationsEnabled()) {
+    if (batteryNotificationsEnabled) {
       requestNotificationPermission();
     }
 
@@ -222,7 +244,12 @@ export const useBattery = () => {
     return () => {
       if (cleanup) cleanup();
     };
-  }, [checkBatterySupport, updateBatteryInfo]);
+  }, [
+    checkBatterySupport,
+    updateBatteryInfo,
+    batteryNotificationsEnabled,
+    requestNotificationPermission,
+  ]);
 
   const dismissNotification = useCallback(() => {
     setNotification(null);

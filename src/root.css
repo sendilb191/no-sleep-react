@@ -14,11 +14,11 @@
   --text-primary: var(--text-color);
   --text-secondary: #666666;
 
-  /* Spacing - Only used ones */
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
+  /* Spacing - Compact layout */
+  --spacing-sm: 0.25rem;
+  --spacing-md: 0.5rem;
+  --spacing-lg: 0.75rem;
+  --spacing-xl: 1rem;
 
   /* Border Radius - Only used ones */
   --radius-md: 8px;

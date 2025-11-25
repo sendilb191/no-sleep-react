@@ -1,19 +1,24 @@
-import { useEffect, useState } from 'react';
 import ToggleButton from '../components/shared/ToggleButton';
 import CustomDropdown from '../components/shared/CustomDropdown';
 import { useBattery } from '../hooks/useBattery';
 import './SettingsPage.less';
 
-function SettingsPage({ wakeLock }) {
-  const [autoEnable, setAutoEnable] = useState(false);
-  const [fallbackMethod, setFallbackMethod] = useState('video');
-  const [batteryNotifications, setBatteryNotifications] = useState(true);
-  const [notificationFrequency, setNotificationFrequency] = useState('5min');
+function SettingsPage({ wakeLock, settings }) {
+  const {
+    autoEnable,
+    fallbackMethod,
+    batteryNotifications,
+    notificationFrequency,
+    updateSetting,
+    resetSettings,
+    reloadSettings,
+    isLoaded,
+  } = settings;
   const {
     notificationPermission,
     requestNotificationPermission,
     showNotification,
-  } = useBattery();
+  } = useBattery(settings);
 
   // Use wake lock state from props
   const {
@@ -23,36 +28,28 @@ function SettingsPage({ wakeLock }) {
     toggleWakeLock,
   } = wakeLock;
 
-  // Load settings from localStorage on mount
-  useEffect(() => {
-    const savedAutoEnable =
-      localStorage.getItem('nosleep-auto-enable') === 'true';
-    const savedFallbackMethod =
-      localStorage.getItem('nosleep-fallback') || 'video';
-    const savedBatteryNotifications =
-      localStorage.getItem('nosleep-battery-notifications') !== 'false';
-    const savedNotificationFrequency =
-      localStorage.getItem('nosleep-notification-frequency') || '5min';
-
-    setAutoEnable(savedAutoEnable);
-    setFallbackMethod(savedFallbackMethod);
-    setBatteryNotifications(savedBatteryNotifications);
-    setNotificationFrequency(savedNotificationFrequency);
-  }, []);
+  // Show loading state until settings are loaded
+  if (!isLoaded) {
+    return (
+      <div className='page settings-page'>
+        <div className='page-header'>
+          <h1>Settings</h1>
+          <p className='page-description'>Loading settings...</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleAutoEnableChange = enabled => {
-    setAutoEnable(enabled);
-    localStorage.setItem('nosleep-auto-enable', enabled.toString());
+    updateSetting('autoEnable', enabled);
   };
 
   const handleFallbackMethodChange = method => {
-    setFallbackMethod(method);
-    localStorage.setItem('nosleep-fallback', method);
+    updateSetting('fallbackMethod', method);
   };
 
   const handleBatteryNotificationsChange = async enabled => {
-    setBatteryNotifications(enabled);
-    localStorage.setItem('nosleep-battery-notifications', enabled.toString());
+    updateSetting('batteryNotifications', enabled);
 
     // Request permission when enabling notifications
     if (enabled && notificationPermission !== 'granted') {
@@ -61,8 +58,7 @@ function SettingsPage({ wakeLock }) {
   };
 
   const handleNotificationFrequencyChange = frequency => {
-    setNotificationFrequency(frequency);
-    localStorage.setItem('nosleep-notification-frequency', frequency);
+    updateSetting('notificationFrequency', frequency);
   };
 
   const handleRequestPermission = async () => {
@@ -130,16 +126,8 @@ function SettingsPage({ wakeLock }) {
     }
   };
 
-  const resetSettings = () => {
-    setAutoEnable(false);
-    setFallbackMethod('video');
-    setBatteryNotifications(true);
-    setNotificationFrequency('5min');
-
-    localStorage.removeItem('nosleep-auto-enable');
-    localStorage.removeItem('nosleep-fallback');
-    localStorage.removeItem('nosleep-battery-notifications');
-    localStorage.removeItem('nosleep-notification-frequency');
+  const handleResetSettings = () => {
+    resetSettings();
   };
 
   return (
@@ -255,85 +243,108 @@ function SettingsPage({ wakeLock }) {
             </div>
           </div>
 
-          {batteryNotifications && (
-            <>
-              <div className='setting-row'>
-                <div className='setting-info'>
-                  <p className='setting-title'>Notification Frequency</p>
-                  <p className='setting-description'>
-                    How often to remind you when battery is above 95% and
-                    charging
-                  </p>
-                </div>
-                <div className='setting-control'>
-                  <CustomDropdown
-                    id='frequency-select'
-                    value={notificationFrequency}
-                    onChange={handleNotificationFrequencyChange}
-                    options={[
-                      {
-                        value: 'once',
-                        label: 'Once Only',
-                        description: 'Single notification when reaching 95%',
-                      },
-                      {
-                        value: '1min',
-                        label: 'Every 1 Minute',
-                        description: 'Frequent reminders while charging',
-                      },
-                      {
-                        value: '5min',
-                        label: 'Every 5 Minutes',
-                        description: 'Regular reminders (recommended)',
-                      },
-                      {
-                        value: '30min',
-                        label: 'Every 30 Minutes',
-                        description: 'Occasional reminders',
-                      },
-                    ]}
-                    placeholder='Select frequency'
-                  />
-                </div>
-              </div>
-              <div className='setting-row'>
-                <div className='setting-info'>
-                  <p className='setting-title'>Browser Push Notifications</p>
-                  <p className='setting-description'>
-                    Status:{' '}
-                    {notificationPermission === 'granted'
-                      ? '✅ Allowed'
-                      : notificationPermission === 'denied'
-                        ? '❌ Blocked'
-                        : notificationPermission === 'default'
-                          ? '⏳ Not requested'
-                          : '❓ Not supported'}
-                    {notificationPermission === 'denied' &&
-                      ' (Enable in browser settings)'}
-                  </p>
-                </div>
-                <div className='setting-control'>
-                  {notificationPermission !== 'granted' &&
-                    notificationPermission !== 'denied' && (
-                      <button
-                        onClick={handleRequestPermission}
-                        className='btn btn-primary'
-                      >
-                        🔔 Allow Notifications
-                      </button>
-                    )}
-                  {notificationPermission === 'granted' && (
-                    <button
-                      onClick={handleTestNotification}
-                      className='btn btn-outline'
-                    >
-                      🧪 Test Notification
-                    </button>
-                  )}
-                </div>
-              </div>
-            </>
-          )}
+          <div className='setting-row'>
+            <div className='setting-info'>
+              <p
+                className={`setting-title ${!batteryNotifications ? 'disabled' : ''}`}
+              >
+                Notification Frequency
+              </p>
+              <p
+                className={`setting-description ${!batteryNotifications ? 'disabled' : ''}`}
+              >
+                How often to remind you when battery is above 95% and charging
+                {!batteryNotifications &&
+                  ' (disabled - enable battery notifications first)'}
+              </p>
+            </div>
+            <div className='setting-control'>
+              <CustomDropdown
+                id='frequency-select'
+                value={notificationFrequency}
+                onChange={handleNotificationFrequencyChange}
+                disabled={!batteryNotifications}
+                options={[
+                  {
+                    value: 'once',
+                    label: 'Once Only',
+                    description: 'Single notification when reaching 95%',
+                  },
+                  {
+                    value: '1min',
+                    label: 'Every 1 Minute',
+                    description: 'Frequent reminders while charging',
+                  },
+                  {
+                    value: '5min',
+                    label: 'Every 5 Minutes',
+                    description: 'Regular reminders (recommended)',
+                  },
+                  {
+                    value: '30min',
+                    label: 'Every 30 Minutes',
+                    description: 'Occasional reminders',
+                  },
+                ]}
+                placeholder='Select frequency'
+              />
+            </div>
+          </div>
+          <div className='setting-row'>
+            <div className='setting-info'>
+              <p
+                className={`setting-title ${!batteryNotifications ? 'disabled' : ''}`}
+              >
+                Browser Push Notifications
+              </p>
+              <p
+                className={`setting-description ${!batteryNotifications ? 'disabled' : ''}`}
+              >
+                Status:{' '}
+                {!batteryNotifications
+                  ? '🔕 Disabled (enable battery notifications first)'
+                  : notificationPermission === 'granted'
+                    ? '✅ Allowed'
+                    : notificationPermission === 'denied'
+                      ? '❌ Blocked'
+                      : notificationPermission === 'default'
+                        ? '⏳ Not requested'
+                        : '❓ Not supported'}
+                {batteryNotifications &&
+                  notificationPermission === 'denied' &&
+                  ' (Enable in browser settings)'}
+              </p>
+            </div>
+            <div className='setting-control'>
+              {batteryNotifications &&
+                notificationPermission !== 'granted' &&
+                notificationPermission !== 'denied' && (
+                  <button
+                    onClick={handleRequestPermission}
+                    className='btn btn-primary'
+                  >
+                    🔔 Allow Notifications
+                  </button>
+                )}
+              {batteryNotifications && notificationPermission === 'granted' && (
+                <button
+                  onClick={handleTestNotification}
+                  className='btn btn-outline'
+                >
+                  🧪 Test Notification
+                </button>
+              )}
+              {!batteryNotifications && (
+                <button
+                  className='btn btn-outline'
+                  disabled
+                  style={{ opacity: 0.5, cursor: 'not-allowed' }}
+                >
+                  🔕 Disabled
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -343,9 +354,22 @@ function SettingsPage({ wakeLock }) {
         </div>
         <div className='section-body'>
           <div className='action-buttons'>
-            <button onClick={resetSettings} className='btn btn-outline'>
+            <button onClick={handleResetSettings} className='btn btn-outline'>
               Reset to Defaults
             </button>
+            <button onClick={reloadSettings} className='btn btn-outline'>
+              Reload from Storage
+            </button>
+          </div>
+          <div
+            style={{
+              marginTop: 'var(--spacing-md)',
+              fontSize: 'var(--font-size-sm)',
+              color: 'var(--text-secondary)',
+            }}
+          >
+            Settings loaded from localStorage:{' '}
+            {isLoaded ? '✅ Yes' : '⏳ Loading...'}
           </div>
         </div>
       </div>

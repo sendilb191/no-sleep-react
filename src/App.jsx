@@ -1,18 +1,37 @@
 import { Route, Routes } from 'react-router-dom';
+import { useEffect } from 'react';
 import './App.less';
 import Navigation from './components/shared/Navigation';
 import { SmartRouter } from './components/SmartRouter';
 import { useWakeLock } from './hooks/useWakeLock';
 import { useBattery } from './hooks/useBattery';
+import { useSettings } from './hooks/useSettings';
 import AboutPage from './pages/AboutPage';
 import MainPage from './pages/MainPage';
 import SettingsPage from './pages/SettingsPage';
 
 function App() {
+  // Initialize settings at the app level
+  const settingsState = useSettings();
   // Initialize wake lock at the app level
   const wakeLockState = useWakeLock();
   // Initialize battery for global notifications
-  const { notification, dismissNotification } = useBattery();
+  const { notification, dismissNotification } = useBattery(settingsState);
+
+  // Auto-enable wake lock when settings are loaded and autoEnable is true
+  useEffect(() => {
+    if (
+      settingsState.isLoaded &&
+      settingsState.autoEnable &&
+      !wakeLockState.isWakeLockEnabled
+    ) {
+      wakeLockState.requestWakeLock();
+    }
+  }, [
+    settingsState.isLoaded,
+    settingsState.autoEnable,
+    wakeLockState.isWakeLockEnabled,
+  ]);
 
   return (
     <SmartRouter>
@@ -20,10 +39,20 @@ function App() {
         <Navigation />
         <main className='main-content'>
           <Routes>
-            <Route path='/' element={<MainPage wakeLock={wakeLockState} />} />
+            <Route
+              path='/'
+              element={
+                <MainPage wakeLock={wakeLockState} settings={settingsState} />
+              }
+            />
             <Route
               path='/settings'
-              element={<SettingsPage wakeLock={wakeLockState} />}
+              element={
+                <SettingsPage
+                  wakeLock={wakeLockState}
+                  settings={settingsState}
+                />
+              }
             />
             <Route path='/about' element={<AboutPage />} />
           </Routes>
