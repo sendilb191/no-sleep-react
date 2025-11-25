@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import { useBattery } from '../hooks/useBattery';
 import './MainPage.less';
 
@@ -67,30 +66,19 @@ function MainPage({ wakeLock }) {
               <span className='status-label'>Battery Level</span>
               <span className='status-value'>
                 {getBatteryIcon()} {getBatteryStatus()}
-                {/* {batteryInfo.supported && batteryInfo.level !== null && (
-                  <>
-                    {batteryInfo.charging &&
-                      batteryInfo.chargingTime !== Infinity && (
-                        <span>
-                          • ⚡ Full in: {formatTime(batteryInfo.chargingTime)}
-                        </span>
-                      )}
-                  </>
-                )} */}
               </span>
             </div>
             <div className='status-item'>
-              <span className='status-label'>Time left</span>
+              <span className='status-label'>System Runtime</span>
               <span className='status-value'>
-                {/* {getBatteryIcon()} {getBatteryStatus()} */}
-                {batteryInfo.supported && batteryInfo.level !== null && (
-                  <>
-                    {!batteryInfo.charging &&
-                      batteryInfo.dischargingTime !== Infinity && (
-                        <span>{formatTime(batteryInfo.dischargingTime)}</span>
-                      )}
-                  </>
-                )}
+                {batteryInfo.supported && batteryInfo.level !== null
+                  ? batteryInfo.charging
+                    ? '🔌 Unlimited (charging)'
+                    : batteryInfo.dischargingTime !== Infinity &&
+                        batteryInfo.dischargingTime > 0
+                      ? `⏱️ ${formatTime(batteryInfo.dischargingTime)} remaining`
+                      : `⏱️ ~${Math.round((batteryInfo.level / 10) * 2)}h estimated`
+                  : '❓ Not available'}
               </span>
             </div>
           </div>

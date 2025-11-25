@@ -49,19 +49,14 @@ export const useBattery = () => {
     if (!lastNotificationTime) return true;
 
     const intervals = {
-      '1min': 60 * 1000, // 1 minute
-      '5min': 5 * 60 * 1000, // 5 minutes
-      '30min': 30 * 60 * 1000, // 30 minutes
+      '1min': 60 * 1000,
+      '5min': 5 * 60 * 1000,
+      '30min': 30 * 60 * 1000,
     };
 
     const interval = intervals[frequency] || intervals['5min'];
     return now - lastNotificationTime >= interval;
-  }, [
-    areNotificationsEnabled,
-    getNotificationFrequency,
-    lastNotificationTime,
-    notifiedForCurrentSession,
-  ]);
+  }, [lastNotificationTime, notifiedForCurrentSession]);
 
   // Request notification permission
   const requestNotificationPermission = useCallback(async () => {
@@ -106,7 +101,9 @@ export const useBattery = () => {
       }, 5000);
     },
     [areNotificationsEnabled]
-  ); // Update battery information
+  );
+
+  // Update battery information
   const updateBatteryInfo = useCallback(
     battery => {
       const level = Math.round(battery.level * 100);
@@ -138,7 +135,7 @@ export const useBattery = () => {
         setNotifiedForCurrentSession(false);
       }
     },
-    [showNotification]
+    [shouldShowNotification, showNotification]
   );
 
   // Initialize battery monitoring
@@ -257,7 +254,7 @@ export const useBattery = () => {
       return 'Loading battery info...';
     }
 
-    return `${level}% ${charging ? '(Charging)' : '(Not charging)'}`;
+    return `${level}%`;
   }, [batteryInfo]);
 
   const formatTime = useCallback(seconds => {
