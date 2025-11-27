@@ -12,6 +12,7 @@ export const STORAGE_KEYS = {
   fallbackMethod: 'nosleep-fallback',
   batteryNotifications: 'nosleep-battery-notifications',
   notificationFrequency: 'nosleep-notification-frequency',
+  userWantsWakeLock: 'nosleep-user-wants-wakelock',
 };
 
 export const loadSettings = () => {
@@ -63,4 +64,27 @@ export const getNotificationFrequencyLabel = frequency => {
     '30min': 'Every 30 Minutes',
   };
   return frequencyLabels[frequency] || 'Every 5 Minutes';
+};
+
+// Wake lock localStorage functions
+export const loadWakeLockPreference = () => {
+  try {
+    return localStorage.getItem(STORAGE_KEYS.userWantsWakeLock) === 'true';
+  } catch (error) {
+    console.error('Failed to load wake lock preference:', error);
+    return false;
+  }
+};
+
+export const saveWakeLockPreference = wantsWakeLock => {
+  try {
+    localStorage.setItem(
+      STORAGE_KEYS.userWantsWakeLock,
+      wantsWakeLock.toString()
+    );
+    return true;
+  } catch (error) {
+    console.error('Failed to save wake lock preference:', error);
+    return false;
+  }
 };

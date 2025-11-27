@@ -5,6 +5,10 @@ import {
   requestWakeLock as requestWakeLockUtil,
   releaseWakeLock as releaseWakeLockUtil,
 } from '../utils/core/wakeLockService.js';
+import {
+  loadWakeLockPreference,
+  saveWakeLockPreference,
+} from '../utils/core/settingsService.js';
 
 export const useWakeLock = () => {
   const [isWakeLockEnabled, setIsWakeLockEnabled] = useState(false);
@@ -12,14 +16,20 @@ export const useWakeLock = () => {
   const [wakeLockStatus, setWakeLockStatus] = useState('Initializing...');
   const [userWantsWakeLock, setUserWantsWakeLock] = useState(false);
   const [isToggling, setIsToggling] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
   const wakeLockRef = useRef(null);
   const videoRef = useRef(null);
 
-  // Initialize wake lock support
+  // Initialize wake lock support and load preferences
   useEffect(() => {
     const support = checkWakeLockSupport();
     setWakeLockSupported(support.supported);
     setWakeLockStatus(support.status);
+
+    const savedPreference = loadWakeLockPreference();
+    setUserWantsWakeLock(savedPreference);
+
+    setIsInitialized(true);
   }, []);
 
   // Create video element for fallback
@@ -73,6 +83,9 @@ export const useWakeLock = () => {
       const newWantsWakeLock = !userWantsWakeLock;
       setUserWantsWakeLock(newWantsWakeLock);
 
+      // Save preference to localStorage
+      saveWakeLockPreference(newWantsWakeLock);
+
       if (newWantsWakeLock) {
         await requestWakeLock();
       } else {
@@ -82,6 +95,14 @@ export const useWakeLock = () => {
       setIsToggling(false);
     }
   }, [isToggling, userWantsWakeLock, requestWakeLock, releaseWakeLock]);
+
+  // Restore wake lock if user previously wanted it (after initialization)
+  useEffect(() => {
+    if (isInitialized && userWantsWakeLock && !isWakeLockEnabled) {
+      console.log('Restoring wake lock from saved preference');
+      requestWakeLock();
+    }
+  }, [isInitialized, userWantsWakeLock, isWakeLockEnabled, requestWakeLock]);
 
   // Handle page visibility changes
   useEffect(() => {
