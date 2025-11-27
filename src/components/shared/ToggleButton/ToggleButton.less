@@ -66,24 +66,26 @@
   .toggle-label {
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
-    color: var(--text-color);
+    color: var(--text-primary);
     min-width: 60px;
     text-align: left;
   }
 
-  /* Active State */
+  /* Active State - Cadet Blue Theme */
   &.active {
     .toggle-track {
-      background: var(--text-color);
-      border-color: var(--text-color);
+      background: var(--accent-color);
+      border-color: var(--accent-color);
     }
 
     .toggle-thumb {
       transform: translateX(24px);
+      background: var(--bg-color);
     }
 
     .toggle-label {
       font-weight: var(--font-weight-bold);
+      color: var(--text-primary);
     }
   }
 
@@ -99,18 +101,20 @@
     }
   }
 
-  /* Hover Effects */
+  /* Hover Effects - Cadet Blue Theme */
   &:hover:not(.disabled) {
     .toggle-track {
       box-shadow: var(--shadow-sm);
     }
 
     &.active .toggle-track {
-      background: var(--border-color);
+      background: var(--cadet-blue-dark);
+      border-color: var(--cadet-blue-dark);
     }
 
     &.inactive .toggle-track {
       background: var(--bg-tertiary);
+      border-color: var(--cadet-blue-light);
     }
   }
 

@@ -1,18 +1,30 @@
-/* CSS Root Variables - Ultra Simple 3-Color System */
+/* CSS Root Variables - Cadet Blue Theme */
 :root {
-  /* Core Colors (Only 3 colors) */
+  /* Cadet Blue Theme Colors */
+  --cadet-blue: #5f9ea0;
+  --cadet-blue-light: #7fb3b5;
+  --cadet-blue-lighter: #9fc5c7;
+  --cadet-blue-dark: #4a7c7e;
+  --cadet-blue-darker: #3a6162;
+
+  /* Core Colors */
   --bg-color: #ffffff; /* White - Background */
-  --text-color: #000000; /* Black - Text */
-  --border-color: #333333; /* Dark Gray - Borders */
+  --text-color: #000000; /* Pure black - Primary text */
+  --border-color: var(--cadet-blue-light); /* Cadet blue - Borders */
+  --accent-color: var(--cadet-blue); /* Primary accent */
 
   /* Derived Colors */
   --bg-primary: var(--bg-color);
-  --bg-secondary: #f8f8f8;
-  --bg-tertiary: #f0f0f0;
+  --bg-secondary: #f8fafa;
+  --bg-tertiary: #f0f5f5;
+  --bg-accent: var(--cadet-blue-lighter);
 
   /* Text Colors */
-  --text-primary: var(--text-color);
-  --text-secondary: #666666;
+  --text-primary: var(--text-color); /* Pure black */
+  --text-secondary: #333333; /* Dark gray */
+  --text-muted: #666666; /* Medium gray */
+  --text-accent: var(--cadet-blue-dark); /* Cadet blue for accents */
+  --text-on-primary: #ffffff; /* White text on primary colored backgrounds */
 
   /* Spacing - Compact layout */
   --spacing-sm: 0.25rem;

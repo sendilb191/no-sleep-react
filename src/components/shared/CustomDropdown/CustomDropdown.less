@@ -21,13 +21,13 @@
     min-height: 36px;
 
     &:hover {
-      border-color: var(--text-secondary);
+      border-color: var(--accent-color);
     }
 
     &:focus {
       outline: none;
-      border-color: var(--text-primary);
-      box-shadow: var(--shadow-sm);
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 2px var(--cadet-blue-light);
     }
 
     .dropdown-value {
@@ -48,10 +48,12 @@
   }
 
   &.open .dropdown-trigger {
-    border-color: var(--text-primary);
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px var(--cadet-blue-light);
 
     .dropdown-arrow {
       transform: rotate(180deg);
+      color: var(--accent-color);
     }
   }
 
@@ -95,14 +97,16 @@
 
       &:hover {
         background: var(--bg-secondary);
+        color: var(--text-primary);
       }
 
       &.selected {
-        background: var(--text-primary);
-        color: var(--bg-primary);
+        background: var(--accent-color);
+        color: var(--text-on-primary);
 
         &:hover {
-          background: var(--text-primary);
+          background: var(--cadet-blue-dark);
+          color: var(--text-on-primary);
         }
       }
 
@@ -116,7 +120,7 @@
       }
 
       &.selected .option-description {
-        color: var(--bg-secondary);
+        color: rgba(255, 255, 255, 0.8);
       }
     }
   }

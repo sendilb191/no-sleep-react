@@ -30,8 +30,12 @@
 
   &:focus {
     outline: none;
-    border-color: var(--text-color);
-    box-shadow: var(--shadow-sm);
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(95, 158, 160, 0.2);
+  }
+
+  &:hover {
+    border-color: var(--cadet-blue-light);
   }
 
   &:disabled {
@@ -48,8 +52,13 @@
 
 .form-checkbox {
   margin-right: var(--spacing-sm);
-  accent-color: var(--text-color);
+  accent-color: var(--accent-color);
   transform: scale(1.2);
+
+  &:focus {
+    outline: 2px solid var(--cadet-blue-light);
+    outline-offset: 2px;
+  }
 }
 
 .form-description {

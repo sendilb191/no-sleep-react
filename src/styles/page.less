@@ -7,15 +7,14 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
-  min-height: 100vh;
   position: relative;
 }
 
 /* ============= PAGE HEADER ============= */
 
-/* Standard Page Header */
+/* Standard Page Header - Cadet Blue Theme */
 .page-header {
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--cadet-blue-light);
   // padding-bottom: var(--spacing-lg);
   margin-bottom: var(--spacing-lg);
 
@@ -23,7 +22,7 @@
     font-size: var(--font-size-2xl);
     font-weight: var(--font-weight-bold);
     margin: 0 0 var(--spacing-sm) 0;
-    color: var(--text-color);
+    color: var(--text-primary);
   }
 
   .page-description {
@@ -61,17 +60,18 @@
 
 /* ============= SECTION COMPONENTS ============= */
 
-/* Standard GitHub-style Sections */
+/* Standard GitHub-style Sections - Cadet Blue Theme */
 .github-section {
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--cadet-blue-light);
   border-radius: var(--radius-md);
   background: var(--bg-primary);
   margin-bottom: var(--spacing-lg);
+  box-shadow: 0 1px 3px rgba(95, 158, 160, 0.1);
 
   .section-header {
     padding: var(--spacing-sm) var(--spacing-md);
-    border-bottom: 1px solid var(--border-color);
-    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--cadet-blue-light);
+    background: var(--bg-accent);
     border-radius: var(--radius-md) var(--radius-md) 0 0;
 
     h2,
@@ -80,7 +80,7 @@
       margin: 0;
       font-size: var(--font-size-xl);
       font-weight: var(--font-weight-bold);
-      color: var(--text-color);
+      color: var(--text-on-primary);
     }
 
     h2 {
@@ -93,7 +93,7 @@
 
     .section-description {
       margin: var(--spacing-sm) 0 0 0;
-      color: var(--text-secondary);
+      color: rgba(255, 255, 255, 0.8);
       font-size: var(--font-size-sm);
       line-height: 1.4;
     }
@@ -187,7 +187,7 @@
 
     &::before {
       content: '✓';
-      color: var(--text-color);
+      color: var(--text-primary);
       font-weight: bold;
       margin-right: var(--spacing-sm);
     }
@@ -214,7 +214,7 @@
 
     .status-value {
       font-size: var(--font-size-base);
-      color: var(--text-color);
+      color: var(--text-primary);
       font-weight: var(--font-weight-bold);
     }
   }
@@ -232,21 +232,21 @@
   position: relative;
 
   &.notification-info {
-    background-color: var(--background-secondary);
-    border-color: var(--primary-color);
-    color: var(--text-primary);
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: var(--text-on-primary);
   }
 
   &.notification-success {
-    background-color: #f0fff4;
-    border-color: #28a745;
-    color: #155724;
+    background-color: #e8f5e8;
+    border-color: var(--cadet-blue);
+    color: var(--cadet-blue-darker);
   }
 
   &.notification-warning {
-    background-color: #fff3cd;
-    border-color: #ffc107;
-    color: #856404;
+    background-color: #fff8e1;
+    border-color: #ff9800;
+    color: #e65100;
   }
 
   &.notification-error {
@@ -399,8 +399,8 @@
     }
 
     &.active {
-      color: var(--text-color);
-      border-bottom-color: var(--text-color);
+      color: var(--text-primary);
+      border-bottom-color: var(--text-primary);
     }
   }
 }
@@ -468,8 +468,8 @@
       }
 
       &.active {
-        background: var(--text-color);
-        color: var(--bg-color);
+        background: var(--accent-color);
+        color: var(--text-on-primary);
       }
     }
   }
@@ -502,7 +502,7 @@
 
     .setting-title {
       font-weight: var(--font-weight-medium);
-      color: var(--text-color);
+      color: var(--text-primary);
       margin: 0 0 var(--spacing-sm) 0;
     }
 
@@ -544,7 +544,7 @@
     h3 {
       font-size: var(--font-size-xl);
       font-weight: var(--font-weight-bold);
-      color: var(--text-color);
+      color: var(--text-primary);
       margin: 0 0 var(--spacing-md) 0;
     }
   }
@@ -560,7 +560,7 @@
     h4 {
       font-size: var(--font-size-base);
       font-weight: var(--font-weight-bold);
-      color: var(--text-color);
+      color: var(--text-primary);
       margin: 0 0 var(--spacing-sm) 0;
     }
 
@@ -587,7 +587,7 @@
 
     .info-label {
       font-weight: var(--font-weight-medium);
-      color: var(--text-color);
+      color: var(--text-primary);
     }
 
     .info-value {
@@ -605,7 +605,7 @@
 
     &:first-child {
       font-weight: var(--font-weight-bold);
-      color: var(--text-color);
+      color: var(--text-primary);
     }
   }
 }
