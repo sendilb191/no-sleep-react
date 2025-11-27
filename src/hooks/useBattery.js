@@ -1,23 +1,16 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import {
+  checkBatterySupport,
+  getBatteryAPI,
+  shouldShowNotification,
+  createNotification,
+  requestNotificationPermission as requestPermissionUtil,
+  getBatteryIcon as getBatteryIconUtil,
+  getBatteryStatus as getBatteryStatusUtil,
+  formatTime as formatTimeUtil,
+} from '../utils/core/batteryService.js';
 
-export const useBattery = (settings = null) => {
-  // Memoize settings-dependent values to prevent infinite re-renders
-  const batteryNotificationsEnabled = useMemo(() => {
-    if (settings && settings.batteryNotifications !== undefined) {
-      return settings.batteryNotifications;
-    }
-    // Fallback to localStorage for backward compatibility
-    return localStorage.getItem('nosleep-battery-notifications') !== 'false';
-  }, [settings?.batteryNotifications]);
-
-  const notificationFrequency = useMemo(() => {
-    if (settings && settings.notificationFrequency !== undefined) {
-      return settings.notificationFrequency;
-    }
-    // Fallback to localStorage for backward compatibility
-    return localStorage.getItem('nosleep-notification-frequency') || '5min';
-  }, [settings?.notificationFrequency]);
-
+export const useBattery = settings => {
   const [batteryInfo, setBatteryInfo] = useState({
     level: null,
     charging: null,
@@ -26,7 +19,6 @@ export const useBattery = (settings = null) => {
     supported: false,
     error: null,
   });
-
   const [notification, setNotification] = useState(null);
   const [notificationPermission, setNotificationPermission] = useState(
     'Notification' in window ? Notification.permission : 'unsupported'
@@ -35,97 +27,22 @@ export const useBattery = (settings = null) => {
   const [notifiedForCurrentSession, setNotifiedForCurrentSession] =
     useState(false);
 
-  // Check if Battery API is supported
-  const checkBatterySupport = useCallback(() => {
-    return 'getBattery' in navigator || 'battery' in navigator;
-  }, []);
-
-  // Check if notifications are enabled
-  const areNotificationsEnabled = useCallback(() => {
-    return batteryNotificationsEnabled;
-  }, [batteryNotificationsEnabled]);
-
-  // Get notification frequency setting
-  const getNotificationFrequency = useCallback(() => {
-    return notificationFrequency;
-  }, [notificationFrequency]);
-
-  // Check if enough time has passed for next notification
-  const shouldShowNotification = useCallback(() => {
-    if (!batteryNotificationsEnabled) return false;
-
-    const frequency = notificationFrequency;
-    const now = Date.now();
-
-    // For 'once' frequency, only show if we haven't notified in this session
-    if (frequency === 'once') {
-      return !notifiedForCurrentSession;
-    }
-
-    // For other frequencies, check time-based cooldown
-    if (!lastNotificationTime) return true;
-
-    const intervals = {
-      '1min': 60 * 1000,
-      '5min': 5 * 60 * 1000,
-      '30min': 30 * 60 * 1000,
-    };
-
-    const interval = intervals[frequency] || intervals['5min'];
-    return now - lastNotificationTime >= interval;
-  }, [
-    batteryNotificationsEnabled,
-    notificationFrequency,
-    lastNotificationTime,
-    notifiedForCurrentSession,
-  ]);
-
-  // Request notification permission
-  const requestNotificationPermission = useCallback(async () => {
-    if ('Notification' in window) {
-      if (Notification.permission === 'default') {
-        const permission = await Notification.requestPermission();
-        setNotificationPermission(permission);
-        return permission;
-      }
-      setNotificationPermission(Notification.permission);
-      return Notification.permission;
-    }
-    return 'unsupported';
-  }, []);
-
-  // Show notification (both in-app and browser)
   const showNotification = useCallback(
     (message, type = 'info') => {
-      if (!areNotificationsEnabled()) return;
+      if (!settings?.batteryNotifications) return;
 
-      // Show in-app notification
       setNotification({ message, type, timestamp: Date.now() });
 
-      // Show browser push notification if permission granted
-      if ('Notification' in window && Notification.permission === 'granted') {
-        const notification = new Notification('Battery Health Alert', {
-          body: message,
-          tag: 'battery-alert',
-          requireInteraction: true, // Keep notification visible until user interacts
-          silent: false,
-        });
-
-        // Auto-close browser notification after 10 seconds
-        setTimeout(() => {
-          notification.close();
-        }, 10000);
+      const browserNotification = createNotification(message, type);
+      if (browserNotification) {
+        setTimeout(() => browserNotification.close(), 10000);
       }
 
-      // Auto-hide in-app notification after 5 seconds
-      setTimeout(() => {
-        setNotification(null);
-      }, 5000);
+      setTimeout(() => setNotification(null), 5000);
     },
-    [batteryNotificationsEnabled]
+    [settings?.batteryNotifications]
   );
 
-  // Update battery information
   const updateBatteryInfo = useCallback(
     battery => {
       const level = Math.round(battery.level * 100);
@@ -140,25 +57,43 @@ export const useBattery = (settings = null) => {
         error: null,
       });
 
-      // Check for notification conditions with frequency control
-      if (charging && level > 95 && shouldShowNotification()) {
+      if (
+        charging &&
+        level > 95 &&
+        shouldShowNotification(
+          settings?.batteryNotifications,
+          settings?.notificationFrequency,
+          lastNotificationTime,
+          notifiedForCurrentSession
+        )
+      ) {
         const now = Date.now();
         setLastNotificationTime(now);
         setNotifiedForCurrentSession(true);
-
         showNotification(
           `Battery is ${level}% and charging. Consider unplugging to preserve battery health.`,
           'warning'
         );
       }
 
-      // Reset session flag when not charging or below 95%
       if (!charging || level <= 95) {
         setNotifiedForCurrentSession(false);
       }
     },
-    [shouldShowNotification, showNotification]
+    [
+      settings?.batteryNotifications,
+      settings?.notificationFrequency,
+      lastNotificationTime,
+      notifiedForCurrentSession,
+      showNotification,
+    ]
   );
+
+  const requestNotificationPermission = useCallback(async () => {
+    const permission = await requestPermissionUtil();
+    setNotificationPermission(permission);
+    return permission;
+  }, []);
 
   // Initialize battery monitoring
   useEffect(() => {
@@ -171,59 +106,31 @@ export const useBattery = (settings = null) => {
       return;
     }
 
-    // Request notification permission if notifications are enabled
-    if (batteryNotificationsEnabled) {
+    if (settings?.batteryNotifications) {
       requestNotificationPermission();
     }
 
-    // Update permission state on mount
     if ('Notification' in window) {
       setNotificationPermission(Notification.permission);
     }
 
     const initBattery = async () => {
       try {
-        let battery;
-
-        if ('getBattery' in navigator) {
-          battery = await navigator.getBattery();
-        } else if ('battery' in navigator) {
-          battery = navigator.battery;
-        }
-
+        const battery = await getBatteryAPI();
         if (battery) {
-          // Initial battery info
           updateBatteryInfo(battery);
 
-          // Set up event listeners
-          const handleLevelChange = () => updateBatteryInfo(battery);
-          const handleChargingChange = () => updateBatteryInfo(battery);
-          const handleChargingTimeChange = () => updateBatteryInfo(battery);
-          const handleDischargingTimeChange = () => updateBatteryInfo(battery);
+          const handleChange = () => updateBatteryInfo(battery);
+          battery.addEventListener('levelchange', handleChange);
+          battery.addEventListener('chargingchange', handleChange);
+          battery.addEventListener('chargingtimechange', handleChange);
+          battery.addEventListener('dischargingtimechange', handleChange);
 
-          battery.addEventListener('levelchange', handleLevelChange);
-          battery.addEventListener('chargingchange', handleChargingChange);
-          battery.addEventListener(
-            'chargingtimechange',
-            handleChargingTimeChange
-          );
-          battery.addEventListener(
-            'dischargingtimechange',
-            handleDischargingTimeChange
-          );
-
-          // Cleanup function
           return () => {
-            battery.removeEventListener('levelchange', handleLevelChange);
-            battery.removeEventListener('chargingchange', handleChargingChange);
-            battery.removeEventListener(
-              'chargingtimechange',
-              handleChargingTimeChange
-            );
-            battery.removeEventListener(
-              'dischargingtimechange',
-              handleDischargingTimeChange
-            );
+            battery.removeEventListener('levelchange', handleChange);
+            battery.removeEventListener('chargingchange', handleChange);
+            battery.removeEventListener('chargingtimechange', handleChange);
+            battery.removeEventListener('dischargingtimechange', handleChange);
           };
         }
       } catch (error) {
@@ -245,67 +152,26 @@ export const useBattery = (settings = null) => {
       if (cleanup) cleanup();
     };
   }, [
-    checkBatterySupport,
     updateBatteryInfo,
-    batteryNotificationsEnabled,
+    settings?.batteryNotifications,
     requestNotificationPermission,
   ]);
-
-  const dismissNotification = useCallback(() => {
-    setNotification(null);
-  }, []);
-
-  const getBatteryIcon = useCallback(() => {
-    const { level, charging } = batteryInfo;
-
-    if (level === null) return '🔋';
-
-    if (charging) {
-      return '🔌';
-    }
-
-    if (level > 75) return '🔋';
-    if (level > 50) return '🔋';
-    if (level > 25) return '🪫';
-    return '🪫';
-  }, [batteryInfo]);
-
-  const getBatteryStatus = useCallback(() => {
-    const { level, charging, supported, error } = batteryInfo;
-
-    if (!supported || error) {
-      return 'Battery info unavailable';
-    }
-
-    if (level === null) {
-      return 'Loading battery info...';
-    }
-
-    return `${level}%`;
-  }, [batteryInfo]);
-
-  const formatTime = useCallback(seconds => {
-    if (seconds === Infinity || isNaN(seconds)) return 'Unknown';
-
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-
-    if (hours > 0) {
-      return `${hours}h ${minutes}m`;
-    }
-    return `${minutes}m`;
-  }, []);
 
   return {
     batteryInfo,
     notification,
     notificationPermission,
-    dismissNotification,
-    getBatteryIcon,
-    getBatteryStatus,
-    formatTime,
+    dismissNotification: () => setNotification(null),
+    getBatteryIcon: () =>
+      getBatteryIconUtil(batteryInfo.level, batteryInfo.charging),
+    getBatteryStatus: () =>
+      getBatteryStatusUtil(
+        batteryInfo.level,
+        batteryInfo.supported,
+        batteryInfo.error
+      ),
+    formatTime: formatTimeUtil,
     requestNotificationPermission,
     showNotification,
-    getNotificationFrequency,
   };
 };

@@ -1,9 +1,8 @@
 import ToggleButton from '../components/shared/ToggleButton';
 import CustomDropdown from '../components/shared/CustomDropdown';
-import { useBattery } from '../hooks/useBattery';
 import './SettingsPage.less';
 
-function SettingsPage({ wakeLock, settings }) {
+function SettingsPage({ wakeLock, settings, battery }) {
   const {
     autoEnable,
     fallbackMethod,
@@ -14,23 +13,20 @@ function SettingsPage({ wakeLock, settings }) {
     reloadSettings,
     isLoaded,
   } = settings;
+
   const {
     notificationPermission,
     requestNotificationPermission,
     showNotification,
-  } = useBattery(settings);
+  } = battery;
 
-  // Use wake lock state from props
   const {
-    isWakeLockEnabled,
     userWantsWakeLock,
     wakeLockSupported,
     wakeLockStatus,
     isToggling,
     toggleWakeLock,
-  } = wakeLock;
-
-  // Show loading state until settings are loaded
+  } = wakeLock; // Show loading state until settings are loaded
   if (!isLoaded) {
     return (
       <div className='page settings-page'>
@@ -42,14 +38,6 @@ function SettingsPage({ wakeLock, settings }) {
     );
   }
 
-  const handleAutoEnableChange = enabled => {
-    updateSetting('autoEnable', enabled);
-  };
-
-  const handleFallbackMethodChange = method => {
-    updateSetting('fallbackMethod', method);
-  };
-
   const handleBatteryNotificationsChange = async enabled => {
     updateSetting('batteryNotifications', enabled);
 
@@ -59,77 +47,21 @@ function SettingsPage({ wakeLock, settings }) {
     }
   };
 
-  const handleNotificationFrequencyChange = frequency => {
-    updateSetting('notificationFrequency', frequency);
-  };
-
-  const handleRequestPermission = async () => {
-    await requestNotificationPermission();
-  };
-
   const handleTestNotification = async () => {
-    try {
-      // Check if Notification API is supported
-      if (!('Notification' in window)) {
-        const msg = 'Notifications are not supported in this browser';
-        console.error(msg);
-        alert(msg);
-        return;
-      }
-
-      // Check current permission
-      let permission = Notification.permission;
-
-      // Request permission if needed
-      if (permission === 'default') {
-        permission = await Notification.requestPermission();
-      }
-
-      if (permission === 'granted') {
-        // Create test notification
-        const notification = new Notification('Test Notification', {
-          body: 'Push notifications are working! 🔋',
-          tag: 'test-notification',
-          requireInteraction: false,
-          silent: false,
-        });
-
-        // Add error listener for debugging
-        notification.onerror = e => console.error('Notification error:', e);
-
-        // Auto-close after 5 seconds
-        setTimeout(() => {
-          notification.close();
-        }, 5000);
-
-        // Also show in-app feedback
-        if (showNotification) {
-          showNotification(
-            'Test notification sent! Check your system tray. 🎉',
-            'info'
-          );
-        } else {
-          console.warn('showNotification function not available');
-          alert('Test notification sent! (showNotification unavailable)');
-        }
-      } else if (permission === 'denied') {
-        const msg =
-          'Notifications are blocked. Please enable them in your browser settings.';
-        console.warn('Permission denied:', msg);
-        alert(msg);
-      } else {
-        const msg = `Notification permission was not granted. Status: ${permission}`;
-        console.warn(msg);
-        alert(msg);
-      }
-    } catch (error) {
-      console.error('Error in handleTestNotification:', error);
-      alert('Failed to send test notification: ' + error.message);
+    if (!('Notification' in window)) {
+      alert('Notifications are not supported in this browser');
+      return;
     }
-  };
 
-  const handleResetSettings = () => {
-    resetSettings();
+    if (Notification.permission === 'granted') {
+      new Notification('Test Notification', {
+        body: 'Push notifications are working! 🔋',
+        tag: 'test-notification',
+      });
+      showNotification('Test notification sent! 🎉', 'info');
+    } else {
+      alert('Notifications are not enabled. Please allow notifications first.');
+    }
   };
 
   return (
@@ -157,7 +89,7 @@ function SettingsPage({ wakeLock, settings }) {
                 id='auto-enable'
                 type='checkbox'
                 checked={autoEnable}
-                onChange={e => handleAutoEnableChange(e.target.checked)}
+                onChange={e => updateSetting('autoEnable', e.target.checked)}
                 className='form-checkbox'
               />
             </div>
@@ -195,7 +127,7 @@ function SettingsPage({ wakeLock, settings }) {
               <CustomDropdown
                 id='fallback-select'
                 value={fallbackMethod}
-                onChange={handleFallbackMethodChange}
+                onChange={method => updateSetting('fallbackMethod', method)}
                 options={[
                   {
                     value: 'video',
@@ -265,7 +197,9 @@ function SettingsPage({ wakeLock, settings }) {
               <CustomDropdown
                 id='frequency-select'
                 value={notificationFrequency}
-                onChange={handleNotificationFrequencyChange}
+                onChange={frequency =>
+                  updateSetting('notificationFrequency', frequency)
+                }
                 disabled={!batteryNotifications}
                 options={[
                   {
@@ -323,7 +257,7 @@ function SettingsPage({ wakeLock, settings }) {
                 notificationPermission !== 'granted' &&
                 notificationPermission !== 'denied' && (
                   <button
-                    onClick={handleRequestPermission}
+                    onClick={requestNotificationPermission}
                     className='btn btn-primary'
                   >
                     🔔 Allow Notifications
@@ -357,7 +291,7 @@ function SettingsPage({ wakeLock, settings }) {
         </div>
         <div className='section-body'>
           <div className='action-buttons'>
-            <button onClick={handleResetSettings} className='btn btn-outline'>
+            <button onClick={resetSettings} className='btn btn-outline'>
               Reset to Defaults
             </button>
             <button onClick={reloadSettings} className='btn btn-outline'>

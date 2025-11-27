@@ -3,45 +3,34 @@ import { useEffect } from 'react';
 import './App.less';
 import Navigation from './components/shared/Navigation';
 import { SmartRouter } from './components/SmartRouter';
+import { useSettings } from './hooks/useSettings';
 import { useWakeLock } from './hooks/useWakeLock';
 import { useBattery } from './hooks/useBattery';
-import { useSettings } from './hooks/useSettings';
 import AboutPage from './pages/AboutPage';
 import MainPage from './pages/MainPage';
 import SettingsPage from './pages/SettingsPage';
 
 function App() {
-  // Initialize settings at the app level
-  const settingsState = useSettings();
-  // Initialize wake lock at the app level
-  const wakeLockState = useWakeLock();
-  // Initialize battery for global notifications
-  const { notification, dismissNotification } = useBattery(settingsState);
+  const settings = useSettings();
+  const wakeLock = useWakeLock();
+  const battery = useBattery(settings);
 
   // Auto-enable wake lock when settings are loaded and autoEnable is true
   useEffect(() => {
-    console.log('App useEffect - Settings check:', {
-      isLoaded: settingsState.isLoaded,
-      autoEnable: settingsState.autoEnable,
-      userWantsWakeLock: wakeLockState.userWantsWakeLock,
-      isWakeLockEnabled: wakeLockState.isWakeLockEnabled,
-    });
-
     if (
-      settingsState.isLoaded &&
-      settingsState.autoEnable &&
-      !wakeLockState.userWantsWakeLock &&
-      !wakeLockState.isWakeLockEnabled
+      settings.isLoaded &&
+      settings.autoEnable &&
+      !wakeLock.userWantsWakeLock &&
+      !wakeLock.isWakeLockEnabled
     ) {
       console.log('Auto-enabling wake lock from settings...');
-      wakeLockState.toggleWakeLock();
+      wakeLock.toggleWakeLock();
     }
   }, [
-    settingsState.isLoaded,
-    settingsState.autoEnable,
-    wakeLockState.userWantsWakeLock,
-    wakeLockState.isWakeLockEnabled,
-    wakeLockState.toggleWakeLock,
+    settings.isLoaded,
+    settings.autoEnable,
+    wakeLock.userWantsWakeLock,
+    wakeLock.isWakeLockEnabled,
   ]);
 
   return (
@@ -53,15 +42,20 @@ function App() {
             <Route
               path='/'
               element={
-                <MainPage wakeLock={wakeLockState} settings={settingsState} />
+                <MainPage
+                  wakeLock={wakeLock}
+                  settings={settings}
+                  battery={battery}
+                />
               }
             />
             <Route
               path='/settings'
               element={
                 <SettingsPage
-                  wakeLock={wakeLockState}
-                  settings={settingsState}
+                  wakeLock={wakeLock}
+                  settings={settings}
+                  battery={battery}
                 />
               }
             />
@@ -70,15 +64,15 @@ function App() {
         </main>
 
         {/* Global battery notifications */}
-        {notification && (
-          <div className={`battery-notification ${notification.type}`}>
+        {battery.notification && (
+          <div className={`battery-notification ${battery.notification.type}`}>
             <div className='notification-content'>
               <span className='notification-message'>
-                {notification.message}
+                {battery.notification.message}
               </span>
               <button
                 className='notification-close'
-                onClick={dismissNotification}
+                onClick={battery.dismissNotification}
                 aria-label='Dismiss notification'
               >
                 ×

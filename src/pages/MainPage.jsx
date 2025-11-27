@@ -1,7 +1,7 @@
-import { useBattery } from '../hooks/useBattery';
+import { getNotificationFrequencyLabel } from '../utils/core/settingsService';
 import './MainPage.less';
 
-function MainPage({ wakeLock, settings }) {
+function MainPage({ wakeLock, settings, battery }) {
   const { isWakeLockEnabled, wakeLockSupported, wakeLockStatus } = wakeLock;
   const {
     batteryInfo,
@@ -10,9 +10,9 @@ function MainPage({ wakeLock, settings }) {
     formatTime,
     notification,
     dismissNotification,
-  } = useBattery(settings);
+  } = battery;
 
-  const { batteryNotifications, getNotificationFrequencyLabel } = settings;
+  const { batteryNotifications } = settings;
 
   return (
     <div className='page main-page'>
@@ -97,7 +97,7 @@ function MainPage({ wakeLock, settings }) {
               <span className='status-label'>Alert Frequency</span>
               <span className='status-value'>
                 {batteryNotifications
-                  ? `⏱️ ${getNotificationFrequencyLabel()}`
+                  ? `⏱️ ${getNotificationFrequencyLabel(settings.notificationFrequency)}`
                   : '➖ Not applicable'}
               </span>
             </div>
