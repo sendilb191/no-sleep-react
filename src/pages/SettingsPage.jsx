@@ -1,5 +1,9 @@
 import ToggleButton from '../components/shared/ToggleButton';
 import CustomDropdown from '../components/shared/CustomDropdown';
+import {
+  FALLBACK_METHOD_OPTIONS,
+  NOTIFICATION_FREQUENCY_OPTIONS,
+} from '../utils/dropdownOptions';
 import './SettingsPage.less';
 
 function SettingsPage({ wakeLock, settings, battery }) {
@@ -128,23 +132,7 @@ function SettingsPage({ wakeLock, settings, battery }) {
                 id='fallback-select'
                 value={fallbackMethod}
                 onChange={method => updateSetting('fallbackMethod', method)}
-                options={[
-                  {
-                    value: 'video',
-                    label: 'Invisible Video',
-                    description: 'Uses hidden video playback',
-                  },
-                  {
-                    value: 'audio',
-                    label: 'Silent Audio',
-                    description: 'Uses muted audio loop',
-                  },
-                  {
-                    value: 'none',
-                    label: 'None (Wake Lock API only)',
-                    description: 'No fallback method',
-                  },
-                ]}
+                options={FALLBACK_METHOD_OPTIONS}
                 placeholder='Select fallback method'
               />
             </div>
@@ -201,28 +189,7 @@ function SettingsPage({ wakeLock, settings, battery }) {
                   updateSetting('notificationFrequency', frequency)
                 }
                 disabled={!batteryNotifications}
-                options={[
-                  {
-                    value: 'once',
-                    label: 'Once Only',
-                    description: 'Single notification when reaching 95%',
-                  },
-                  {
-                    value: '1min',
-                    label: 'Every 1 Minute',
-                    description: 'Frequent reminders while charging',
-                  },
-                  {
-                    value: '5min',
-                    label: 'Every 5 Minutes',
-                    description: 'Regular reminders (recommended)',
-                  },
-                  {
-                    value: '30min',
-                    label: 'Every 30 Minutes',
-                    description: 'Occasional reminders',
-                  },
-                ]}
+                options={NOTIFICATION_FREQUENCY_OPTIONS}
                 placeholder='Select frequency'
               />
             </div>
