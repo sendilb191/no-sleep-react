@@ -11,18 +11,7 @@ main.page {
   position: relative;
   color: var(--text-primary);
 
-  /* Page variants */
-  &.main-page {
-    /* Main page specific styles */
-  }
-
-  &.about-page {
-    /* About page specific styles */
-  }
-
-  &.settings-page {
-    /* Settings page specific styles */
-  }
+  /* Page variants can be added here when needed */
 } /* ============= THEME UTILITIES ============= */
 
 /* Status indicators */
@@ -361,43 +350,6 @@ section.github-section {
 
 /* ============= STANDARDIZED COMPONENTS ============= */
 
-/* Status Cards */
-.status-card {
-  background: var(--bg-primary);
-  border: 1px solid var(--cadet-blue-light);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-md);
-  transition: var(--transition-base);
-
-  &:hover {
-    box-shadow: 0 2px 8px rgba(95, 158, 160, 0.15);
-  }
-
-  .status-title {
-    font-weight: var(--font-weight-medium);
-    color: var(--text-primary);
-    margin-bottom: var(--spacing-sm);
-  }
-
-  .status-value {
-    color: var(--text-secondary);
-    font-size: var(--font-size-sm);
-  }
-
-  &.status-active {
-    border-color: var(--success-color);
-
-    .status-title {
-      color: var(--success-color);
-    }
-  }
-
-  &.status-inactive {
-    border-color: var(--text-secondary);
-    opacity: 0.7;
-  }
-}
-
 /* Badge Components */
 .badge {
   display: inline-flex;
@@ -427,6 +379,14 @@ section.github-section {
     background: var(--bg-tertiary);
     color: var(--text-secondary);
   }
+}
+
+/* Disabled states */
+.disabled,
+.setting-title.disabled,
+.setting-description.disabled {
+  opacity: 0.5;
+  color: var(--text-muted);
 }
 
 /* Global notification positioning */

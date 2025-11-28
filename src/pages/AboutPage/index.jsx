@@ -1,5 +1,3 @@
-import './AboutPage.less';
-
 function AboutPage() {
   return (
     <main className='page about-page'>

@@ -4,7 +4,6 @@ import {
   FALLBACK_METHOD_OPTIONS,
   NOTIFICATION_FREQUENCY_OPTIONS,
 } from '../../constants/dropdownOptions';
-import './SettingsPage.less';
 
 function SettingsPage({ wakeLock, settings, battery }) {
   const {
