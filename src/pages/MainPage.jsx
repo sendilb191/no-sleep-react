@@ -1,4 +1,4 @@
-import { getNotificationFrequencyLabel } from '../../utils/settingsService';
+import { getNotificationFrequencyLabel } from '../utils/settingsService';
 
 function MainPage({ wakeLock, settings, battery }) {
   const { isWakeLockEnabled, wakeLockSupported, wakeLockStatus } = wakeLock;

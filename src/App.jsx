@@ -6,9 +6,9 @@ import { SmartRouter } from './components/SmartRouter';
 import { useSettings } from './hooks/useSettings';
 import { useWakeLock } from './hooks/useWakeLock';
 import { useBattery } from './hooks/useBattery';
-import AboutPage from './pages/AboutPage/index.jsx';
-import MainPage from './pages/MainPage/index.jsx';
-import SettingsPage from './pages/SettingsPage/index.jsx';
+import AboutPage from './pages/AboutPage.jsx';
+import MainPage from './pages/MainPage.jsx';
+import SettingsPage from './pages/SettingsPage.jsx';
 
 function App() {
   const settings = useSettings();
