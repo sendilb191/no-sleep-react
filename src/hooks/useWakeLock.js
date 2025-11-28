@@ -4,11 +4,11 @@ import {
   createVideoElement,
   requestWakeLock as requestWakeLockUtil,
   releaseWakeLock as releaseWakeLockUtil,
-} from '../utils/core/wakeLockService.js';
+} from '../utils/wakeLockService.js';
 import {
   loadWakeLockPreference,
   saveWakeLockPreference,
-} from '../utils/core/settingsService.js';
+} from '../utils/settingsService.js';
 
 export const useWakeLock = () => {
   const [isWakeLockEnabled, setIsWakeLockEnabled] = useState(false);
@@ -96,9 +96,14 @@ export const useWakeLock = () => {
     }
   }, [isToggling, userWantsWakeLock, requestWakeLock, releaseWakeLock]);
 
-  // Restore wake lock if user previously wanted it (after initialization)
+  // Restore wake lock if user previously wanted it (after initialization and if page is visible)
   useEffect(() => {
-    if (isInitialized && userWantsWakeLock && !isWakeLockEnabled) {
+    if (
+      isInitialized &&
+      userWantsWakeLock &&
+      !isWakeLockEnabled &&
+      document.visibilityState === 'visible'
+    ) {
       console.log('Restoring wake lock from saved preference');
       requestWakeLock();
     }
@@ -112,13 +117,30 @@ export const useWakeLock = () => {
         userWantsWakeLock &&
         !isWakeLockEnabled
       ) {
+        console.log('Tab became visible, attempting to restore wake lock');
+        requestWakeLock();
+      } else if (document.visibilityState === 'hidden' && isWakeLockEnabled) {
+        console.log(
+          'Tab became hidden, wake lock will be automatically released by browser'
+        );
+      }
+    };
+
+    // Also handle focus events as an additional trigger
+    const handleFocus = () => {
+      if (userWantsWakeLock && !isWakeLockEnabled) {
+        console.log('Window focused, attempting to restore wake lock');
         requestWakeLock();
       }
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () =>
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+    };
   }, [userWantsWakeLock, isWakeLockEnabled, requestWakeLock]);
 
   // Cleanup on unmount

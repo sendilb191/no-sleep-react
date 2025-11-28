@@ -8,7 +8,7 @@ import {
   getBatteryIcon as getBatteryIconUtil,
   getBatteryStatus as getBatteryStatusUtil,
   formatTime as formatTimeUtil,
-} from '../utils/core/batteryService.js';
+} from '../utils/batteryService.js';
 
 export const useBattery = settings => {
   const [batteryInfo, setBatteryInfo] = useState({

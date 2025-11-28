@@ -4,7 +4,7 @@ import {
   loadSettings,
   updateSetting as updateSettingUtil,
   resetSettings as resetSettingsUtil,
-} from '../utils/core/settingsService.js';
+} from '../utils/settingsService.js';
 
 export const useSettings = () => {
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);

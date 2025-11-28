@@ -1,4 +1,4 @@
-import { checkFeatureSupport, getBrowserInfo } from '../browser.js';
+import { checkFeatureSupport, getBrowserInfo } from './browser.js';
 
 export const checkWakeLockSupport = () => {
   const featureSupport = checkFeatureSupport();
@@ -49,6 +49,17 @@ export const createVideoElement = () => {
 
 export const requestWakeLock = async (wakeLockSupported, videoRef) => {
   try {
+    // Check if page is visible before requesting wake lock
+    if (document.visibilityState !== 'visible') {
+      return {
+        success: false,
+        wakeLock: null,
+        status:
+          'Page not visible - wake lock will be requested when tab becomes active',
+        error: 'PAGE_NOT_VISIBLE',
+      };
+    }
+
     if (wakeLockSupported) {
       const wakeLock = await navigator.wakeLock.request('screen');
       return {
@@ -69,6 +80,23 @@ export const requestWakeLock = async (wakeLockSupported, videoRef) => {
       }
     }
   } catch (error) {
+    // Handle specific case where page is not visible
+    if (
+      error.name === 'NotAllowedError' &&
+      error.message.includes('not visible')
+    ) {
+      console.warn(
+        'Wake lock request failed: Page not visible. Will retry when tab becomes active.'
+      );
+      return {
+        success: false,
+        wakeLock: null,
+        status:
+          'Page not visible - wake lock will be requested when tab becomes active',
+        error: 'PAGE_NOT_VISIBLE',
+      };
+    }
+
     console.error('Failed to request wake lock:', error);
     return {
       success: false,

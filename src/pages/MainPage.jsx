@@ -1,4 +1,4 @@
-import { getNotificationFrequencyLabel } from '../utils/core/settingsService';
+import { getNotificationFrequencyLabel } from '../utils/settingsService';
 import './MainPage.less';
 
 function MainPage({ wakeLock, settings, battery }) {
@@ -105,31 +105,33 @@ function MainPage({ wakeLock, settings, battery }) {
         </div>
       </div>
 
-      <div className='github-section'>
-        <div className='section-header'>
-          <h2>Wake Lock Status</h2>
-        </div>
-        <div className='section-body'>
-          <div className='status-grid'>
-            <div className='status-item'>
-              <span className='status-label'>API Support</span>
-              <span className='status-value'>
-                {wakeLockSupported ? '✓ Native Wake Lock' : '⚠ Video Fallback'}
-              </span>
-            </div>
-            <div className='status-item'>
-              <span className='status-label'>Current Status</span>
-              <span className='status-value'>
-                {isWakeLockEnabled ? '🔒 Active' : '⭕ Inactive'}
-              </span>
-            </div>
-            <div className='status-item'>
-              <span className='status-label'>Ready State</span>
-              <span className='status-value'>{wakeLockStatus}</span>
+      {isWakeLockEnabled && (
+        <div className='github-section'>
+          <div className='section-header'>
+            <h2>Wake Lock Status</h2>
+          </div>
+          <div className='section-body'>
+            <div className='status-grid'>
+              <div className='status-item'>
+                <span className='status-label'>API Support</span>
+                <span className='status-value'>
+                  {wakeLockSupported
+                    ? '✓ Native Wake Lock'
+                    : '⚠ Video Fallback'}
+                </span>
+              </div>
+              <div className='status-item'>
+                <span className='status-label'>Current Status</span>
+                <span className='status-value'>🔒 Active</span>
+              </div>
+              <div className='status-item'>
+                <span className='status-label'>Ready State</span>
+                <span className='status-value'>{wakeLockStatus}</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
