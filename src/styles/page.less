@@ -2,21 +2,82 @@
 
 /* ============= PAGE LAYOUT ============= */
 
-/* Base Page Container */
-.page {
+/* Base Page Container - works with main elements */
+.page,
+main.page {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
   position: relative;
+  color: var(--text-primary);
+
+  /* Page variants */
+  &.main-page {
+    /* Main page specific styles */
+  }
+
+  &.about-page {
+    /* About page specific styles */
+  }
+
+  &.settings-page {
+    /* Settings page specific styles */
+  }
+} /* ============= THEME UTILITIES ============= */
+
+/* Status indicators */
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+
+  &.status-active {
+    color: var(--success-color);
+  }
+
+  &.status-inactive {
+    color: var(--text-secondary);
+  }
+
+  &.status-warning {
+    color: var(--warning-color);
+  }
+
+  &.status-error {
+    color: var(--error-color);
+  }
+}
+
+/* Icon text combinations */
+.icon-text {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+/* Content spacing utilities */
+.content-spacing {
+  &.tight {
+    gap: var(--spacing-sm);
+  }
+
+  &.normal {
+    gap: var(--spacing-md);
+  }
+
+  &.loose {
+    gap: var(--spacing-lg);
+  }
 }
 
 /* ============= PAGE HEADER ============= */
 
-/* Standard Page Header - Cadet Blue Theme */
-.page-header {
+/* Standard Page Header - Works with header elements */
+.page-header,
+header.page-header {
   border-bottom: 1px solid var(--cadet-blue-light);
-  // padding-bottom: var(--spacing-lg);
   margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-md);
 
   h1 {
     font-size: var(--font-size-2xl);
@@ -60,16 +121,18 @@
 
 /* ============= SECTION COMPONENTS ============= */
 
-/* Standard GitHub-style Sections - Cadet Blue Theme */
-.github-section {
+/* Standard GitHub-style Sections - Works with semantic elements */
+.github-section,
+section.github-section {
   border: 1px solid var(--cadet-blue-light);
   border-radius: var(--radius-md);
   background: var(--bg-primary);
   margin-bottom: var(--spacing-lg);
   box-shadow: 0 1px 3px rgba(95, 158, 160, 0.1);
 
-  .section-header {
-    padding: var(--spacing-sm) var(--spacing-md);
+  .section-header,
+  header.section-header {
+    padding: var(--spacing-md) var(--spacing-lg);
     border-bottom: 1px solid var(--cadet-blue-light);
     background: var(--bg-accent);
     border-radius: var(--radius-md) var(--radius-md) 0 0;
@@ -293,6 +356,76 @@
       outline: 2px solid currentColor;
       outline-offset: 2px;
     }
+  }
+}
+
+/* ============= STANDARDIZED COMPONENTS ============= */
+
+/* Status Cards */
+.status-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--cadet-blue-light);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  transition: var(--transition-base);
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(95, 158, 160, 0.15);
+  }
+
+  .status-title {
+    font-weight: var(--font-weight-medium);
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .status-value {
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+  }
+
+  &.status-active {
+    border-color: var(--success-color);
+
+    .status-title {
+      color: var(--success-color);
+    }
+  }
+
+  &.status-inactive {
+    border-color: var(--text-secondary);
+    opacity: 0.7;
+  }
+}
+
+/* Badge Components */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+
+  &.badge-success {
+    background: #e8f5e8;
+    color: var(--success-color);
+  }
+
+  &.badge-warning {
+    background: #fff8e1;
+    color: #e65100;
+  }
+
+  &.badge-info {
+    background: #e8f4f8;
+    color: var(--cadet-blue);
+  }
+
+  &.badge-inactive {
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
   }
 }
 

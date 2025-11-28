@@ -6,9 +6,9 @@ import { SmartRouter } from './components/SmartRouter';
 import { useSettings } from './hooks/useSettings';
 import { useWakeLock } from './hooks/useWakeLock';
 import { useBattery } from './hooks/useBattery';
-import AboutPage from './pages/AboutPage';
-import MainPage from './pages/MainPage';
-import SettingsPage from './pages/SettingsPage';
+import AboutPage from './pages/AboutPage/index.jsx';
+import MainPage from './pages/MainPage/index.jsx';
+import SettingsPage from './pages/SettingsPage/index.jsx';
 
 function App() {
   const settings = useSettings();
@@ -37,7 +37,7 @@ function App() {
     <SmartRouter>
       <div className='app'>
         <Navigation />
-        <main className='main-content'>
+        <main className='main-content' role='main'>
           <Routes>
             <Route
               path='/'

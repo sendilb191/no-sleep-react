@@ -2,18 +2,21 @@ import './AboutPage.less';
 
 function AboutPage() {
   return (
-    <div className='page about-page'>
-      <div className='page-header'>
+    <main className='page about-page'>
+      <header className='page-header'>
         <h1>About No Sleep</h1>
         <p className='page-description'>
           Learn how this wake lock application works and its technical details.
         </p>
-      </div>
+      </header>
 
-      <div className='github-section'>
-        <div className='section-header'>
-          <h2>How it works</h2>
-        </div>
+      <section
+        className='github-section'
+        aria-labelledby='how-it-works-heading'
+      >
+        <header className='section-header'>
+          <h2 id='how-it-works-heading'>How it works</h2>
+        </header>
         <div className='section-body'>
           <ul className='feature-list'>
             <li>Uses native Wake Lock API when supported</li>
@@ -22,12 +25,12 @@ function AboutPage() {
             <li>Prevents screen from turning off or device from sleeping</li>
           </ul>
         </div>
-      </div>
+      </section>
 
-      <div className='github-section'>
-        <div className='section-header'>
-          <h2>Features</h2>
-        </div>
+      <section className='github-section' aria-labelledby='features-heading'>
+        <header className='section-header'>
+          <h2 id='features-heading'>Features</h2>
+        </header>
         <div className='section-body'>
           <ul className='feature-list'>
             <li>Wake lock controls are available in Settings</li>
@@ -36,12 +39,15 @@ function AboutPage() {
             <li>Works across all modern browsers</li>
           </ul>
         </div>
-      </div>
+      </section>
 
-      <div className='github-section'>
-        <div className='section-header'>
-          <h2>Browser Compatibility</h2>
-        </div>
+      <section
+        className='github-section'
+        aria-labelledby='browser-compatibility-heading'
+      >
+        <header className='section-header'>
+          <h2 id='browser-compatibility-heading'>Browser Compatibility</h2>
+        </header>
         <div className='section-body'>
           <div className='compatibility-grid'>
             <div className='browser-support'>
@@ -64,12 +70,15 @@ function AboutPage() {
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className='github-section'>
-        <div className='section-header'>
-          <h2>Wake Lock Technical Details</h2>
-        </div>
+      <section
+        className='github-section'
+        aria-labelledby='wake-lock-technical-heading'
+      >
+        <header className='section-header'>
+          <h2 id='wake-lock-technical-heading'>Wake Lock Technical Details</h2>
+        </header>
         <div className='section-body'>
           <div className='tech-details'>
             <div className='detail-item'>
@@ -98,12 +107,15 @@ function AboutPage() {
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className='github-section'>
-        <div className='section-header'>
-          <h2>Battery Technical Details</h2>
-        </div>
+      <section
+        className='github-section'
+        aria-labelledby='battery-technical-heading'
+      >
+        <header className='section-header'>
+          <h2 id='battery-technical-heading'>Battery Technical Details</h2>
+        </header>
         <div className='section-body'>
           <div className='tech-details'>
             <div className='detail-item'>
@@ -131,12 +143,15 @@ function AboutPage() {
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className='github-section'>
-        <div className='section-header'>
-          <h2>Application Info</h2>
-        </div>
+      <section
+        className='github-section'
+        aria-labelledby='application-info-heading'
+      >
+        <header className='section-header'>
+          <h2 id='application-info-heading'>Application Info</h2>
+        </header>
         <div className='section-body'>
           <div className='app-info'>
             <div className='info-row'>
@@ -167,8 +182,8 @@ function AboutPage() {
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }
 

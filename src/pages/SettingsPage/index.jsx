@@ -1,9 +1,9 @@
-import ToggleButton from '../components/shared/ToggleButton';
-import CustomDropdown from '../components/shared/CustomDropdown';
+import ToggleButton from '../../components/shared/ToggleButton';
+import CustomDropdown from '../../components/shared/CustomDropdown';
 import {
   FALLBACK_METHOD_OPTIONS,
   NOTIFICATION_FREQUENCY_OPTIONS,
-} from '../constants/dropdownOptions';
+} from '../../constants/dropdownOptions';
 import './SettingsPage.less';
 
 function SettingsPage({ wakeLock, settings, battery }) {
