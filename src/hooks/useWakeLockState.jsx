@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
-const useWakeLockState = () => {
+const useWakeLockState = (initialActive = false, onActiveChange = null) => {
   const [wakeLock, setWakeLock] = useState(null);
-  const [isActive, setIsActive] = useState(false);
+  const [isActive, setIsActive] = useState(initialActive);
   const initialized = useRef(false);
   const wasActiveBeforeHidden = useRef(false);
 
@@ -17,12 +17,13 @@ const useWakeLockState = () => {
         const lock = await navigator.wakeLock.request('screen');
         setWakeLock(lock);
         setIsActive(true);
-        localStorage.setItem('wakeLockActive', 'true');
+        onActiveChange?.(true);
 
         // Handle wake lock release events
         lock.addEventListener('release', () => {
           setIsActive(false);
           setWakeLock(null);
+          onActiveChange?.(false);
         });
       } else {
         console.log('Wake Lock API is not supported in this browser');
@@ -37,7 +38,7 @@ const useWakeLockState = () => {
       await wakeLock.release();
       setWakeLock(null);
       setIsActive(false);
-      localStorage.setItem('wakeLockActive', 'false');
+      onActiveChange?.(false);
     }
   }, [wakeLock]);
 
@@ -49,16 +50,26 @@ const useWakeLockState = () => {
     }
   }, [isActive, releaseWakeLock, requestWakeLock]);
 
-  // Initialize wake lock from localStorage
+  // Initialize wake lock from external state
   useEffect(() => {
     if (initialized.current) return;
     initialized.current = true;
 
-    const savedWakeLockState = localStorage.getItem('wakeLockActive');
-    if (savedWakeLockState === 'true') {
+    if (initialActive) {
       requestWakeLock();
     }
-  }, [requestWakeLock]);
+  }, [requestWakeLock, initialActive]);
+
+  // Sync with external state changes
+  useEffect(() => {
+    if (!initialized.current) return;
+
+    if (initialActive && !isActive) {
+      requestWakeLock();
+    } else if (!initialActive && isActive) {
+      releaseWakeLock();
+    }
+  }, [initialActive, isActive, requestWakeLock, releaseWakeLock]);
 
   // Handle tab visibility changes to restore wake lock
   useEffect(() => {

@@ -3,7 +3,7 @@ import { useSettings } from '../contexts/SettingsContext';
 
 const SettingPage = () => {
   const {
-    settings,
+    appSettings,
     updateSetting,
     isWakeLockActive,
     handleWakeLockToggle,
@@ -12,13 +12,14 @@ const SettingPage = () => {
 
   const handleNotificationToggle = () => {
     updateSetting(
-      'batteryNotificationsEnabled',
-      !settings.batteryNotificationsEnabled
+      'battery',
+      'notificationsEnabled',
+      !appSettings.battery.notificationsEnabled
     );
   };
 
   const handleFrequencyChange = e => {
-    updateSetting('notificationFrequency', parseInt(e.target.value));
+    updateSetting('battery', 'notificationFrequency', parseInt(e.target.value));
   };
 
   const handleTestNotification = () => {
@@ -47,7 +48,7 @@ const SettingPage = () => {
         <label className='toggle-setting'>
           <input
             type='checkbox'
-            checked={settings.batteryNotificationsEnabled}
+            checked={appSettings.battery.notificationsEnabled}
             onChange={handleNotificationToggle}
           />
           <div className='toggle-content'>
@@ -58,13 +59,13 @@ const SettingPage = () => {
           </div>
         </label>
 
-        {settings.batteryNotificationsEnabled && (
+        {appSettings.battery.notificationsEnabled && (
           <>
             <div className='setting-group'>
               <label className='frequency-setting'>
                 <span className='setting-label'>Notification Frequency:</span>
                 <select
-                  value={settings.notificationFrequency}
+                  value={appSettings.battery.notificationFrequency}
                   onChange={handleFrequencyChange}
                   className='frequency-select'
                 >

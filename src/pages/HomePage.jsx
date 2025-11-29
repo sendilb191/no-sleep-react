@@ -3,7 +3,7 @@ import { useSettings } from '../contexts/SettingsContext';
 import BatteryIcon from '../components/BatteryIcon';
 
 const HomePage = () => {
-  const { settings, isWakeLockActive, batteryInfo } = useSettings();
+  const { appSettings, isWakeLockActive, batteryInfo } = useSettings();
 
   return (
     <main className='page'>
@@ -25,9 +25,11 @@ const HomePage = () => {
           <div className='info-item'>
             <span className='label'>Notifications:</span>
             <span
-              className={`value ${settings.batteryNotificationsEnabled ? 'enabled' : 'disabled'}`}
+              className={`value ${appSettings.battery.notificationsEnabled ? 'enabled' : 'disabled'}`}
             >
-              {settings.batteryNotificationsEnabled ? 'Enabled' : 'Disabled'}
+              {appSettings.battery.notificationsEnabled
+                ? 'Enabled'
+                : 'Disabled'}
             </span>
           </div>
         </div>
@@ -39,9 +41,9 @@ const HomePage = () => {
           <div className='info-item'>
             <span className='label'>Status:</span>
             <span
-              className={`value ${isWakeLockActive ? 'enabled' : 'disabled'}`}
+              className={`value ${appSettings.wakeLock.active ? 'enabled' : 'disabled'}`}
             >
-              {isWakeLockActive ? 'Enabled' : 'Disabled'}
+              {appSettings.wakeLock.active ? 'Enabled' : 'Disabled'}
             </span>
           </div>
         </div>

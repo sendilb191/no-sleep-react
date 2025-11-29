@@ -57,6 +57,14 @@ const useBatteryState = (
     }
   }, []);
 
+  // Clear existing interval when frequency changes
+  useEffect(() => {
+    if (notificationIntervalRef.current) {
+      clearInterval(notificationIntervalRef.current);
+      notificationIntervalRef.current = null;
+    }
+  }, [notificationFrequency]);
+
   // Battery initialization effect
   useEffect(() => {
     const getBatteryInfo = async () => {
@@ -67,43 +75,9 @@ const useBatteryState = (
           const updateBatteryInfo = () => {
             const currentLevel = Math.round(battery.level * 100);
             const isCharging = battery.charging;
-            const now = Date.now();
 
-            // Check for high battery notification with frequency control
-            if (
-              currentLevel > 90 &&
-              isCharging &&
-              batteryNotificationsEnabled
-            ) {
-              // Check if enough time has passed since last notification
-              const timeSinceLastNotification =
-                now - lastNotificationRef.current;
-              const frequencyMs = notificationFrequency * 60 * 1000; // Convert minutes to milliseconds
-
-              if (timeSinceLastNotification >= frequencyMs) {
-                showBatteryNotification(currentLevel, isCharging);
-                lastNotificationRef.current = now;
-              }
-
-              // Set up recurring notifications
-              if (!notificationIntervalRef.current) {
-                notificationIntervalRef.current = setInterval(() => {
-                  if (
-                    currentLevel > 90 &&
-                    isCharging &&
-                    batteryNotificationsEnabled
-                  ) {
-                    showBatteryNotification(currentLevel, isCharging);
-                  }
-                }, frequencyMs);
-              }
-            } else {
-              // Clear interval when conditions are not met
-              if (notificationIntervalRef.current) {
-                clearInterval(notificationIntervalRef.current);
-                notificationIntervalRef.current = null;
-              }
-            }
+            // Only update battery info, no notifications here
+            // Notifications will be handled by the separate interval effect
 
             const newBatteryInfo = {
               level: currentLevel,
@@ -158,12 +132,49 @@ const useBatteryState = (
     };
 
     getBatteryInfo();
+  }, [formatTime, showBatteryNotification]); // Removed batteryNotificationsEnabled and notificationFrequency to prevent re-initialization
+
+  // Manage notification interval based on settings only
+  useEffect(() => {
+    // Clear existing interval
+    if (notificationIntervalRef.current) {
+      clearInterval(notificationIntervalRef.current);
+      notificationIntervalRef.current = null;
+    }
+
+    // Set up new interval if notifications are enabled
+    if (batteryNotificationsEnabled) {
+      const frequencyMs = notificationFrequency * 60 * 1000;
+      notificationIntervalRef.current = setInterval(() => {
+        // Check current battery conditions at interval time
+        if (
+          batteryInfo.level > 90 &&
+          batteryInfo.charging &&
+          batteryNotificationsEnabled
+        ) {
+          const now = Date.now();
+          const timeSinceLastNotification = now - lastNotificationRef.current;
+
+          // Only send notification if enough time has passed
+          if (timeSinceLastNotification >= frequencyMs) {
+            showBatteryNotification(batteryInfo.level, batteryInfo.charging);
+            lastNotificationRef.current = now;
+          }
+        }
+      }, frequencyMs);
+    }
+
+    return () => {
+      if (notificationIntervalRef.current) {
+        clearInterval(notificationIntervalRef.current);
+        notificationIntervalRef.current = null;
+      }
+    };
   }, [
     batteryNotificationsEnabled,
     notificationFrequency,
-    formatTime,
     showBatteryNotification,
-  ]);
+  ]); // Removed batteryInfo dependencies
 
   // Cleanup intervals on unmount
   useEffect(() => {

@@ -13,57 +13,129 @@ export const useSettings = () => {
 };
 
 export const SettingsProvider = ({ children }) => {
-  const [settings, setSettings] = useState(() => {
-    // Initialize settings from localStorage on first render
+  const [appSettings, setAppSettings] = useState(() => {
+    // Initialize app settings from localStorage on first render
     try {
       const savedSettings = localStorage.getItem('app-settings');
       if (savedSettings) {
         const parsedSettings = JSON.parse(savedSettings);
+
+        // Handle migration from old flat structure to new nested structure
+        if (
+          parsedSettings.batteryNotificationsEnabled !== undefined ||
+          parsedSettings.notificationFrequency !== undefined ||
+          parsedSettings.wakeLockActive !== undefined
+        ) {
+          // Migrate from old flat structure - only use the nested structure, ignore old flat keys
+          const migratedSettings = {
+            battery: {
+              notificationsEnabled:
+                parsedSettings.batteryNotificationsEnabled ??
+                parsedSettings.battery?.notificationsEnabled ??
+                true,
+              notificationFrequency:
+                parsedSettings.notificationFrequency ??
+                parsedSettings.battery?.notificationFrequency ??
+                5,
+            },
+            wakeLock: {
+              active:
+                parsedSettings.wakeLockActive ??
+                parsedSettings.wakeLock?.active ??
+                false,
+            },
+          };
+
+          // Save the migrated structure immediately to clean up localStorage
+          localStorage.setItem(
+            'app-settings',
+            JSON.stringify(migratedSettings)
+          );
+
+          // Clean up old localStorage keys
+          localStorage.removeItem('wakeLockActive');
+
+          return migratedSettings;
+        }
+
+        // If already in new structure, return as is (but ensure it has the correct structure)
+        if (parsedSettings.battery && parsedSettings.wakeLock) {
+          return {
+            battery: {
+              notificationsEnabled:
+                parsedSettings.battery.notificationsEnabled ?? true,
+              notificationFrequency:
+                parsedSettings.battery.notificationFrequency ?? 5,
+            },
+            wakeLock: {
+              active: parsedSettings.wakeLock.active ?? false,
+            },
+          };
+        }
+
+        // Fallback for any other case
         return {
-          batteryNotificationsEnabled: true, // default value
-          notificationFrequency: 5, // minutes between notifications
-          ...parsedSettings, // override with saved values
+          battery: {
+            notificationsEnabled: true,
+            notificationFrequency: 5,
+          },
+          wakeLock: {
+            active: false,
+          },
         };
       }
     } catch (error) {
       console.error('Error loading settings from localStorage:', error);
     }
 
-    // Return default settings if no saved settings or error
+    // Return default app settings if no saved settings or error
     return {
-      batteryNotificationsEnabled: true,
-      notificationFrequency: 5, // minutes between notifications
+      battery: {
+        notificationsEnabled: true,
+        notificationFrequency: 5, // minutes between notifications
+      },
+      wakeLock: {
+        active: false,
+      },
     };
   });
 
-  // Use custom hooks
+  // Use custom hooks with app-settings integration
   const {
     isActive: isWakeLockActive,
     toggleWakeLock,
     requestWakeLock,
     releaseWakeLock,
-  } = useWakeLockState();
-
-  const batteryData = useBatteryState(
-    settings.batteryNotificationsEnabled,
-    settings.notificationFrequency
+  } = useWakeLockState(appSettings.wakeLock.active, active =>
+    updateSetting('wakeLock', 'active', active)
   );
 
-  // Save settings to localStorage whenever they change
+  const batteryData = useBatteryState(
+    appSettings.battery.notificationsEnabled,
+    appSettings.battery.notificationFrequency
+  );
+
+  // Save app settings to localStorage whenever they change
   useEffect(() => {
     try {
-      localStorage.setItem('app-settings', JSON.stringify(settings));
+      localStorage.setItem('app-settings', JSON.stringify(appSettings));
     } catch (error) {
       console.error('Error saving settings to localStorage:', error);
     }
-  }, [settings]);
+  }, [appSettings]);
 
-  const updateSetting = (key, value) => {
-    setSettings(prev => ({ ...prev, [key]: value }));
+  const updateSetting = (section, key, value) => {
+    setAppSettings(prev => ({
+      ...prev,
+      [section]: {
+        ...prev[section],
+        [key]: value,
+      },
+    }));
   };
 
   const value = {
-    settings,
+    appSettings,
     updateSetting,
     // Battery state and functions
     batteryInfo: batteryData,
