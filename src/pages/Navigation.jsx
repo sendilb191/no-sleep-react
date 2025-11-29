@@ -14,6 +14,9 @@ const Navigation = () => {
         <Link to='/setting' className='nav-link'>
           ⚙️ Settings
         </Link>
+        <Link to='/about' className='nav-link'>
+          📱 About
+        </Link>
       </div>
     </nav>
   );
