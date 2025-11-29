@@ -117,21 +117,29 @@ function handleWakeLockUpdate(wakeLockData) {
 
 // Notification management - single source of truth
 let notificationTimer = null;
-let currentBatteryData = { level: 85, charging: true };
+let currentBatteryData = null; // Will be set by main app
 let notificationSettings = {
   enabled: false,
-  frequency: 5, // minutes
+  frequency: 5, // Will be updated by main app
+};
+let lastNotification = {
+  timestamp: null,
+  batteryLevel: null,
+  chargingStatus: null,
 };
 
 // Update notification settings and manage timer
 function updateNotificationSettings(settings) {
   console.log('Service Worker: Updating notification settings:', settings);
-  
+
   // Clear existing timer first
   if (notificationTimer) {
     clearInterval(notificationTimer);
     notificationTimer = null;
   }
+
+  // Cancel any existing notifications when settings change
+  cancelExistingNotifications();
 
   // Update settings
   notificationSettings.enabled = settings.enabled;
@@ -143,16 +151,45 @@ function updateNotificationSettings(settings) {
   }
 }
 
+// Cancel all existing notifications
+async function cancelExistingNotifications() {
+  try {
+    const notifications = await self.registration.getNotifications();
+    console.log(
+      'Service Worker: Canceling',
+      notifications.length,
+      'existing notifications'
+    );
+
+    notifications.forEach(notification => {
+      if (notification.tag && notification.tag.startsWith('battery-status')) {
+        notification.close();
+      }
+    });
+  } catch (error) {
+    console.log(
+      'Service Worker: Could not cancel existing notifications:',
+      error
+    );
+  }
+}
+
 // Start notification timer
 function startNotificationTimer() {
   if (!notificationSettings.enabled) return;
 
   const intervalMs = notificationSettings.frequency * 60 * 1000;
-  console.log('Service Worker: Starting notification timer -', notificationSettings.frequency, 'minutes');
+  console.log(
+    'Service Worker: Starting notification timer -',
+    notificationSettings.frequency,
+    'minutes'
+  );
 
   notificationTimer = setInterval(() => {
     console.log('Service Worker: Timer fired - showing notification');
-    showBatteryNotification(currentBatteryData);
+    // Use current battery data, or fallback if not available
+    const batteryData = currentBatteryData || { level: 0, charging: false };
+    showBatteryNotification(batteryData);
   }, intervalMs);
 }
 
@@ -166,10 +203,27 @@ function updateBatteryData(data) {
 async function showBatteryNotification(batteryData) {
   const { level, charging } = batteryData;
   const chargingStatus = charging ? 'charging' : 'not charging';
-  const timestamp = new Date().toLocaleTimeString();
+  const now = new Date();
+  const timestamp = now.toLocaleTimeString();
+
+  // Build notification body with last notification info
+  let bodyText = `Battery: ${level}% (${chargingStatus}) - ${timestamp}\nDevice is staying awake.`;
+
+  if (lastNotification.timestamp) {
+    const lastTime = new Date(lastNotification.timestamp);
+    const minutesAgo = Math.floor((now - lastTime) / 60000);
+    const lastTimeStr = lastTime.toLocaleTimeString();
+
+    bodyText += `\n\nPrevious: ${lastNotification.batteryLevel}% (${lastNotification.chargingStatus}) at ${lastTimeStr}`;
+    if (minutesAgo > 0) {
+      bodyText += ` (${minutesAgo}m ago)`;
+    }
+  } else {
+    bodyText += '\n\nFirst notification of this session';
+  }
 
   const options = {
-    body: `Battery: ${level}% (${chargingStatus}) - ${timestamp}\nDevice is staying awake.`,
+    body: bodyText,
     icon: '/no-sleep.svg',
     badge: '/no-sleep.svg',
     tag: 'battery-status-' + Date.now(), // Unique tag to show multiple notifications
@@ -192,6 +246,14 @@ async function showBatteryNotification(batteryData) {
     'Service Worker: Showing notification for battery level:',
     level + '%'
   );
+
+  // Update last notification tracking
+  lastNotification = {
+    timestamp: now.getTime(),
+    batteryLevel: level,
+    chargingStatus: chargingStatus,
+  };
+
   return self.registration.showNotification(
     'No Sleep - Battery Status 🔋',
     options

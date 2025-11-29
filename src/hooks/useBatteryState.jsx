@@ -101,18 +101,25 @@ const useBatteryState = (
 
   // Send notification settings to service worker when they change
   useEffect(() => {
-    // Always send current settings to service worker, let it decide what to do
-    swManager.updateNotificationSettings({
-      enabled: batteryNotificationsEnabled,
-      frequency: notificationFrequency,
-      batteryLevel: batteryInfo.level,
-      isCharging: batteryInfo.charging,
-    });
+    // Ensure service worker is ready before sending settings
+    const sendSettings = () => {
+      if (swManager.isReady()) {
+        swManager.updateNotificationSettings({
+          enabled: batteryNotificationsEnabled,
+          frequency: notificationFrequency,
+        });
+      } else {
+        // Retry after a short delay if service worker isn't ready
+        setTimeout(sendSettings, 100);
+      }
+    };
+
+    sendSettings();
   }, [batteryNotificationsEnabled, notificationFrequency]);
 
   // Send battery status updates to service worker
   useEffect(() => {
-    if (batteryInfo.level !== null) {
+    if (batteryInfo.level !== null && swManager.isReady()) {
       swManager.sendBatteryStatus({
         level: batteryInfo.level,
         charging: batteryInfo.charging,

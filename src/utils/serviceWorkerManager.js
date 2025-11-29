@@ -88,6 +88,11 @@ class ServiceWorkerManager {
     this.sendMessage('TEST_NOTIFICATION', batteryData);
   }
 
+  // Check if service worker is ready to receive messages
+  isReady() {
+    return this.registration && this.registration.active;
+  }
+
   // Cancel notifications
   cancelNotifications() {
     this.sendMessage('CANCEL_NOTIFICATIONS');
