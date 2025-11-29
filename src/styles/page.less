@@ -167,23 +167,18 @@
 
   @keyframes batteryPulse {
     0% {
-      transform: translateY(0px) scale(1);
       filter: brightness(1);
     }
     25% {
-      transform: translateY(-3px) scale(1.05);
       filter: brightness(1.2) hue-rotate(30deg);
     }
     50% {
-      transform: translateY(-6px) scale(1.1);
       filter: brightness(1.4) hue-rotate(60deg);
     }
     75% {
-      transform: translateY(-3px) scale(1.05);
       filter: brightness(1.2) hue-rotate(30deg);
     }
     100% {
-      transform: translateY(0px) scale(1);
       filter: brightness(1);
     }
   }
@@ -289,7 +284,7 @@
   }
 
   &:active {
-    transform: translateY(1px);
+    opacity: 0.9;
   }
 }
 
