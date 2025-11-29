@@ -40,12 +40,15 @@ const HomePage = () => {
 
       <section className='info-card'>
         <h2>💤 Wake Lock</h2>
-        <div className='status-badge'>
-          <span
-            className={`status ${isWakeLockActive ? 'active' : 'inactive'}`}
-          >
-            {isWakeLockActive ? '🔒 Screen Awake' : '💤 Sleep Mode'}
-          </span>
+        <div className='info-grid'>
+          <div className='info-item'>
+            <span className='label'>Status:</span>
+            <span
+              className={`value ${isWakeLockActive ? 'active' : 'inactive'}`}
+            >
+              {isWakeLockActive ? '🔒 Screen Awake' : '💤 Sleep Mode'}
+            </span>
+          </div>
         </div>
       </section>
     </main>

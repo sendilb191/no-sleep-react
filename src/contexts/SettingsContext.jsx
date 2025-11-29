@@ -13,8 +13,25 @@ export const useSettings = () => {
 };
 
 export const SettingsProvider = ({ children }) => {
-  const [settings, setSettings] = useState({
-    batteryNotificationsEnabled: true,
+  const [settings, setSettings] = useState(() => {
+    // Initialize settings from localStorage on first render
+    try {
+      const savedSettings = localStorage.getItem('app-settings');
+      if (savedSettings) {
+        const parsedSettings = JSON.parse(savedSettings);
+        return {
+          batteryNotificationsEnabled: true, // default value
+          ...parsedSettings, // override with saved values
+        };
+      }
+    } catch (error) {
+      console.error('Error loading settings from localStorage:', error);
+    }
+
+    // Return default settings if no saved settings or error
+    return {
+      batteryNotificationsEnabled: true,
+    };
   });
 
   // Use custom hooks
@@ -27,22 +44,13 @@ export const SettingsProvider = ({ children }) => {
 
   const batteryInfo = useBatteryState(settings.batteryNotificationsEnabled);
 
-  // Load settings from localStorage on mount
-  useEffect(() => {
-    const savedSettings = localStorage.getItem('app-settings');
-    if (savedSettings) {
-      try {
-        const parsedSettings = JSON.parse(savedSettings);
-        setSettings(prev => ({ ...prev, ...parsedSettings }));
-      } catch (error) {
-        console.error('Error loading settings:', error);
-      }
-    }
-  }, []);
-
   // Save settings to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem('app-settings', JSON.stringify(settings));
+    try {
+      localStorage.setItem('app-settings', JSON.stringify(settings));
+    } catch (error) {
+      console.error('Error saving settings to localStorage:', error);
+    }
   }, [settings]);
 
   const updateSetting = (key, value) => {
