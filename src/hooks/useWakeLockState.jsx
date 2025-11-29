@@ -4,6 +4,7 @@ const useWakeLockState = () => {
   const [wakeLock, setWakeLock] = useState(null);
   const [isActive, setIsActive] = useState(false);
   const initialized = useRef(false);
+  const wasActiveBeforeHidden = useRef(false);
 
   const requestWakeLock = useCallback(async () => {
     // Prevent multiple wake lock requests
@@ -58,6 +59,26 @@ const useWakeLockState = () => {
       requestWakeLock();
     }
   }, [requestWakeLock]);
+
+  // Handle tab visibility changes to restore wake lock
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        // Remember if wake lock was active when tab became hidden
+        wasActiveBeforeHidden.current = isActive;
+      } else if (document.visibilityState === 'visible') {
+        // Re-request wake lock if it was active before hiding
+        if (wasActiveBeforeHidden.current && !isActive) {
+          requestWakeLock();
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [isActive, requestWakeLock]);
 
   // Only cleanup wake lock on component unmount (not on every wakeLock change)
   useEffect(() => {

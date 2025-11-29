@@ -25,11 +25,9 @@ const HomePage = () => {
           <div className='info-item'>
             <span className='label'>Notifications:</span>
             <span
-              className={`value ${settings.batteryNotificationsEnabled ? 'enabled' : ''}`}
+              className={`value ${settings.batteryNotificationsEnabled ? 'enabled' : 'disabled'}`}
             >
-              {settings.batteryNotificationsEnabled
-                ? '🟢 Enabled'
-                : '🔴 Disabled'}
+              {settings.batteryNotificationsEnabled ? 'Enabled' : 'Disabled'}
             </span>
           </div>
         </div>
@@ -41,9 +39,9 @@ const HomePage = () => {
           <div className='info-item'>
             <span className='label'>Status:</span>
             <span
-              className={`value ${isWakeLockActive ? 'active' : 'inactive'}`}
+              className={`value ${isWakeLockActive ? 'enabled' : 'disabled'}`}
             >
-              {isWakeLockActive ? '🔒 Screen Awake' : '💤 Sleep Mode'}
+              {isWakeLockActive ? 'Enabled' : 'Disabled'}
             </span>
           </div>
         </div>
