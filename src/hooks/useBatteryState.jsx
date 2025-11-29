@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import swManager from '../utils/serviceWorkerManager.js';
 
 const useBatteryState = (
   batteryNotificationsEnabled,
@@ -33,18 +34,21 @@ const useBatteryState = (
   }, []);
 
   // Function to show notification
-  const showBatteryNotification = useCallback(level => {
+  const showBatteryNotification = useCallback((level, isCharging = true) => {
     if ('Notification' in window) {
+      const chargingStatus = isCharging ? 'charging' : 'not charging';
+      const message = `Battery level: ${level}% - Device is ${chargingStatus} and staying awake.`;
+
       if (Notification.permission === 'granted') {
         new Notification('No Sleep - Battery Status 🔋', {
-          body: `Battery level: ${level}% - Device is charging and staying awake.`,
+          body: message,
           icon: '/favicon.ico',
         });
       } else if (Notification.permission !== 'denied') {
         Notification.requestPermission().then(permission => {
           if (permission === 'granted') {
             new Notification('No Sleep - Battery Status 🔋', {
-              body: `Battery level: ${level}% - Device is charging and staying awake.`,
+              body: message,
               icon: '/favicon.ico',
             });
           }
@@ -77,7 +81,7 @@ const useBatteryState = (
               const frequencyMs = notificationFrequency * 60 * 1000; // Convert minutes to milliseconds
 
               if (timeSinceLastNotification >= frequencyMs) {
-                showBatteryNotification(currentLevel);
+                showBatteryNotification(currentLevel, isCharging);
                 lastNotificationRef.current = now;
               }
 
@@ -89,7 +93,7 @@ const useBatteryState = (
                     isCharging &&
                     batteryNotificationsEnabled
                   ) {
-                    showBatteryNotification(currentLevel);
+                    showBatteryNotification(currentLevel, isCharging);
                   }
                 }, frequencyMs);
               }
@@ -101,7 +105,7 @@ const useBatteryState = (
               }
             }
 
-            setBatteryInfo({
+            const newBatteryInfo = {
               level: currentLevel,
               charging: isCharging,
               chargingTime: battery.chargingTime,
@@ -109,6 +113,16 @@ const useBatteryState = (
               chargingTimeFormatted: formatTime(battery.chargingTime),
               dischargingTimeFormatted: formatTime(battery.dischargingTime),
               supported: true,
+            };
+
+            setBatteryInfo(newBatteryInfo);
+
+            // Update service worker with battery status
+            swManager.updateBatteryStatus({
+              level: currentLevel,
+              charging: isCharging,
+              notificationsEnabled: batteryNotificationsEnabled,
+              frequency: notificationFrequency,
             });
           };
 
@@ -162,8 +176,11 @@ const useBatteryState = (
 
   // Test notification function
   const testNotification = useCallback(() => {
-    showBatteryNotification(batteryInfo.level || 90);
-  }, [showBatteryNotification, batteryInfo.level]);
+    showBatteryNotification(
+      batteryInfo.level || 90,
+      batteryInfo.charging || false
+    );
+  }, [showBatteryNotification, batteryInfo.level, batteryInfo.charging]);
 
   return {
     ...batteryInfo,
