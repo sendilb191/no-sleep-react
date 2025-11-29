@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import useWakeLock from '../../hooks/useWakeLock';
 import './HomePage.less';
 import useBattery from '../../hooks/useBattery';
+import AnimatedBattery from '../../components/AnimatedBattery';
 
 const HomePage = () => {
   const { isActive, handleToggle } = useWakeLock();
@@ -20,10 +21,17 @@ const HomePage = () => {
       </section>
       <section className='battery-info'>
         <h2>Battery Info</h2>
-        <div>
-          <p>🔋 Battery Level: {batteryInfo.level}%</p>
-          <p>⚡ Charging: {batteryInfo.charging ? '🔌 Yes' : '🔋 No'}</p>
-          <p>🕐 Discharging Time: {batteryInfo.dischargingTimeFormatted}</p>
+
+        <div className='battery-display'>
+          <AnimatedBattery
+            level={batteryInfo.level || 0}
+            charging={batteryInfo.charging || false}
+          />
+          <div>
+            <p>🔋 Battery Level: {batteryInfo.level}%</p>
+            <p>⚡ Charging: {batteryInfo.charging ? '🔌 Yes' : '🔋 No'}</p>
+            <p>🕐 Discharging Time: {batteryInfo.dischargingTimeFormatted}</p>
+          </div>
         </div>
       </section>
     </div>
