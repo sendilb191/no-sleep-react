@@ -1,0 +1,143 @@
+.battery-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &.charging {
+    .battery-body {
+      animation: batteryGlow 2s ease-in-out infinite;
+    }
+
+    .charging-wave {
+      opacity: 1;
+    }
+
+    .lightning-bolt {
+      animation: boltFlash 1s ease-in-out infinite alternate;
+    }
+  }
+}
+
+.battery-body {
+  display: flex;
+  align-items: center;
+  flex-direction: row-reverse;
+  transition: all 0.3s ease;
+}
+
+.battery-shell {
+  width: 48px;
+  height: 24px;
+  border: 2px solid #666;
+  border-radius: 4px;
+  background: #f0f0f0;
+  position: relative;
+  overflow: hidden;
+}
+
+.battery-tip {
+  width: 5px;
+  height: 12px;
+  background: #666;
+  border-radius: 0 2px 2px 0;
+  margin-left: 1px;
+}
+
+.battery-fill {
+  height: 100%;
+  border-radius: 1px;
+  position: relative;
+  transition:
+    width 0.5s ease,
+    background-color 0.3s ease;
+  min-width: 2px;
+
+  /* Charging waves animation inside battery */
+  .charging-wave {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.4) 25%,
+      rgba(255, 255, 255, 0.8) 50%,
+      rgba(255, 255, 255, 0.4) 75%,
+      transparent 100%
+    );
+    opacity: 0;
+    animation: waveFlow 1.5s ease-in-out infinite;
+  }
+
+  .wave-1 {
+    animation-delay: 0s;
+  }
+
+  .wave-2 {
+    animation-delay: 0.5s;
+  }
+
+  .wave-3 {
+    animation-delay: 1s;
+  }
+}
+
+.lightning-bolt {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 8px;
+  color: #fff;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+.battery-percentage {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #495057;
+  min-width: 2.5rem;
+  text-align: center;
+}
+
+/* Animations */
+@keyframes batteryGlow {
+  0%,
+  100% {
+    filter: brightness(1) drop-shadow(0 0 2px rgba(40, 167, 69, 0.3));
+  }
+  50% {
+    filter: brightness(1.1) drop-shadow(0 0 6px rgba(40, 167, 69, 0.8));
+  }
+}
+
+@keyframes waveFlow {
+  0% {
+    left: -100%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes boltFlash {
+  0% {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+}

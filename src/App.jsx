@@ -1,87 +1,31 @@
-import { Route, Routes } from 'react-router-dom';
-import { useEffect } from 'react';
-import './App.less';
-import Navigation from './components/shared/Navigation';
-import { SmartRouter } from './components/SmartRouter';
-import { useSettings } from './hooks/useSettings';
-import { useWakeLock } from './hooks/useWakeLock';
-import { useBattery } from './hooks/useBattery';
-import AboutPage from './pages/AboutPage.jsx';
-import MainPage from './pages/MainPage.jsx';
-import SettingsPage from './pages/SettingsPage.jsx';
+import React from 'react';
+import { HashRouter, Routes, Route } from 'react-router-dom';
+import HomePage from './pages/HomePage.jsx';
+import SettingPage from './pages/SettingPage.jsx';
+import Navigation from './pages/Navigation.jsx';
+import { SettingsProvider } from './contexts/SettingsContext.jsx';
+import './styles/page.less';
 
 function App() {
-  const settings = useSettings();
-  const wakeLock = useWakeLock();
-  const battery = useBattery(settings);
-
-  // Auto-enable wake lock when settings are loaded and autoEnable is true
-  useEffect(() => {
-    if (
-      settings.isLoaded &&
-      settings.autoEnable &&
-      !wakeLock.userWantsWakeLock &&
-      !wakeLock.isWakeLockEnabled
-    ) {
-      console.log('Auto-enabling wake lock from settings...');
-      wakeLock.toggleWakeLock();
-    }
-  }, [
-    settings.isLoaded,
-    settings.autoEnable,
-    wakeLock.userWantsWakeLock,
-    wakeLock.isWakeLockEnabled,
-  ]);
-
   return (
-    <SmartRouter>
-      <div className='app'>
-        <Navigation />
-        <main className='main-content' role='main'>
-          <Routes>
-            <Route
-              path='/'
-              element={
-                <MainPage
-                  wakeLock={wakeLock}
-                  settings={settings}
-                  battery={battery}
-                />
-              }
-            />
-            <Route
-              path='/settings'
-              element={
-                <SettingsPage
-                  wakeLock={wakeLock}
-                  settings={settings}
-                  battery={battery}
-                />
-              }
-            />
-            <Route path='/about' element={<AboutPage />} />
-          </Routes>
-        </main>
-
-        {/* Global battery notifications */}
-        {battery.notification && (
-          <div className={`battery-notification ${battery.notification.type}`}>
-            <div className='notification-content'>
-              <span className='notification-message'>
-                {battery.notification.message}
-              </span>
-              <button
-                className='notification-close'
-                onClick={battery.dismissNotification}
-                aria-label='Dismiss notification'
-              >
-                ×
-              </button>
-            </div>
-          </div>
-        )}
+    <SettingsProvider>
+      <div className='app-container'>
+        <HashRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <Navigation />
+          <section>
+            <Routes>
+              <Route path='/' element={<HomePage />} />
+              <Route path='/setting' element={<SettingPage />} />
+            </Routes>
+          </section>
+        </HashRouter>
       </div>
-    </SmartRouter>
+    </SettingsProvider>
   );
 }
 

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Background circle -->
+  <circle cx="50" cy="50" r="45" fill="#667eea" stroke="#764ba2" stroke-width="3"/>
+  
+  <!-- Eye (awake symbol) -->
+  <ellipse cx="50" cy="40" rx="20" ry="12" fill="white"/>
+  <circle cx="50" cy="40" r="8" fill="#2c3e50"/>
+  <circle cx="52" cy="38" r="3" fill="white"/>
+  
+  <!-- Lightning bolt (power/energy symbol) -->
+  <path d="M35 60 L45 50 L40 50 L48 35 L38 45 L43 45 L35 60 Z" fill="#ffd700" stroke="#ff8c00" stroke-width="1"/>
+  
+  <!-- Battery outline -->
+  <rect x="60" y="50" width="20" height="12" rx="2" fill="none" stroke="white" stroke-width="2"/>
+  <rect x="80" y="53" width="3" height="6" fill="white"/>
+  
+  <!-- Battery level (charged) -->
+  <rect x="62" y="52" width="16" height="8" fill="#28a745"/>
+  
+  <!-- "NO" text -->
+  <text x="50" y="85" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">NO</text>
+  <text x="50" y="95" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="white" text-anchor="middle">SLEEP</text>
+</svg>
