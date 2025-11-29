@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
-const useBatteryState = batteryNotificationsEnabled => {
+const useBatteryState = (
+  batteryNotificationsEnabled,
+  notificationFrequency = 5
+) => {
   const [batteryInfo, setBatteryInfo] = useState({
     level: null,
     charging: null,
@@ -8,7 +11,8 @@ const useBatteryState = batteryNotificationsEnabled => {
     dischargingTime: null,
     supported: false,
   });
-  const notificationShownRef = useRef(false);
+  const lastNotificationRef = useRef(0);
+  const notificationIntervalRef = useRef(null);
 
   // Helper function to format time in seconds to readable format
   const formatTime = useCallback(seconds => {
@@ -32,15 +36,15 @@ const useBatteryState = batteryNotificationsEnabled => {
   const showBatteryNotification = useCallback(level => {
     if ('Notification' in window) {
       if (Notification.permission === 'granted') {
-        new Notification('Battery Alert! 🔋', {
-          body: `Battery is ${level}% and charging. Consider unplugging to preserve battery health.`,
+        new Notification('No Sleep - Battery Status 🔋', {
+          body: `Battery level: ${level}% - Device is charging and staying awake.`,
           icon: '/favicon.ico',
         });
       } else if (Notification.permission !== 'denied') {
         Notification.requestPermission().then(permission => {
           if (permission === 'granted') {
-            new Notification('Battery Alert! 🔋', {
-              body: `Battery is ${level}% and charging. Consider unplugging to preserve battery health.`,
+            new Notification('No Sleep - Battery Status 🔋', {
+              body: `Battery level: ${level}% - Device is charging and staying awake.`,
               icon: '/favicon.ico',
             });
           }
@@ -59,19 +63,42 @@ const useBatteryState = batteryNotificationsEnabled => {
           const updateBatteryInfo = () => {
             const currentLevel = Math.round(battery.level * 100);
             const isCharging = battery.charging;
+            const now = Date.now();
 
-            // Check for high battery notification
+            // Check for high battery notification with frequency control
             if (
               currentLevel > 90 &&
               isCharging &&
-              !notificationShownRef.current &&
               batteryNotificationsEnabled
             ) {
-              showBatteryNotification(currentLevel);
-              notificationShownRef.current = true;
-            } else if (currentLevel <= 90 || !isCharging) {
-              // Reset notification flag when battery drops below 90% or stops charging
-              notificationShownRef.current = false;
+              // Check if enough time has passed since last notification
+              const timeSinceLastNotification =
+                now - lastNotificationRef.current;
+              const frequencyMs = notificationFrequency * 60 * 1000; // Convert minutes to milliseconds
+
+              if (timeSinceLastNotification >= frequencyMs) {
+                showBatteryNotification(currentLevel);
+                lastNotificationRef.current = now;
+              }
+
+              // Set up recurring notifications
+              if (!notificationIntervalRef.current) {
+                notificationIntervalRef.current = setInterval(() => {
+                  if (
+                    currentLevel > 90 &&
+                    isCharging &&
+                    batteryNotificationsEnabled
+                  ) {
+                    showBatteryNotification(currentLevel);
+                  }
+                }, frequencyMs);
+              }
+            } else {
+              // Clear interval when conditions are not met
+              if (notificationIntervalRef.current) {
+                clearInterval(notificationIntervalRef.current);
+                notificationIntervalRef.current = null;
+              }
             }
 
             setBatteryInfo({
@@ -117,9 +144,31 @@ const useBatteryState = batteryNotificationsEnabled => {
     };
 
     getBatteryInfo();
-  }, [batteryNotificationsEnabled, formatTime, showBatteryNotification]);
+  }, [
+    batteryNotificationsEnabled,
+    notificationFrequency,
+    formatTime,
+    showBatteryNotification,
+  ]);
 
-  return batteryInfo;
+  // Cleanup intervals on unmount
+  useEffect(() => {
+    return () => {
+      if (notificationIntervalRef.current) {
+        clearInterval(notificationIntervalRef.current);
+      }
+    };
+  }, []);
+
+  // Test notification function
+  const testNotification = useCallback(() => {
+    showBatteryNotification(batteryInfo.level || 90);
+  }, [showBatteryNotification, batteryInfo.level]);
+
+  return {
+    ...batteryInfo,
+    testNotification,
+  };
 };
 
 export default useBatteryState;

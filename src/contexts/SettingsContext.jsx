@@ -21,6 +21,7 @@ export const SettingsProvider = ({ children }) => {
         const parsedSettings = JSON.parse(savedSettings);
         return {
           batteryNotificationsEnabled: true, // default value
+          notificationFrequency: 5, // minutes between notifications
           ...parsedSettings, // override with saved values
         };
       }
@@ -31,6 +32,7 @@ export const SettingsProvider = ({ children }) => {
     // Return default settings if no saved settings or error
     return {
       batteryNotificationsEnabled: true,
+      notificationFrequency: 5, // minutes between notifications
     };
   });
 
@@ -42,7 +44,10 @@ export const SettingsProvider = ({ children }) => {
     releaseWakeLock,
   } = useWakeLockState();
 
-  const batteryInfo = useBatteryState(settings.batteryNotificationsEnabled);
+  const batteryData = useBatteryState(
+    settings.batteryNotificationsEnabled,
+    settings.notificationFrequency
+  );
 
   // Save settings to localStorage whenever they change
   useEffect(() => {
@@ -60,8 +65,9 @@ export const SettingsProvider = ({ children }) => {
   const value = {
     settings,
     updateSetting,
-    // Battery state
-    batteryInfo,
+    // Battery state and functions
+    batteryInfo: batteryData,
+    testNotification: batteryData.testNotification,
     // Wake lock state and functions
     isWakeLockActive,
     handleWakeLockToggle: toggleWakeLock,

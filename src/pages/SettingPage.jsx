@@ -2,8 +2,13 @@ import React from 'react';
 import { useSettings } from '../contexts/SettingsContext';
 
 const SettingPage = () => {
-  const { settings, updateSetting, isWakeLockActive, handleWakeLockToggle } =
-    useSettings();
+  const {
+    settings,
+    updateSetting,
+    isWakeLockActive,
+    handleWakeLockToggle,
+    testNotification,
+  } = useSettings();
 
   const handleNotificationToggle = () => {
     updateSetting(
@@ -12,10 +17,18 @@ const SettingPage = () => {
     );
   };
 
+  const handleFrequencyChange = e => {
+    updateSetting('notificationFrequency', parseInt(e.target.value));
+  };
+
+  const handleTestNotification = () => {
+    testNotification();
+  };
+
   return (
     <main className='page'>
       <section className='settings-card'>
-        <h2>🔔 Notifications</h2>
+        <h2>🔋 Battery</h2>
         <label className='toggle-setting'>
           <input
             type='checkbox'
@@ -29,6 +42,34 @@ const SettingPage = () => {
             </span>
           </div>
         </label>
+
+        {settings.batteryNotificationsEnabled && (
+          <>
+            <div className='setting-group'>
+              <label className='frequency-setting'>
+                <span className='setting-label'>Notification Frequency:</span>
+                <select
+                  value={settings.notificationFrequency}
+                  onChange={handleFrequencyChange}
+                  className='frequency-select'
+                >
+                  <option value={1}>Every 1 minute</option>
+                  <option value={2}>Every 2 minutes</option>
+                  <option value={5}>Every 5 minutes</option>
+                  <option value={10}>Every 10 minutes</option>
+                  <option value={15}>Every 15 minutes</option>
+                  <option value={30}>Every 30 minutes</option>
+                </select>
+              </label>
+            </div>
+
+            <div className='setting-group'>
+              <button onClick={handleTestNotification} className='test-button'>
+                🧪 Test Notification
+              </button>
+            </div>
+          </>
+        )}
       </section>
 
       <section className='settings-card'>
