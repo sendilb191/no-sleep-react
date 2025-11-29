@@ -7,15 +7,17 @@ import './styles/page.less';
 
 function App() {
   return (
-    <HashRouter>
-      <Navigation />
-      <section>
-        <Routes>
-          <Route path='/' element={<HomePage />} />
-          <Route path='/setting' element={<SettingPage />} />
-        </Routes>
-      </section>
-    </HashRouter>
+    <div className='app-container'>
+      <HashRouter>
+        <Navigation />
+        <section>
+          <Routes>
+            <Route path='/' element={<HomePage />} />
+            <Route path='/setting' element={<SettingPage />} />
+          </Routes>
+        </section>
+      </HashRouter>
+    </div>
   );
 }
 

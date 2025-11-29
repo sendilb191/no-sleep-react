@@ -8,24 +8,24 @@ const HomePage = () => {
   const batteryInfo = useBattery();
 
   console.log('batteryInfo', batteryInfo);
+
   return (
     <div className='home-page'>
-      <div className='wake-lock'>
-        <h2>Wake Lock Info</h2>
+      <section className='wake-lock'>
+        <h2>Wake Lock Info </h2>
         <div className='lock-status flex'>
-          <p>
-            Status: {isActive ? '🔒 Screen Lock Active' : '💤 Screen Can Sleep'}
-          </p>
+          <span>Status: {isActive ? '🔒 Active' : '💤 Sleeping'}</span>
           <input type='checkbox' checked={isActive} onChange={handleToggle} />
         </div>
-      </div>
-      <div className='battery-info'>
+      </section>
+      <section className='battery-info'>
         <h2>Battery Info</h2>
-        <div className='lock-status flex'>
-          <p>battery Level:{batteryInfo.level}</p>
-          <p>charging:{batteryInfo.charging}</p>
+        <div>
+          <p>🔋 Battery Level: {batteryInfo.level}%</p>
+          <p>⚡ Charging: {batteryInfo.charging ? '🔌 Yes' : '🔋 No'}</p>
+          <p>🕐 Discharging Time: {batteryInfo.dischargingTimeFormatted}</p>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

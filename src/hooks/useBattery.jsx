@@ -9,11 +9,31 @@ const useBattery = () => {
     supported: false,
   });
 
+  // Helper function to format time in seconds to readable format
+  const formatTime = seconds => {
+    if (seconds === Infinity || seconds === 0 || isNaN(seconds)) {
+      return 'Unknown';
+    }
+
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+
+    if (hours > 0) {
+      return `${hours}h ${minutes}m`;
+    } else if (minutes > 0) {
+      return `${minutes} minutes`;
+    } else {
+      return `${Math.floor(seconds)} seconds`;
+    }
+  };
+
   useEffect(() => {
     const getBatteryInfo = async () => {
       try {
         if ('getBattery' in navigator) {
           const battery = await navigator.getBattery();
+
+          console.log('battery', battery);
 
           const updateBatteryInfo = () => {
             setBatteryInfo({
@@ -21,6 +41,8 @@ const useBattery = () => {
               charging: battery.charging,
               chargingTime: battery.chargingTime,
               dischargingTime: battery.dischargingTime,
+              chargingTimeFormatted: formatTime(battery.chargingTime),
+              dischargingTimeFormatted: formatTime(battery.dischargingTime),
               supported: true,
             });
           };
