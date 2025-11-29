@@ -202,6 +202,7 @@ function updateBatteryData(data) {
 // Show battery notification
 async function showBatteryNotification(batteryData) {
   const { level, charging } = batteryData;
+
   const chargingStatus = charging ? 'charging' : 'not charging';
   const now = new Date();
 
