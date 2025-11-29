@@ -129,47 +129,49 @@ const useBatteryState = (
     getBatteryInfo();
   }, [formatTime, showBatteryNotification]); // Removed batteryNotificationsEnabled and notificationFrequency to prevent re-initialization
 
-  // Manage notification interval based on settings only
+  // Set up service worker notifications when settings change
   useEffect(() => {
-    // Clear existing interval
-    if (notificationIntervalRef.current) {
-      clearInterval(notificationIntervalRef.current);
-      notificationIntervalRef.current = null;
+    if (batteryNotificationsEnabled && batteryInfo.level !== null) {
+      // Schedule notifications through service worker
+      swManager.scheduleNotification({
+        frequency: notificationFrequency,
+        batteryLevel: batteryInfo.level,
+        isCharging: batteryInfo.charging,
+        enabled: true,
+      });
+    } else {
+      // Cancel notifications when disabled
+      swManager.cancelNotifications();
     }
-
-    // Set up new interval if notifications are enabled
-    if (batteryNotificationsEnabled) {
-      const frequencyMs = notificationFrequency * 60 * 1000;
-      notificationIntervalRef.current = setInterval(() => {
-        // Check current battery conditions at interval time
-        if (
-          batteryInfo.level > 90 &&
-          batteryInfo.charging &&
-          batteryNotificationsEnabled
-        ) {
-          const now = Date.now();
-          const timeSinceLastNotification = now - lastNotificationRef.current;
-
-          // Only send notification if enough time has passed
-          if (timeSinceLastNotification >= frequencyMs) {
-            showBatteryNotification(batteryInfo.level, batteryInfo.charging);
-            lastNotificationRef.current = now;
-          }
-        }
-      }, frequencyMs);
-    }
-
-    return () => {
-      if (notificationIntervalRef.current) {
-        clearInterval(notificationIntervalRef.current);
-        notificationIntervalRef.current = null;
-      }
-    };
   }, [
     batteryNotificationsEnabled,
     notificationFrequency,
-    showBatteryNotification,
-  ]); // Removed batteryInfo dependencies
+    batteryInfo.level,
+    batteryInfo.charging,
+  ]);
+
+  // Listen for service worker battery status requests
+  useEffect(() => {
+    const handleBatteryStatusRequest = () => {
+      if (batteryInfo.level !== null) {
+        swManager.sendBatteryStatus({
+          level: batteryInfo.level,
+          charging: batteryInfo.charging,
+        });
+      }
+    };
+
+    window.addEventListener(
+      'sw-request-battery-status',
+      handleBatteryStatusRequest
+    );
+    return () => {
+      window.removeEventListener(
+        'sw-request-battery-status',
+        handleBatteryStatusRequest
+      );
+    };
+  }, [batteryInfo.level, batteryInfo.charging]);
 
   // Cleanup intervals on unmount
   useEffect(() => {
@@ -182,10 +184,19 @@ const useBatteryState = (
 
   // Test notification function
   const testNotification = useCallback(() => {
-    showBatteryNotification(
-      batteryInfo.level || 90,
-      batteryInfo.charging || false
-    );
+    // First try to show via service worker for more reliable delivery
+    if (swManager.registration && swManager.registration.active) {
+      swManager.sendBatteryStatus({
+        level: batteryInfo.level || 85,
+        charging: batteryInfo.charging !== null ? batteryInfo.charging : true,
+      });
+    } else {
+      // Fallback to direct notification
+      showBatteryNotification(
+        batteryInfo.level || 85,
+        batteryInfo.charging !== null ? batteryInfo.charging : true
+      );
+    }
   }, [showBatteryNotification, batteryInfo.level, batteryInfo.charging]);
 
   return {

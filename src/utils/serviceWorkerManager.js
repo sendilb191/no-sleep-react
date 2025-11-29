@@ -49,6 +49,10 @@ class ServiceWorkerManager {
         // Trigger battery check in main app
         window.dispatchEvent(new CustomEvent('sw-battery-check'));
         break;
+      case 'REQUEST_BATTERY_STATUS':
+        // Service worker is requesting current battery status
+        window.dispatchEvent(new CustomEvent('sw-request-battery-status'));
+        break;
       default:
         console.log('Unknown message from service worker:', type, data);
     }
@@ -67,6 +71,11 @@ class ServiceWorkerManager {
   // Schedule notification through service worker
   scheduleNotification(data) {
     this.sendMessage('SCHEDULE_NOTIFICATION', data);
+  }
+
+  // Send current battery status to service worker
+  sendBatteryStatus(batteryData) {
+    this.sendMessage('CURRENT_BATTERY_STATUS', batteryData);
   }
 
   // Cancel notifications

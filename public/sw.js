@@ -102,6 +102,12 @@ self.addEventListener('message', event => {
     case 'CANCEL_NOTIFICATIONS':
       cancelScheduledNotifications();
       break;
+    case 'CURRENT_BATTERY_STATUS':
+      // Received current battery status, show notification if appropriate
+      if (currentSettings.battery.notificationsEnabled) {
+        showBatteryNotification(data);
+      }
+      break;
   }
 });
 
@@ -121,27 +127,79 @@ function handleWakeLockUpdate(wakeLockData) {
   // Could be used for analytics or coordination between tabs
 }
 
-// Enhanced notification scheduling
+// Enhanced notification scheduling with persistent timers
+let notificationTimer = null;
+let currentSettings = {
+  battery: {
+    notificationsEnabled: true,
+    notificationFrequency: 5,
+  },
+  wakeLock: {
+    active: false,
+  },
+};
+
 async function scheduleNotification(data) {
-  const { frequency, batteryLevel, isCharging } = data;
+  const { frequency, batteryLevel, isCharging, enabled } = data;
 
-  // Show immediate notification
+  // Clear existing timer
+  if (notificationTimer) {
+    clearInterval(notificationTimer);
+    notificationTimer = null;
+  }
+
+  if (!enabled) {
+    console.log('Service Worker: Notifications disabled, stopping timer');
+    return;
+  }
+
+  // Store current settings
+  currentSettings.battery.notificationsEnabled = enabled;
+  currentSettings.battery.notificationFrequency = frequency;
+
+  console.log(
+    'Service Worker: Starting notification timer with frequency:',
+    frequency,
+    'minutes'
+  );
+
+  // Set up recurring notifications
+  const intervalMs = frequency * 60 * 1000; // Convert minutes to milliseconds
+
+  notificationTimer = setInterval(async () => {
+    try {
+      // Get current battery status from main app
+      const clients = await self.clients.matchAll();
+      if (clients.length > 0) {
+        // Request current battery status
+        clients[0].postMessage({ type: 'REQUEST_BATTERY_STATUS' });
+      } else {
+        // No active clients, show notification with stored data
+        await showBatteryNotification({
+          level: batteryLevel,
+          charging: isCharging,
+        });
+      }
+    } catch (error) {
+      console.error('Service Worker: Error in notification timer:', error);
+    }
+  }, intervalMs);
+
+  // Show immediate notification for testing
   await showBatteryNotification({ level: batteryLevel, charging: isCharging });
-
-  // Note: True background scheduling would require more complex implementation
-  // This is a simplified version
 }
 
 // Show battery notification
 async function showBatteryNotification(batteryData) {
   const { level, charging } = batteryData;
   const chargingStatus = charging ? 'charging' : 'not charging';
+  const timestamp = new Date().toLocaleTimeString();
 
   const options = {
-    body: `Battery level: ${level}% - Device is ${chargingStatus} and staying awake.`,
+    body: `Battery: ${level}% (${chargingStatus}) - ${timestamp}\nDevice is staying awake.`,
     icon: '/no-sleep.svg',
     badge: '/no-sleep.svg',
-    tag: 'battery-status',
+    tag: 'battery-status-' + Date.now(), // Unique tag to show multiple notifications
     requireInteraction: false,
     silent: false,
     actions: [
@@ -157,6 +215,10 @@ async function showBatteryNotification(batteryData) {
     ],
   };
 
+  console.log(
+    'Service Worker: Showing notification for battery level:',
+    level + '%'
+  );
   return self.registration.showNotification(
     'No Sleep - Battery Status 🔋',
     options
@@ -216,8 +278,11 @@ async function checkBatteryStatus() {
 
 // Cancel scheduled notifications
 function cancelScheduledNotifications() {
-  // Clear any scheduled notifications
-  console.log('Service Worker: Canceling scheduled notifications');
+  if (notificationTimer) {
+    clearInterval(notificationTimer);
+    notificationTimer = null;
+    console.log('Service Worker: Notification timer canceled');
+  }
 }
 
 console.log('Service Worker: Loaded successfully');

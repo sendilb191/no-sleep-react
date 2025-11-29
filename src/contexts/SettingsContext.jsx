@@ -115,6 +115,17 @@ export const SettingsProvider = ({ children }) => {
     appSettings.battery.notificationFrequency
   );
 
+  // Request notification permission on first load if notifications are enabled
+  useEffect(() => {
+    if (appSettings.battery.notificationsEnabled) {
+      if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission().then(permission => {
+          console.log('Notification permission:', permission);
+        });
+      }
+    }
+  }, [appSettings.battery.notificationsEnabled]);
+
   // Save app settings to localStorage whenever they change
   useEffect(() => {
     try {

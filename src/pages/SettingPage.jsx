@@ -11,19 +11,37 @@ const SettingPage = () => {
   } = useSettings();
 
   const handleNotificationToggle = () => {
-    updateSetting(
-      'battery',
-      'notificationsEnabled',
-      !appSettings.battery.notificationsEnabled
-    );
+    const newValue = !appSettings.battery.notificationsEnabled;
+    console.log('Toggling notifications to:', newValue);
+    updateSetting('battery', 'notificationsEnabled', newValue);
   };
 
   const handleFrequencyChange = e => {
-    updateSetting('battery', 'notificationFrequency', parseInt(e.target.value));
+    const newFrequency = parseInt(e.target.value);
+    console.log('Changing notification frequency to:', newFrequency, 'minutes');
+    updateSetting('battery', 'notificationFrequency', newFrequency);
   };
 
   const handleTestNotification = () => {
-    testNotification();
+    console.log('Test notification clicked - requesting permission first');
+    if ('Notification' in window) {
+      if (Notification.permission === 'granted') {
+        testNotification();
+      } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(permission => {
+          console.log('Notification permission result:', permission);
+          if (permission === 'granted') {
+            testNotification();
+          }
+        });
+      } else {
+        alert(
+          'Notifications are blocked. Please enable them in your browser settings.'
+        );
+      }
+    } else {
+      alert('This browser does not support notifications.');
+    }
   };
 
   return (
@@ -56,7 +74,7 @@ const SettingPage = () => {
           <div className='toggle-content'>
             <span className='setting-title'>Battery Alerts</span>
             <span className='setting-desc'>
-              Get notified when battery is above 90% while charging
+              Get periodic battery status notifications
             </span>
           </div>
         </label>
@@ -87,6 +105,28 @@ const SettingPage = () => {
           <button onClick={handleTestNotification} className='test-button'>
             🧪 Test Notification
           </button>
+        </div>
+
+        <div className='setting-group'>
+          <div className='status-info'>
+            <h4>System Status</h4>
+            <p>
+              Notification Permission:{' '}
+              {'Notification' in window
+                ? Notification.permission === 'granted'
+                  ? '✅ Granted'
+                  : Notification.permission === 'denied'
+                    ? '❌ Denied'
+                    : '⚠️ Not Requested'
+                : '❌ Not Supported'}
+            </p>
+            <p>
+              Service Worker:{' '}
+              {'serviceWorker' in navigator
+                ? '✅ Supported'
+                : '❌ Not Supported'}
+            </p>
+          </div>
         </div>
       </section>
     </main>
