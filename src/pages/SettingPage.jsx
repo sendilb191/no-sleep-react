@@ -13,41 +13,41 @@ const SettingPage = () => {
   };
 
   return (
-    <div className='settings-page'>
-      <h1>Settings</h1>
-
-      <section className='notification-settings'>
-        <h2>Notifications</h2>
-        <div className='setting-item'>
-          <label className='setting-label'>
-            <input
-              type='checkbox'
-              checked={settings.batteryNotificationsEnabled}
-              onChange={handleNotificationToggle}
-            />
-            <span className='setting-text'>
-              Enable battery notifications (when battery {'>'}90% and charging)
+    <main className='page'>
+      <section className='settings-card'>
+        <h2>🔔 Notifications</h2>
+        <label className='toggle-setting'>
+          <input
+            type='checkbox'
+            checked={settings.batteryNotificationsEnabled}
+            onChange={handleNotificationToggle}
+          />
+          <div className='toggle-content'>
+            <span className='setting-title'>Battery Alerts</span>
+            <span className='setting-desc'>
+              Get notified when battery is above 90% while charging
             </span>
-          </label>
-        </div>
+          </div>
+        </label>
       </section>
 
-      <section className='wake-lock-settings'>
-        <h2>Wake Lock</h2>
-        <div className='setting-item'>
-          <label className='setting-label'>
-            <input
-              type='checkbox'
-              checked={isWakeLockActive}
-              onChange={handleWakeLockToggle}
-            />
-            <span className='setting-text'>
-              Keep screen awake (prevents device from sleeping)
+      <section className='settings-card'>
+        <h2>🔒 Wake Lock</h2>
+        <label className='toggle-setting'>
+          <input
+            type='checkbox'
+            checked={isWakeLockActive}
+            onChange={handleWakeLockToggle}
+          />
+          <div className='toggle-content'>
+            <span className='setting-title'>Keep Screen Awake</span>
+            <span className='setting-desc'>
+              Prevent device from going to sleep
             </span>
-          </label>
-        </div>
+          </div>
+        </label>
       </section>
-    </div>
+    </main>
   );
 };
 
