@@ -34,8 +34,10 @@ const SettingPage = () => {
         <label className='toggle-setting'>
           <input
             type='checkbox'
-            checked={isWakeLockActive}
-            onChange={handleWakeLockToggle}
+            checked={appSettings.wakeLock.active}
+            onChange={() =>
+              updateSetting('wakeLock', 'active', !appSettings.wakeLock.active)
+            }
           />
           <div className='toggle-content'>
             <span className='setting-title'>Keep Screen Awake</span>
