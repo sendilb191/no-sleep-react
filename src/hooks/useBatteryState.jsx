@@ -91,13 +91,8 @@ const useBatteryState = (
 
             setBatteryInfo(newBatteryInfo);
 
-            // Update service worker with battery status
-            swManager.updateBatteryStatus({
-              level: currentLevel,
-              charging: isCharging,
-              notificationsEnabled: batteryNotificationsEnabled,
-              frequency: notificationFrequency,
-            });
+            // Note: Service worker battery updates disabled to prevent duplicate notifications
+            // All notifications are now handled by the main app with proper frequency control
           };
 
           // Initial update

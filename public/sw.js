@@ -110,13 +110,9 @@ async function handleBatteryUpdate(batteryData) {
   // Store battery data for background monitoring
   await self.registration.sync.register('battery-check');
 
-  // Check if notification should be sent
-  if (batteryData.level > 90 && batteryData.charging) {
-    const settings = await getStoredSettings();
-    if (settings.batteryNotificationsEnabled) {
-      await showBatteryNotification(batteryData);
-    }
-  }
+  // Note: Notifications are now handled by the main app with proper frequency control
+  // Service worker only stores the data, doesn't send notifications
+  console.log('Service Worker: Battery status updated', batteryData);
 }
 
 // Wake lock status handling
@@ -167,14 +163,38 @@ async function showBatteryNotification(batteryData) {
   );
 }
 
-// Get stored settings from IndexedDB or localStorage
+// Get stored settings from localStorage (using new app-settings structure)
 async function getStoredSettings() {
-  // In a real implementation, you might use IndexedDB
-  // For now, we'll return default settings
-  return {
-    batteryNotificationsEnabled: true,
-    notificationFrequency: 5,
-  };
+  try {
+    // Try to get settings from localStorage
+    const clients = await self.clients.matchAll();
+    if (clients.length > 0) {
+      // Request settings from main app
+      clients[0].postMessage({ type: 'GET_SETTINGS' });
+    }
+
+    // Return default settings as fallback
+    return {
+      battery: {
+        notificationsEnabled: true,
+        notificationFrequency: 5,
+      },
+      wakeLock: {
+        active: false,
+      },
+    };
+  } catch (error) {
+    console.log('Service Worker: Could not get settings', error);
+    return {
+      battery: {
+        notificationsEnabled: true,
+        notificationFrequency: 5,
+      },
+      wakeLock: {
+        active: false,
+      },
+    };
+  }
 }
 
 // Background battery check
