@@ -14,21 +14,44 @@ const useBatteryState = (
   });
 
   // Helper function to format time in seconds to readable format
-  const formatTime = useCallback(seconds => {
-    if (seconds === Infinity || seconds === 0 || isNaN(seconds)) {
-      return 'Unknown';
+  const formatTime = useCallback((seconds, batteryLevel, isCharging) => {
+    // If we have valid time data from the API, use it
+    if (seconds !== Infinity && seconds > 0 && !isNaN(seconds)) {
+      const hours = Math.floor(seconds / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+
+      if (hours > 0) {
+        return `${hours}h ${minutes}m`;
+      } else if (minutes > 0) {
+        return `${minutes} minutes`;
+      } else {
+        return `${Math.floor(seconds)} seconds`;
+      }
     }
 
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-
-    if (hours > 0) {
-      return `${hours}h ${minutes}m`;
-    } else if (minutes > 0) {
-      return `${minutes} minutes`;
-    } else {
-      return `${Math.floor(seconds)} seconds`;
+    // If charging, don't estimate discharge time
+    if (isCharging) {
+      return 'Charging';
     }
+
+    // Provide rough estimate based on battery level if API data is unavailable
+    if (batteryLevel !== null && batteryLevel > 0) {
+      // Rough estimate: assume 8-12 hours of typical usage for 100% battery
+      // This gives us approximately 7-10 minutes per percent
+      const estimatedMinutes = batteryLevel * 8; // Conservative estimate of 8 minutes per percent
+      const hours = Math.floor(estimatedMinutes / 60);
+      const minutes = estimatedMinutes % 60;
+
+      if (hours > 0) {
+        return `~${hours}h ${minutes}m (estimated)`;
+      } else if (minutes > 0) {
+        return `~${minutes} minutes (estimated)`;
+      } else {
+        return 'Low battery';
+      }
+    }
+
+    return 'Unknown';
   }, []);
 
   // All notifications are now handled by service worker
@@ -54,8 +77,16 @@ const useBatteryState = (
               charging: isCharging,
               chargingTime: battery.chargingTime,
               dischargingTime: battery.dischargingTime,
-              chargingTimeFormatted: formatTime(battery.chargingTime),
-              dischargingTimeFormatted: formatTime(battery.dischargingTime),
+              chargingTimeFormatted: formatTime(
+                battery.chargingTime,
+                currentLevel,
+                isCharging
+              ),
+              dischargingTimeFormatted: formatTime(
+                battery.dischargingTime,
+                currentLevel,
+                isCharging
+              ),
               supported: true,
             };
 
