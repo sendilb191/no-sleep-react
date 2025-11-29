@@ -1,3 +1,6 @@
+/* Import component styles */
+@import '../components/BatteryIcon/BatteryIcon.less';
+
 /* App Layout */
 .app-container {
   min-height: 100vh;
@@ -78,9 +81,15 @@
 
   h2 {
     margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
     color: #2c3e50;
     font-size: 1.3rem;
     font-weight: 600;
+    border-bottom: 2px solid rgba(108, 117, 125, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
   }
 }
 
@@ -98,8 +107,13 @@
   padding: 1rem;
   background: #f8f9fa;
   border-radius: 10px;
+  border: 1px solid rgba(108, 117, 125, 0.2);
   border-left: 4px solid #6c757d;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    0 1px 3px rgba(0, 0, 0, 0.12);
   min-height: 60px;
+  transition: all 0.3s ease;
 
   .label {
     font-weight: 600;
@@ -112,45 +126,66 @@
     color: #2c3e50;
     font-size: 1rem;
     text-align: right;
+  }
+
+  &:hover {
+    box-shadow:
+      0 4px 12px rgba(0, 0, 0, 0.12),
+      0 2px 6px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+  }
+
+  /* Battery charging animation */
+  .battery-icon {
+    display: inline-block;
+    transition: all 0.3s ease;
 
     &.charging {
-      color: #28a745;
-    }
-
-    &.enabled {
-      color: #17a2b8;
-    }
-
-    &.active {
-      color: #28a745;
-    }
-
-    &.inactive {
-      color: #6c757d;
+      animation:
+        batteryPulse 2s ease-in-out infinite,
+        batteryGlow 1s ease-in-out infinite alternate;
     }
   }
 
-  &:has(.charging) {
-    border-left-color: #28a745;
+  @keyframes batteryGlow {
+    0% {
+      text-shadow: 0 0 5px rgba(40, 167, 69, 0.3);
+    }
+    100% {
+      text-shadow:
+        0 0 15px rgba(40, 167, 69, 0.8),
+        0 0 25px rgba(40, 167, 69, 0.4);
+    }
   }
 
-  &:has(.enabled) {
-    border-left-color: #17a2b8;
-  }
-
-  &:has(.active) {
-    border-left-color: #28a745;
-  }
-
-  &:has(.inactive) {
-    border-left-color: #6c757d;
+  @keyframes batteryPulse {
+    0% {
+      transform: translateY(0px) scale(1);
+      filter: brightness(1);
+    }
+    25% {
+      transform: translateY(-3px) scale(1.05);
+      filter: brightness(1.2) hue-rotate(30deg);
+    }
+    50% {
+      transform: translateY(-6px) scale(1.1);
+      filter: brightness(1.4) hue-rotate(60deg);
+    }
+    75% {
+      transform: translateY(-3px) scale(1.05);
+      filter: brightness(1.2) hue-rotate(30deg);
+    }
+    100% {
+      transform: translateY(0px) scale(1);
+      filter: brightness(1);
+    }
   }
 
   /* Single column layout for wake lock section */
   &:only-child {
-    grid-column: 1 / -1;
-    max-width: 50%;
-    margin: 0 auto;
+    grid-column: 1 / 2;
+    max-width: none;
+    margin: 0;
   }
 }
 

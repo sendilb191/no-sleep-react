@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSettings } from '../contexts/SettingsContext';
+import BatteryIcon from '../components/BatteryIcon';
 
 const HomePage = () => {
   const { settings, isWakeLockActive, batteryInfo } = useSettings();
@@ -7,18 +8,14 @@ const HomePage = () => {
   return (
     <main className='page'>
       <section className='info-card'>
-        <h2>🔋 Battery Status</h2>
+        <h2>
+          <span>Battery Status</span>
+          <BatteryIcon
+            level={batteryInfo.level}
+            isCharging={batteryInfo.charging}
+          />
+        </h2>
         <div className='info-grid'>
-          <div className='info-item'>
-            <span className='label'>Level:</span>
-            <span className='value'>{batteryInfo.level || 0}%</span>
-          </div>
-          <div className='info-item'>
-            <span className='label'>Charging:</span>
-            <span className={`value ${batteryInfo.charging ? 'charging' : ''}`}>
-              {batteryInfo.charging ? '🔌 Yes' : '🔋 No'}
-            </span>
-          </div>
           <div className='info-item'>
             <span className='label'>Time Remaining:</span>
             <span className='value'>
