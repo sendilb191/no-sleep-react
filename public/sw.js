@@ -204,12 +204,14 @@ async function showBatteryNotification(batteryData) {
   const { level, charging } = batteryData;
   const chargingStatus = charging ? 'charging' : 'not charging';
   const now = new Date();
-  const timestamp = now.toLocaleTimeString({
-    hour12: true,
-    hour: 'numeric',
-    minute: '2-digit',
-    second: '2-digit',
-  });
+
+  // Format time manually to ensure seconds are always shown
+  const hours = now.getHours();
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  const seconds = now.getSeconds().toString().padStart(2, '0');
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const displayHours = hours % 12 || 12;
+  const timestamp = `${displayHours}:${minutes}:${seconds} ${ampm}`;
 
   // Build notification body with last notification info
   let bodyText = `Battery: ${level}% (${chargingStatus}) - ${timestamp}\nDevice is staying awake.`;
@@ -219,14 +221,15 @@ async function showBatteryNotification(batteryData) {
     const timeDiff = now - lastTime;
     const minutesAgo = Math.floor(timeDiff / 60000);
     const secondsAgo = Math.floor((timeDiff % 60000) / 1000);
-    const lastTimeStr = lastTime.toLocaleTimeString({
-      hour12: true,
-      hour: 'numeric',
-      minute: '2-digit',
-      second: '2-digit',
-    });
+    // Format last time manually to ensure seconds are always shown
+    const lastHours = lastTime.getHours();
+    const lastMinutes = lastTime.getMinutes().toString().padStart(2, '0');
+    const lastSeconds = lastTime.getSeconds().toString().padStart(2, '0');
+    const lastAmpm = lastHours >= 12 ? 'PM' : 'AM';
+    const lastDisplayHours = lastHours % 12 || 12;
+    const lastTimeStr = `${lastDisplayHours}:${lastMinutes}:${lastSeconds} ${lastAmpm}`;
 
-    bodyText += `\n\nPrevious: ${lastNotification.batteryLevel}% (${lastNotification.chargingStatus}) at ${lastTimeStr}`;
+    bodyText += `\n\nPrevious: ${lastTimeStr}`;
 
     if (minutesAgo > 0) {
       bodyText += ` (${minutesAgo}m ${secondsAgo}s ago)`;
