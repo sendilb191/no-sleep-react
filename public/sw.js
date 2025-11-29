@@ -204,19 +204,36 @@ async function showBatteryNotification(batteryData) {
   const { level, charging } = batteryData;
   const chargingStatus = charging ? 'charging' : 'not charging';
   const now = new Date();
-  const timestamp = now.toLocaleTimeString();
+  const timestamp = now.toLocaleTimeString({
+    hour12: true,
+    hour: 'numeric',
+    minute: '2-digit',
+    second: '2-digit',
+  });
 
   // Build notification body with last notification info
   let bodyText = `Battery: ${level}% (${chargingStatus}) - ${timestamp}\nDevice is staying awake.`;
 
   if (lastNotification.timestamp) {
     const lastTime = new Date(lastNotification.timestamp);
-    const minutesAgo = Math.floor((now - lastTime) / 60000);
-    const lastTimeStr = lastTime.toLocaleTimeString();
+    const timeDiff = now - lastTime;
+    const minutesAgo = Math.floor(timeDiff / 60000);
+    const secondsAgo = Math.floor((timeDiff % 60000) / 1000);
+    const lastTimeStr = lastTime.toLocaleTimeString({
+      hour12: true,
+      hour: 'numeric',
+      minute: '2-digit',
+      second: '2-digit',
+    });
 
     bodyText += `\n\nPrevious: ${lastNotification.batteryLevel}% (${lastNotification.chargingStatus}) at ${lastTimeStr}`;
+
     if (minutesAgo > 0) {
-      bodyText += ` (${minutesAgo}m ago)`;
+      bodyText += ` (${minutesAgo}m ${secondsAgo}s ago)`;
+    } else if (secondsAgo > 0) {
+      bodyText += ` (${secondsAgo}s ago)`;
+    } else {
+      bodyText += ` (just now)`;
     }
   } else {
     bodyText += '\n\nFirst notification of this session';
