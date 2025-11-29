@@ -1,15 +1,43 @@
 # No Sleep React App 🔋
 
-A Progressive Web App (PWA) that prevents your device from going to sleep and provides periodic battery notifications with wake lock functionality.
+A modern Progressive Web App (PWA) that prevents your device from going to sleep while providing comprehensive battery monitoring, smart notifications, and wake lock functionality. Built with React, Vite, and modern web APIs.
 
 ## 🚀 Features
 
-- **Wake Lock API** - Keeps your device screen active and prevents sleep
-- **Battery Monitoring** - Real-time battery level and charging status
-- **Smart Notifications** - Background notifications via Service Worker
-- **Progressive Web App** - Offline capability with caching
-- **Responsive Design** - Works on desktop and mobile devices
-- **Settings Management** - Customizable notification frequency and preferences
+- **🔒 Wake Lock API** - Keeps your device screen active and prevents sleep mode
+- **🔋 Real-time Battery Monitoring** - Live battery level, charging status, and time estimates
+- **📢 Smart Notifications** - Customizable periodic battery alerts via Service Worker
+- **📱 Progressive Web App** - Offline capability, installable, native app experience
+- **🎨 Modern UI/UX** - Clean cadet-blue design with responsive layout
+- **⚙️ Customizable Settings** - Adjustable notification frequency and preferences
+- **🌐 Cross-Platform** - Works seamlessly on desktop, mobile, and tablet devices
+
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend**: React 18 + Vite
+- **Styling**: LESS with CSS Variables
+- **Routing**: React Router DOM with NavLink
+- **PWA**: Service Worker for background notifications
+- **APIs**: Wake Lock API, Battery Status API, Notification API
+- **Build Tool**: Vite with HMR (Hot Module Replacement)
+
+---
+
+## 🎨 Design System
+
+### Color Palette (Cadet Blue Theme)
+
+- **Primary**: `#5f9ea0` (Cadet Blue)
+- **Light Variations**: `#8bb5b7`, `#b7ccce`
+- **Dark Variations**: `#4a7d7f`, `#3a6162`
+
+### Typography
+
+- **Small**: 0.9rem
+- **Medium**: 1rem
+- **Large**: 1.3rem
 
 ---
 

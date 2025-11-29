@@ -10,194 +10,392 @@ const AboutPage = () => {
           <div className='section'>
             <h3>🚀 What is No Sleep?</h3>
             <p>
-              No Sleep is a progressive web application designed to prevent your
-              device from going to sleep while providing comprehensive battery
-              monitoring and notifications. Perfect for presentations,
-              monitoring sessions, or any time you need to keep your screen
-              active.
+              No Sleep is a modern progressive web application designed to
+              prevent your device from going to sleep while providing
+              comprehensive battery monitoring and smart notifications. Built
+              with React 18 and Vite, it offers a native app-like experience
+              with offline capability. Perfect for presentations, monitoring
+              sessions, long-running tasks, or any time you need to keep your
+              screen active and monitor your device's power status.
             </p>
           </div>
 
           <div className='section'>
-            <h3>✨ Key Features</h3>
+            <h3>✨ Core Features</h3>
             <ul>
               <li>
-                <strong>Wake Lock Control:</strong> Prevents your device from
-                sleeping or turning off the screen
+                <strong>🔒 Advanced Wake Lock Control:</strong> Uses the Screen
+                Wake Lock API to prevent your device from sleeping or turning
+                off the screen
               </li>
               <li>
-                <strong>Battery Monitoring:</strong> Real-time battery level,
-                charging status, and time estimates
+                <strong>🔋 Real-time Battery Monitoring:</strong> Live battery
+                level, charging status, time remaining, and visual battery
+                indicator
               </li>
               <li>
-                <strong>Smart Notifications:</strong> Periodic battery status
-                alerts with customizable frequency
+                <strong>📢 Smart Notifications:</strong> Customizable periodic
+                battery status alerts with 1-60 minute intervals via Service
+                Worker
               </li>
               <li>
-                <strong>Progressive Web App:</strong> Install on your device for
-                native app-like experience
+                <strong>📱 Progressive Web App:</strong> Installable on desktop
+                and mobile with offline functionality and native app experience
               </li>
               <li>
-                <strong>Service Worker:</strong> Background notifications even
-                when the app isn't active
+                <strong>⚙️ Comprehensive Settings:</strong> Auto-enable wake
+                lock, notification preferences, and battery threshold alerts
               </li>
               <li>
-                <strong>Cross-Platform:</strong> Works on desktop, mobile, and
-                tablet devices
+                <strong>🎨 Modern Design:</strong> Clean cadet-blue theme with
+                responsive layout and smooth animations
+              </li>
+              <li>
+                <strong>🌐 Cross-Platform Compatibility:</strong> Works
+                seamlessly on desktop, mobile, and tablet devices
               </li>
             </ul>
           </div>
 
           <div className='section'>
-            <h3>🔋 Battery Features</h3>
+            <h3>🔧 Technical Architecture</h3>
             <ul>
               <li>
-                <strong>Real-time Level:</strong> Live battery percentage with
-                visual indicator
+                <strong>Frontend Framework:</strong> React 18 with modern hooks
+                and context API
               </li>
               <li>
-                <strong>Charging Detection:</strong> Automatically detects when
-                device is plugged in
+                <strong>Build System:</strong> Vite for lightning-fast
+                development and optimized builds
               </li>
               <li>
-                <strong>Time Estimation:</strong> Smart calculation of remaining
-                battery time
+                <strong>Styling:</strong> LESS preprocessor with CSS variables
+                for consistent theming
               </li>
               <li>
-                <strong>Notification Alerts:</strong> Customizable periodic
-                battery status updates
+                <strong>Routing:</strong> React Router DOM with NavLink for SPA
+                navigation
               </li>
               <li>
-                <strong>Historical Tracking:</strong> Shows previous
-                notification timestamps
+                <strong>State Management:</strong> Context API with custom hooks
+                for global state
+              </li>
+              <li>
+                <strong>PWA Features:</strong> Service Worker for background
+                tasks and caching
               </li>
             </ul>
           </div>
 
           <div className='section'>
-            <h3>🔧 Technical Details</h3>
+            <h3>🌐 Web APIs Used</h3>
             <ul>
               <li>
-                <strong>Built with:</strong> React, Vite, and modern web APIs
+                <strong>Screen Wake Lock API:</strong> Prevents device sleep and
+                screen dimming
               </li>
               <li>
-                <strong>Wake Lock API:</strong> Uses Screen Wake Lock API for
-                preventing sleep
+                <strong>Battery Status API:</strong> Monitors battery level and
+                charging state
               </li>
               <li>
-                <strong>Battery API:</strong> Leverages Navigator Battery API
-                for power monitoring
-              </li>
-              <li>
-                <strong>Service Worker:</strong> Background processing for
+                <strong>Notification API:</strong> Sends system-level
                 notifications
               </li>
               <li>
-                <strong>Local Storage:</strong> Persistent settings and
+                <strong>Service Worker API:</strong> Enables background
+                processing and caching
+              </li>
+              <li>
+                <strong>Local Storage API:</strong> Persists user settings and
                 preferences
               </li>
+            </ul>
+          </div>
+
+          <div className='section'>
+            <h3>🔋 Advanced Battery Monitoring</h3>
+            <ul>
               <li>
-                <strong>Responsive Design:</strong> Optimized for all screen
-                sizes
+                <strong>Live Battery Percentage:</strong> Real-time battery
+                level with animated visual indicator and color-coded status
+              </li>
+              <li>
+                <strong>Charging State Detection:</strong> Automatically detects
+                when device is plugged in or unplugged with visual feedback
+              </li>
+              <li>
+                <strong>Smart Time Estimation:</strong> Calculates remaining
+                battery time and charging time based on current usage patterns
+              </li>
+              <li>
+                <strong>Customizable Alerts:</strong> Set notification intervals
+                from 1-60 minutes for periodic battery status updates
+              </li>
+              <li>
+                <strong>Historical Tracking:</strong> View previous notification
+                timestamps and battery status history
+              </li>
+              <li>
+                <strong>Low Battery Warnings:</strong> Configurable threshold
+                alerts when battery reaches critical levels
               </li>
             </ul>
           </div>
 
           <div className='section'>
-            <h3>🎯 Use Cases</h3>
-            <ul>
-              <li>
-                <strong>Presentations:</strong> Keep screen active during
-                meetings or demos
-              </li>
-              <li>
-                <strong>Monitoring:</strong> Watch dashboards or live data
-                without interruption
-              </li>
-              <li>
-                <strong>Media Consumption:</strong> Prevent sleep during video
-                calls or streaming
-              </li>
-              <li>
-                <strong>Development:</strong> Keep development environments
-                active
-              </li>
-              <li>
-                <strong>Kiosk Mode:</strong> Public displays or information
-                screens
-              </li>
-            </ul>
-          </div>
-
-          <div className='section'>
-            <h3>⚙️ Settings & Customization</h3>
-            <ul>
-              <li>
-                <strong>Wake Lock Toggle:</strong> Easy on/off control for
-                screen wake lock
-              </li>
-              <li>
-                <strong>Notification Settings:</strong> Enable/disable battery
-                alerts
-              </li>
-              <li>
-                <strong>Frequency Control:</strong> Choose notification
-                intervals (1-30 minutes)
-              </li>
-              <li>
-                <strong>Permission Management:</strong> Handles browser
-                permissions gracefully
-              </li>
-              <li>
-                <strong>Persistent Storage:</strong> Remembers your preferences
-                across sessions
-              </li>
-            </ul>
+            <h3>🌍 Browser Compatibility</h3>
+            <div className='compatibility-grid'>
+              <div className='browser-support'>
+                <h4>✅ Full Support</h4>
+                <ul>
+                  <li>
+                    <strong>Chrome/Chromium:</strong> 84+ (Wake Lock API)
+                  </li>
+                  <li>
+                    <strong>Microsoft Edge:</strong> 84+ (Wake Lock API)
+                  </li>
+                  <li>
+                    <strong>All Modern Browsers:</strong> PWA & Service Worker
+                  </li>
+                </ul>
+              </div>
+              <div className='browser-support'>
+                <h4>⚠️ Partial Support</h4>
+                <ul>
+                  <li>
+                    <strong>Firefox:</strong> PWA features, no Wake Lock API
+                  </li>
+                  <li>
+                    <strong>Safari:</strong> PWA features, no Wake Lock API
+                  </li>
+                  <li>
+                    <strong>Battery API:</strong> Deprecated but functional
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
 
           <div className='section'>
             <h3>🔒 Privacy & Security</h3>
             <ul>
               <li>
-                <strong>No Data Collection:</strong> All data stays on your
-                device
+                <strong>No Data Collection:</strong> The app doesn't collect,
+                store, or transmit any personal information
               </li>
               <li>
-                <strong>Local Storage Only:</strong> No external servers or
-                databases
+                <strong>Local Storage Only:</strong> All settings and
+                preferences are stored locally on your device
               </li>
               <li>
-                <strong>Open Source Ready:</strong> Transparent codebase
+                <strong>No External Services:</strong> Fully self-contained
+                application with no third-party dependencies
               </li>
               <li>
-                <strong>Permission Based:</strong> Only requests necessary
-                browser permissions
+                <strong>Secure Context Required:</strong> Uses HTTPS for
+                production deployment ensuring secure API access
               </li>
               <li>
-                <strong>Offline Capable:</strong> Works without internet
-                connection
+                <strong>Permission-Based:</strong> Requests explicit permission
+                for notifications and wake lock features
               </li>
             </ul>
           </div>
 
           <div className='section'>
-            <h3>📱 Installation</h3>
+            <h3>🎯 Perfect Use Cases</h3>
+            <ul>
+              <li>
+                <strong>📊 Presentations & Demos:</strong> Keep screen active
+                during meetings, presentations, or live demonstrations
+              </li>
+              <li>
+                <strong>🖥️ Monitoring & Dashboards:</strong> Watch real-time
+                data, server monitoring, or analytics without screen
+                interruption
+              </li>
+              <li>
+                <strong>🎥 Media & Video Calls:</strong> Prevent sleep during
+                long video conferences, webinars, or streaming sessions
+              </li>
+              <li>
+                <strong>💻 Development Work:</strong> Keep development
+                environments and IDEs active during long compilation or testing
+                processes
+              </li>
+              <li>
+                <strong>🏪 Kiosk & Display Mode:</strong> Perfect for public
+                displays, information screens, or interactive installations
+              </li>
+              <li>
+                <strong>🔋 Battery Monitoring:</strong> Keep track of device
+                power status during critical operations or extended usage
+              </li>
+            </ul>
+          </div>
+
+          <div className='section'>
+            <h3>⚙️ Comprehensive Settings</h3>
+            <ul>
+              <li>
+                <strong>🔒 Wake Lock Control:</strong> Easy toggle for screen
+                wake lock with auto-enable option on app startup
+              </li>
+              <li>
+                <strong>🔔 Smart Notifications:</strong> Enable/disable battery
+                alerts with customizable frequency from 1-60 minutes
+              </li>
+              <li>
+                <strong>⚡ Battery Thresholds:</strong> Set custom low battery
+                warning levels and charging notifications
+              </li>
+              <li>
+                <strong>🎨 Visual Preferences:</strong> Modern cadet-blue theme
+                with responsive design for all screen sizes
+              </li>
+              <li>
+                <strong>💾 Persistent Storage:</strong> All settings remembered
+                across browser sessions and app restarts
+              </li>
+              <li>
+                <strong>🛡️ Permission Management:</strong> Graceful handling of
+                browser permissions with clear user prompts
+              </li>
+            </ul>
+          </div>
+
+          <div className='section'>
+            <h3>🚀 Performance & Optimization</h3>
+            <ul>
+              <li>
+                <strong>⚡ Vite Build System:</strong> Lightning-fast
+                development with optimized production builds and tree-shaking
+              </li>
+              <li>
+                <strong>🔄 Efficient Updates:</strong> Smart re-rendering with
+                React hooks and context optimization
+              </li>
+              <li>
+                <strong>📦 Code Splitting:</strong> Lazy loading for optimal
+                performance and reduced initial bundle size
+              </li>
+              <li>
+                <strong>🗄️ Service Worker Caching:</strong> Intelligent caching
+                strategy for faster load times and offline functionality
+              </li>
+              <li>
+                <strong>📱 Mobile Optimized:</strong> Touch-friendly interface
+                with responsive design and PWA features
+              </li>
+            </ul>
+          </div>
+
+          <div className='section'>
+            <h3>📱 PWA Installation Guide</h3>
             <p>
-              This app can be installed as a Progressive Web App (PWA) on your
-              device:
+              Install No Sleep as a Progressive Web App for the best experience:
+            </p>
+
+            <div className='installation-guide'>
+              <div className='install-method'>
+                <h4>🖥️ Desktop Installation</h4>
+                <ul>
+                  <li>
+                    Look for the install icon (⊕) in your browser's address bar
+                  </li>
+                  <li>Click "Install No Sleep" when prompted</li>
+                  <li>The app will be added to your desktop and start menu</li>
+                </ul>
+              </div>
+
+              <div className='install-method'>
+                <h4>📱 Mobile Installation</h4>
+                <ul>
+                  <li>
+                    <strong>Android:</strong> Tap menu (⋮) → "Install app" or
+                    "Add to Home screen"
+                  </li>
+                  <li>
+                    <strong>iOS:</strong> Tap share button (□↗) → "Add to Home
+                    Screen"
+                  </li>
+                  <li>The app icon will appear on your home screen</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className='pwa-benefits'>
+              <h4>✨ PWA Benefits</h4>
+              <ul>
+                <li>
+                  <strong>🚀 Faster Loading:</strong> Instant app startup from
+                  your home screen
+                </li>
+                <li>
+                  <strong>📴 Offline Access:</strong> Core functionality works
+                  without internet
+                </li>
+                <li>
+                  <strong>🔔 Native Notifications:</strong> System-level battery
+                  alerts
+                </li>
+                <li>
+                  <strong>💾 Automatic Updates:</strong> Always get the latest
+                  features
+                </li>
+                <li>
+                  <strong>🎯 Full-Screen Experience:</strong> Native app-like
+                  interface
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className='section'>
+            <h3>🤝 Open Source & Contributing</h3>
+            <p>
+              No Sleep is built with modern web technologies and designed to be
+              transparent, secure, and community-driven:
             </p>
             <ul>
               <li>
-                <strong>Desktop:</strong> Click the install button in your
-                browser's address bar
+                <strong>📂 GitHub Repository:</strong> Full source code
+                available for review and contributions
               </li>
               <li>
-                <strong>Mobile:</strong> Use "Add to Home Screen" from your
-                browser menu
+                <strong>🐛 Issue Reporting:</strong> Found a bug or have a
+                suggestion? Create an issue on GitHub
               </li>
               <li>
-                <strong>Benefits:</strong> Native app experience, faster
-                loading, offline access
+                <strong>🔧 Feature Requests:</strong> Help shape the future of
+                the app with your ideas and feedback
+              </li>
+              <li>
+                <strong>📄 MIT License:</strong> Free and open source software
+                that respects your freedom
+              </li>
+            </ul>
+          </div>
+
+          <div className='section'>
+            <h3>📞 Support & Resources</h3>
+            <ul>
+              <li>
+                <strong>🌐 Web APIs Documentation:</strong> Learn more about
+                Wake Lock API and Battery Status API on MDN
+              </li>
+              <li>
+                <strong>💬 Community Support:</strong> Join discussions and get
+                help from other users
+              </li>
+              <li>
+                <strong>🔄 Updates:</strong> Regular updates with new features
+                and improvements
+              </li>
+              <li>
+                <strong>🛡️ Security:</strong> Report security issues responsibly
+                through proper channels
               </li>
             </ul>
           </div>
