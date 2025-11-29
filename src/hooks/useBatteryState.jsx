@@ -42,14 +42,14 @@ const useBatteryState = (
       if (Notification.permission === 'granted') {
         new Notification('No Sleep - Battery Status 🔋', {
           body: message,
-          icon: '/favicon.ico',
+          icon: '/no-sleep.svg',
         });
       } else if (Notification.permission !== 'denied') {
         Notification.requestPermission().then(permission => {
           if (permission === 'granted') {
             new Notification('No Sleep - Battery Status 🔋', {
               body: message,
-              icon: '/favicon.ico',
+              icon: '/no-sleep.svg',
             });
           }
         });

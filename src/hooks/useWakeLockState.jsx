@@ -4,7 +4,6 @@ const useWakeLockState = () => {
   const [wakeLock, setWakeLock] = useState(null);
   const [isActive, setIsActive] = useState(false);
   const initialized = useRef(false);
-  const userWantsWakeLock = useRef(false);
 
   const requestWakeLock = useCallback(async () => {
     // Prevent multiple wake lock requests
@@ -24,8 +23,6 @@ const useWakeLockState = () => {
           setIsActive(false);
           setWakeLock(null);
         });
-
-        userWantsWakeLock.current = true;
       } else {
         console.log('Wake Lock API is not supported in this browser');
       }
@@ -40,7 +37,6 @@ const useWakeLockState = () => {
       setWakeLock(null);
       setIsActive(false);
       localStorage.setItem('wakeLockActive', 'false');
-      userWantsWakeLock.current = false;
     }
   }, [wakeLock]);
 
@@ -59,33 +55,9 @@ const useWakeLockState = () => {
 
     const savedWakeLockState = localStorage.getItem('wakeLockActive');
     if (savedWakeLockState === 'true') {
-      userWantsWakeLock.current = true;
       requestWakeLock();
-    } else {
-      userWantsWakeLock.current = false;
-      setIsActive(false);
     }
   }, [requestWakeLock]);
-
-  // Handle page visibility changes to re-request wake lock if needed
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (
-        document.visibilityState === 'visible' &&
-        userWantsWakeLock.current &&
-        !wakeLock
-      ) {
-        // Re-request wake lock when page becomes visible again and user wants it
-        requestWakeLock();
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [wakeLock, requestWakeLock]);
 
   // Only cleanup wake lock on component unmount (not on every wakeLock change)
   useEffect(() => {
