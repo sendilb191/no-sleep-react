@@ -18,6 +18,15 @@
 }
 
 :root {
+  /* Cadet Blue Color System */
   --cadet-blue: #5f9ea0;
+  --cadet-blue-light: #8bb5b7;
+  --cadet-blue-lighter: #b7ccce;
+  --cadet-blue-dark: #4a7d7f;
   --cadet-blue-darker: #3a6162;
+
+  /* Global Font Sizes */
+  --font-size-small: 0.9rem;
+  --font-size-medium: 1rem;
+  --font-size-large: 1.3rem;
 }
