@@ -1,15 +1,7 @@
-import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.jsx';
-import { initializeRouting } from './utils/routing.js';
 
 import './root.css';
+import './index.less';
 
-// Initialize routing mode detection
-initializeRouting();
-
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <App />
-  </StrictMode>
-);
+createRoot(document.getElementById('root')).render(<App />);
