@@ -28,7 +28,22 @@ const SettingPage = () => {
   return (
     <main className='page'>
       <section className='settings-card'>
-        <h2>🔋 Battery</h2>
+        <h2>⚙️ Settings</h2>
+
+        <label className='toggle-setting'>
+          <input
+            type='checkbox'
+            checked={isWakeLockActive}
+            onChange={handleWakeLockToggle}
+          />
+          <div className='toggle-content'>
+            <span className='setting-title'>Keep Screen Awake</span>
+            <span className='setting-desc'>
+              Prevent device from going to sleep
+            </span>
+          </div>
+        </label>
+
         <label className='toggle-setting'>
           <input
             type='checkbox'
@@ -62,31 +77,14 @@ const SettingPage = () => {
                 </select>
               </label>
             </div>
-
-            <div className='setting-group'>
-              <button onClick={handleTestNotification} className='test-button'>
-                🧪 Test Notification
-              </button>
-            </div>
           </>
         )}
-      </section>
 
-      <section className='settings-card'>
-        <h2>🔒 Wake Lock</h2>
-        <label className='toggle-setting'>
-          <input
-            type='checkbox'
-            checked={isWakeLockActive}
-            onChange={handleWakeLockToggle}
-          />
-          <div className='toggle-content'>
-            <span className='setting-title'>Keep Screen Awake</span>
-            <span className='setting-desc'>
-              Prevent device from going to sleep
-            </span>
-          </div>
-        </label>
+        <div className='setting-group'>
+          <button onClick={handleTestNotification} className='test-button'>
+            🧪 Test Notification
+          </button>
+        </div>
       </section>
     </main>
   );
