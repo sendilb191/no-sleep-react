@@ -78,6 +78,16 @@ class ServiceWorkerManager {
     this.sendMessage('CURRENT_BATTERY_STATUS', batteryData);
   }
 
+  // Update notification settings in service worker
+  updateNotificationSettings(settings) {
+    this.sendMessage('UPDATE_NOTIFICATION_SETTINGS', settings);
+  }
+
+  // Test notification via service worker
+  testNotification(batteryData) {
+    this.sendMessage('TEST_NOTIFICATION', batteryData);
+  }
+
   // Cancel notifications
   cancelNotifications() {
     this.sendMessage('CANCEL_NOTIFICATIONS');

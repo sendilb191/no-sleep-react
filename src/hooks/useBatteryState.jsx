@@ -12,8 +12,6 @@ const useBatteryState = (
     dischargingTime: null,
     supported: false,
   });
-  const lastNotificationRef = useRef(0);
-  const notificationIntervalRef = useRef(null);
 
   // Helper function to format time in seconds to readable format
   const formatTime = useCallback(seconds => {
@@ -33,37 +31,9 @@ const useBatteryState = (
     }
   }, []);
 
-  // Function to show notification
-  const showBatteryNotification = useCallback((level, isCharging = true) => {
-    if ('Notification' in window) {
-      const chargingStatus = isCharging ? 'charging' : 'not charging';
-      const message = `Battery level: ${level}% - Device is ${chargingStatus} and staying awake.`;
+  // All notifications are now handled by service worker
 
-      if (Notification.permission === 'granted') {
-        new Notification('No Sleep - Battery Status 🔋', {
-          body: message,
-          icon: '/no-sleep.svg',
-        });
-      } else if (Notification.permission !== 'denied') {
-        Notification.requestPermission().then(permission => {
-          if (permission === 'granted') {
-            new Notification('No Sleep - Battery Status 🔋', {
-              body: message,
-              icon: '/no-sleep.svg',
-            });
-          }
-        });
-      }
-    }
-  }, []);
-
-  // Clear existing interval when frequency changes
-  useEffect(() => {
-    if (notificationIntervalRef.current) {
-      clearInterval(notificationIntervalRef.current);
-      notificationIntervalRef.current = null;
-    }
-  }, [notificationFrequency]);
+  // Settings are now managed entirely by service worker
 
   // Battery initialization effect
   useEffect(() => {
@@ -173,31 +143,20 @@ const useBatteryState = (
     };
   }, [batteryInfo.level, batteryInfo.charging]);
 
-  // Cleanup intervals on unmount
+  // Cleanup on unmount - notify service worker to stop notifications
   useEffect(() => {
     return () => {
-      if (notificationIntervalRef.current) {
-        clearInterval(notificationIntervalRef.current);
-      }
+      swManager.updateNotificationSettings({ enabled: false, frequency: 5 });
     };
   }, []);
 
-  // Test notification function
+  // Test notification function - delegate to service worker
   const testNotification = useCallback(() => {
-    // First try to show via service worker for more reliable delivery
-    if (swManager.registration && swManager.registration.active) {
-      swManager.sendBatteryStatus({
-        level: batteryInfo.level || 85,
-        charging: batteryInfo.charging !== null ? batteryInfo.charging : true,
-      });
-    } else {
-      // Fallback to direct notification
-      showBatteryNotification(
-        batteryInfo.level || 85,
-        batteryInfo.charging !== null ? batteryInfo.charging : true
-      );
-    }
-  }, [showBatteryNotification, batteryInfo.level, batteryInfo.charging]);
+    swManager.testNotification({
+      level: batteryInfo.level || 85,
+      charging: batteryInfo.charging !== null ? batteryInfo.charging : true,
+    });
+  }, [batteryInfo.level, batteryInfo.charging]);
 
   return {
     ...batteryInfo,
