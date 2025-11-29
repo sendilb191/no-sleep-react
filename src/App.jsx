@@ -1,8 +1,8 @@
 import React from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
-import HomePage from './pages/HomePage/index.jsx';
+import HomePage from './pages/HomePage.jsx';
 import SettingPage from './pages/SettingPage.jsx';
-import Navigation from './pages/Navigation/index.jsx';
+import Navigation from './pages/Navigation.jsx';
 import { SettingsProvider } from './contexts/SettingsContext.jsx';
 import './styles/page.less';
 
@@ -10,7 +10,12 @@ function App() {
   return (
     <SettingsProvider>
       <div className='app-container'>
-        <HashRouter>
+        <HashRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
           <Navigation />
           <section>
             <Routes>
