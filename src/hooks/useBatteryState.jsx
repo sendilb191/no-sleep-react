@@ -97,50 +97,27 @@ const useBatteryState = (
     };
 
     getBatteryInfo();
-  }, [formatTime, showBatteryNotification]); // Removed batteryNotificationsEnabled and notificationFrequency to prevent re-initialization
+  }, [formatTime]); // Battery initialization effect
 
-  // Set up service worker notifications when settings change
+  // Send notification settings to service worker when they change
   useEffect(() => {
-    if (batteryNotificationsEnabled && batteryInfo.level !== null) {
-      // Schedule notifications through service worker
-      swManager.scheduleNotification({
-        frequency: notificationFrequency,
-        batteryLevel: batteryInfo.level,
-        isCharging: batteryInfo.charging,
-        enabled: true,
+    // Always send current settings to service worker, let it decide what to do
+    swManager.updateNotificationSettings({
+      enabled: batteryNotificationsEnabled,
+      frequency: notificationFrequency,
+      batteryLevel: batteryInfo.level,
+      isCharging: batteryInfo.charging,
+    });
+  }, [batteryNotificationsEnabled, notificationFrequency]);
+
+  // Send battery status updates to service worker
+  useEffect(() => {
+    if (batteryInfo.level !== null) {
+      swManager.sendBatteryStatus({
+        level: batteryInfo.level,
+        charging: batteryInfo.charging,
       });
-    } else {
-      // Cancel notifications when disabled
-      swManager.cancelNotifications();
     }
-  }, [
-    batteryNotificationsEnabled,
-    notificationFrequency,
-    batteryInfo.level,
-    batteryInfo.charging,
-  ]);
-
-  // Listen for service worker battery status requests
-  useEffect(() => {
-    const handleBatteryStatusRequest = () => {
-      if (batteryInfo.level !== null) {
-        swManager.sendBatteryStatus({
-          level: batteryInfo.level,
-          charging: batteryInfo.charging,
-        });
-      }
-    };
-
-    window.addEventListener(
-      'sw-request-battery-status',
-      handleBatteryStatusRequest
-    );
-    return () => {
-      window.removeEventListener(
-        'sw-request-battery-status',
-        handleBatteryStatusRequest
-      );
-    };
   }, [batteryInfo.level, batteryInfo.charging]);
 
   // Cleanup on unmount - notify service worker to stop notifications
