@@ -106,28 +106,6 @@ const SettingPage = () => {
             🧪 Test Notification
           </button>
         </div>
-
-        <div className='setting-group'>
-          <div className='status-info'>
-            <h4>System Status</h4>
-            <p>
-              Notification Permission:{' '}
-              {'Notification' in window
-                ? Notification.permission === 'granted'
-                  ? '✅ Granted'
-                  : Notification.permission === 'denied'
-                    ? '❌ Denied'
-                    : '⚠️ Not Requested'
-                : '❌ Not Supported'}
-            </p>
-            <p>
-              Service Worker:{' '}
-              {'serviceWorker' in navigator
-                ? '✅ Supported'
-                : '❌ Not Supported'}
-            </p>
-          </div>
-        </div>
       </section>
     </main>
   );
