@@ -1,14 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import useWakeLock from '../../hooks/useWakeLock';
+import React from 'react';
 import './HomePage.less';
-import useBattery from '../../hooks/useBattery';
 import AnimatedBattery from '../../components/AnimatedBattery';
+import { useSettings } from '../../contexts/SettingsContext';
 
 const HomePage = () => {
-  const { isActive, handleToggle } = useWakeLock();
-  const batteryInfo = useBattery();
-
-  console.log('batteryInfo', batteryInfo);
+  const { settings, isWakeLockActive, batteryInfo } = useSettings();
 
   return (
     <div className='home-page'>
@@ -17,23 +13,20 @@ const HomePage = () => {
         <div className='battery-display'>
           <div>
             <p>🔋 Battery Level: {batteryInfo.level}%</p>
-            <p>⚡ Charging: {batteryInfo.charging ? '🔌 Yes' : '🔋 No'}</p>
+            <p>⚡ Charging: {batteryInfo.charging ? 'Yes' : 'No'}</p>
             <p>🕐 Discharging Time: {batteryInfo.dischargingTimeFormatted}</p>
-          </div>
-          <div className='battery-animation-container'>
-            <AnimatedBattery
-              level={batteryInfo.level || 0}
-              charging={batteryInfo.charging || false}
-            />
+            <p>
+              🔔 Notifications:{' '}
+              {settings.batteryNotificationsEnabled ? 'Enabled' : 'Disabled'}
+            </p>
           </div>
         </div>
       </section>
 
       <section className='wake-lock'>
-        <h2>Wake Lock Info </h2>
-        <div className='lock-status flex'>
-          <span>Status: {isActive ? '🔒 Active' : '💤 Sleeping'}</span>
-          <input type='checkbox' checked={isActive} onChange={handleToggle} />
+        <h2>Wake Lock Status</h2>
+        <div className='status-display'>
+          <p>Status: {isWakeLockActive ? 'Active' : 'Sleeping'}</p>
         </div>
       </section>
     </div>
