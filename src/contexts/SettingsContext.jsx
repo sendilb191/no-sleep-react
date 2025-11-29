@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+} from 'react';
 import useWakeLockState from '../hooks/useWakeLockState';
 import useBatteryState from '../hooks/useBatteryState';
 
@@ -13,6 +19,7 @@ export const useSettings = () => {
 };
 
 export const SettingsProvider = ({ children }) => {
+  const hasRequestedPermission = useRef(false);
   const [appSettings, setAppSettings] = useState(() => {
     // Initialize app settings from localStorage on first render
     try {
@@ -117,8 +124,12 @@ export const SettingsProvider = ({ children }) => {
 
   // Request notification permission on first load if notifications are enabled
   useEffect(() => {
-    if (appSettings.battery.notificationsEnabled) {
+    if (
+      appSettings.battery.notificationsEnabled &&
+      !hasRequestedPermission.current
+    ) {
       if ('Notification' in window && Notification.permission === 'default') {
+        hasRequestedPermission.current = true;
         Notification.requestPermission().then(permission => {
           console.log('Notification permission:', permission);
         });
