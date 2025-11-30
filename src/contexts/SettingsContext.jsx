@@ -8,6 +8,7 @@ import React, {
 import useWakeLockState from '../hooks/useWakeLockState';
 import useBatteryState from '../hooks/useBatteryState';
 import { requestNotificationPermissionOnly } from '../utils/notificationUtils';
+import { DEFAULT_APP_SETTINGS, STORAGE_KEYS } from '../constants/appConstants';
 
 const SettingsContext = createContext();
 
@@ -22,90 +23,37 @@ export const useSettings = () => {
 export const SettingsProvider = ({ children }) => {
   const hasRequestedPermission = useRef(false);
   const [appSettings, setAppSettings] = useState(() => {
-    // Initialize app settings from localStorage on first render
+    // Initialize app settings from localStorage
     try {
-      const savedSettings = localStorage.getItem('app-settings');
+      const savedSettings = localStorage.getItem(STORAGE_KEYS.APP_SETTINGS);
       if (savedSettings) {
         const parsedSettings = JSON.parse(savedSettings);
 
-        // Handle migration from old flat structure to new nested structure
-        if (
-          parsedSettings.batteryNotificationsEnabled !== undefined ||
-          parsedSettings.notificationFrequency !== undefined ||
-          parsedSettings.wakeLockActive !== undefined
-        ) {
-          // Migrate from old flat structure - only use the nested structure, ignore old flat keys
-          const migratedSettings = {
-            battery: {
-              notificationsEnabled:
-                parsedSettings.batteryNotificationsEnabled ??
-                parsedSettings.battery?.notificationsEnabled ??
-                true,
-              notificationFrequency:
-                parsedSettings.notificationFrequency ??
-                parsedSettings.battery?.notificationFrequency ??
-                5,
-            },
-            wakeLock: {
-              active:
-                parsedSettings.wakeLockActive ??
-                parsedSettings.wakeLock?.active ??
-                false,
-            },
-          };
-
-          // Save the migrated structure immediately to clean up localStorage
-          localStorage.setItem(
-            'app-settings',
-            JSON.stringify(migratedSettings)
-          );
-
-          // Clean up old localStorage keys
-          localStorage.removeItem('wakeLockActive');
-
-          return migratedSettings;
-        }
-
-        // If already in new structure, return as is (but ensure it has the correct structure)
+        // Ensure the settings have the correct structure
         if (parsedSettings.battery && parsedSettings.wakeLock) {
           return {
             battery: {
               notificationsEnabled:
-                parsedSettings.battery.notificationsEnabled ?? true,
+                parsedSettings.battery.notificationsEnabled ??
+                DEFAULT_APP_SETTINGS.battery.notificationsEnabled,
               notificationFrequency:
-                parsedSettings.battery.notificationFrequency ?? 5,
+                parsedSettings.battery.notificationFrequency ??
+                DEFAULT_APP_SETTINGS.battery.notificationFrequency,
             },
             wakeLock: {
-              active: parsedSettings.wakeLock.active ?? false,
+              active:
+                parsedSettings.wakeLock.active ??
+                DEFAULT_APP_SETTINGS.wakeLock.active,
             },
           };
         }
-
-        // Fallback for any other case
-        return {
-          battery: {
-            notificationsEnabled: true,
-            notificationFrequency: 5,
-          },
-          wakeLock: {
-            active: false,
-          },
-        };
       }
     } catch (error) {
       console.error('Error loading settings from localStorage:', error);
     }
 
-    // Return default app settings if no saved settings or error
-    return {
-      battery: {
-        notificationsEnabled: true,
-        notificationFrequency: 5, // minutes between notifications
-      },
-      wakeLock: {
-        active: false,
-      },
-    };
+    // Return default settings
+    return DEFAULT_APP_SETTINGS;
   });
 
   // Use custom hooks with app-settings integration
@@ -137,7 +85,10 @@ export const SettingsProvider = ({ children }) => {
   // Save app settings to localStorage whenever they change
   useEffect(() => {
     try {
-      localStorage.setItem('app-settings', JSON.stringify(appSettings));
+      localStorage.setItem(
+        STORAGE_KEYS.APP_SETTINGS,
+        JSON.stringify(appSettings)
+      );
     } catch (error) {
       console.error('Error saving settings to localStorage:', error);
     }
