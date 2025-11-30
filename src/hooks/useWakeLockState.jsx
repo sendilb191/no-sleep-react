@@ -1,163 +1,119 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+﻿import { useState, useEffect, useCallback, useRef } from 'react';
 
 const useWakeLockState = (initialActive = false, onActiveChange = null) => {
   const [wakeLock, setWakeLock] = useState(null);
-  const [isActive, setIsActive] = useState(initialActive);
-  const initialized = useRef(false);
-  const wasActiveBeforeHidden = useRef(false);
+  const [isActive, setIsActive] = useState(false);
+  const shouldBeActive = useRef(initialActive);
   const userHasInteracted = useRef(false);
 
-  // Log wake lock status changes
+  // Update shouldBeActive when initialActive changes
   useEffect(() => {
-    if (initialized.current) {
-      console.log(
-        `📱 WAKE LOCK STATUS: ${isActive ? 'ENABLED ✅' : 'DISABLED ❌'}`
-      );
-    }
-  }, [isActive]);
+    shouldBeActive.current = initialActive;
+  }, [initialActive]);
 
-  const requestWakeLock = useCallback(async () => {
-    // Prevent multiple wake lock requests
-    if (wakeLock || isActive) {
+  // Acquire wake lock - simplified version based on working code
+  const acquireWakeLock = useCallback(async () => {
+    // Check if page is visible before requesting wake lock
+    if (document.visibilityState === 'hidden') {
+      console.log('Cannot acquire wake lock: page is not visible');
       return;
     }
 
-    // Check if page is visible and we have user interaction
-    if (document.visibilityState !== 'visible') {
-      console.log('Wake Lock cannot be requested: page not visible');
+    // Check if wake lock is supported
+    if (!('wakeLock' in navigator)) {
+      console.log('Wake Lock API not supported');
+      return;
+    }
+
+    // Don't acquire if already active
+    if (wakeLock) {
+      console.log('Wake lock already active');
       return;
     }
 
     try {
-      if ('wakeLock' in navigator) {
-        const lock = await navigator.wakeLock.request('screen');
-        setWakeLock(lock);
-        setIsActive(true);
-        onActiveChange?.(true);
-        console.log('🔒 WAKE LOCK ENABLED - Device will stay awake');
+      const lock = await navigator.wakeLock.request('screen');
+      setWakeLock(lock);
+      setIsActive(true);
+      onActiveChange?.(true);
+      console.log('🔒 Wake lock acquired');
 
-        // Handle wake lock release events
-        lock.addEventListener('release', () => {
-          console.log(
-            '🔓 WAKE LOCK DISABLED (by system) - Device can sleep normally'
-          );
-          setIsActive(false);
-          setWakeLock(null);
-          // Don't update app-settings when system releases wake lock
-          // This keeps the user's intent to have wake lock active
-        });
-      } else {
-        console.log('Wake Lock API is not supported in this browser');
-      }
-    } catch (error) {
-      console.error('Failed to activate Wake Lock:', error);
-
-      // If error is due to page visibility or user activation, provide helpful message
-      if (error.name === 'NotAllowedError') {
+      lock.addEventListener('release', () => {
+        setWakeLock(null);
+        setIsActive(false);
+        onActiveChange?.(false);
+        console.log('🔓 Wake lock released');
+      });
+    } catch (err) {
+      if (err.name === 'NotAllowedError') {
         console.log(
-          'Wake Lock requires page to be visible and user interaction. Try clicking on the page first.'
+          'Wake lock not allowed: Page might not be visible or user denied permission'
         );
+      } else {
+        console.error(`Could not acquire wake lock: ${err}`);
       }
-    }
-  }, [wakeLock, isActive]);
-
-  const releaseWakeLock = useCallback(async () => {
-    if (wakeLock) {
-      await wakeLock.release();
-      setWakeLock(null);
-      setIsActive(false);
-      onActiveChange?.(false);
-      console.log('🔓 WAKE LOCK DISABLED - Device can sleep normally');
     }
   }, [wakeLock, onActiveChange]);
 
+  // Release wake lock
+  const releaseWakeLock = useCallback(async () => {
+    if (wakeLock) {
+      try {
+        await wakeLock.release();
+        setWakeLock(null);
+        setIsActive(false);
+        onActiveChange?.(false);
+        console.log('🔓 Wake lock manually released');
+      } catch (err) {
+        console.error(`Could not release wake lock: ${err}`);
+      }
+    }
+  }, [wakeLock, onActiveChange]);
+
+  // Toggle wake lock
   const toggleWakeLock = useCallback(() => {
     if (isActive) {
-      console.log('👤 User manually disabling wake lock');
+      console.log('👤 Disabling wake lock');
       releaseWakeLock();
     } else {
-      console.log('👤 User manually enabling wake lock');
-      requestWakeLock();
+      console.log('👤 Enabling wake lock');
+      acquireWakeLock();
     }
-  }, [isActive, releaseWakeLock, requestWakeLock]);
+  }, [isActive, releaseWakeLock, acquireWakeLock]);
 
   // Track user interaction for wake lock activation
   useEffect(() => {
     const handleUserInteraction = () => {
       userHasInteracted.current = true;
+      console.log('👤 User interaction detected');
     };
 
-    // Listen for various user interaction events
-    document.addEventListener('click', handleUserInteraction, { once: true });
-    document.addEventListener('keydown', handleUserInteraction, { once: true });
-    document.addEventListener('touchstart', handleUserInteraction, {
-      once: true,
+    const events = ['click', 'keydown', 'touchstart', 'mousedown'];
+    events.forEach(event => {
+      document.addEventListener(event, handleUserInteraction, {
+        once: true,
+        passive: true,
+      });
     });
 
     return () => {
-      document.removeEventListener('click', handleUserInteraction);
-      document.removeEventListener('keydown', handleUserInteraction);
-      document.removeEventListener('touchstart', handleUserInteraction);
+      events.forEach(event => {
+        document.removeEventListener(event, handleUserInteraction);
+      });
     };
   }, []);
 
-  // Initialize wake lock from external state
-  useEffect(() => {
-    if (initialized.current) return;
-    initialized.current = true;
-
-    // Only request wake lock if initialActive is true, but delay until user interaction
-    if (initialActive) {
-      // If user has already interacted, request immediately
-      if (userHasInteracted.current) {
-        requestWakeLock();
-      } else {
-        // Wait for user interaction, then request wake lock
-        const waitForInteraction = () => {
-          if (userHasInteracted.current && initialActive) {
-            requestWakeLock();
-          } else {
-            setTimeout(waitForInteraction, 100);
-          }
-        };
-        waitForInteraction();
-      }
-    }
-  }, [requestWakeLock, initialActive]);
-
-  // Sync with external state changes immediately
-  useEffect(() => {
-    if (!initialized.current) return;
-
-    // Sync state based on initialActive setting
-    if (initialActive && !isActive) {
-      // Try to re-acquire wake lock if setting is active but wake lock was lost
-      console.log('⚙️ Re-acquiring wake lock due to settings');
-      requestWakeLock();
-    } else if (!initialActive && isActive) {
-      // Release if user disabled it in settings
-      console.log('⚙️ Releasing wake lock due to user settings');
-      releaseWakeLock();
-    }
-  }, [initialActive, isActive, requestWakeLock, releaseWakeLock]);
-
-  // Handle tab visibility changes to restore wake lock
+  // Setup visibility change handling
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'hidden') {
-        // Remember if wake lock was active when tab became hidden
-        wasActiveBeforeHidden.current = isActive;
+        // Page hidden - wake lock may be released by system
       } else if (document.visibilityState === 'visible') {
-        // Add a small delay to ensure the page is fully visible before requesting wake lock
-        setTimeout(() => {
-          if (
-            (wasActiveBeforeHidden.current && !isActive) ||
-            (initialActive && !isActive)
-          ) {
-            console.log('👁️ Re-acquiring wake lock after tab became visible');
-            requestWakeLock();
-          }
-        }, 100);
+        if (shouldBeActive.current && !wakeLock && userHasInteracted.current) {
+          setTimeout(() => {
+            acquireWakeLock();
+          }, 100);
+        }
       }
     };
 
@@ -165,43 +121,59 @@ const useWakeLockState = (initialActive = false, onActiveChange = null) => {
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [isActive, initialActive, requestWakeLock]);
+  }, [wakeLock, acquireWakeLock]);
 
-  // Periodic check to maintain wake lock if settings indicate it should be active
+  // Initialize wake lock when settings change
   useEffect(() => {
-    if (!initialActive) return;
+    if (initialActive && !isActive && userHasInteracted.current) {
+      acquireWakeLock();
+    } else if (!initialActive && isActive) {
+      releaseWakeLock();
+    }
+  }, [initialActive, isActive, acquireWakeLock, releaseWakeLock]);
 
-    const intervalId = setInterval(() => {
-      // Only try to re-acquire if page is visible and user has interacted
-      if (
-        initialActive &&
-        !isActive &&
-        document.visibilityState === 'visible' &&
-        document.hasFocus()
-      ) {
-        console.log('🔄 Periodic wake lock check - re-acquiring');
-        requestWakeLock();
+  // Auto-acquire on first interaction
+  useEffect(() => {
+    if (userHasInteracted.current || !initialActive || isActive) return;
+
+    const handleFirstInteraction = () => {
+      if (initialActive && !wakeLock) {
+        // First interaction - acquiring wake lock
+        acquireWakeLock();
       }
-    }, 30000); // Check every 30 seconds
+    };
 
-    return () => clearInterval(intervalId);
-  }, [initialActive, isActive, requestWakeLock]);
+    const events = ['click', 'keydown', 'touchstart', 'mousedown'];
+    events.forEach(event => {
+      document.addEventListener(event, handleFirstInteraction, {
+        once: true,
+        passive: true,
+      });
+    });
 
-  // Only cleanup wake lock on component unmount (not on every wakeLock change)
+    return () => {
+      events.forEach(event => {
+        document.removeEventListener(event, handleFirstInteraction);
+      });
+    };
+  }, [initialActive, isActive, wakeLock, acquireWakeLock]);
+
+  // Cleanup on unmount
   useEffect(() => {
     return () => {
-      // Only release if we're truly unmounting the component
       if (wakeLock) {
         wakeLock.release();
       }
     };
-  }, []); // Empty dependency array - only runs on mount/unmount
+  }, [wakeLock]);
 
   return {
     isActive,
-    requestWakeLock,
+    requestWakeLock: acquireWakeLock,
     releaseWakeLock,
     toggleWakeLock,
+    wakeLockSupported: 'wakeLock' in navigator,
+    usingFallback: false,
   };
 };
 

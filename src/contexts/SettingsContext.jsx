@@ -8,7 +8,7 @@ import React, {
 import useWakeLockState from '../hooks/useWakeLockState';
 import useBatteryState from '../hooks/useBatteryState';
 import { requestNotificationPermissionOnly } from '../utils/notificationUtils';
-import { DEFAULT_APP_SETTINGS, STORAGE_KEYS } from '../constants/appConstants';
+import { DEFAULT_APP_SETTINGS } from '../constants/appConstants';
 
 const SettingsContext = createContext();
 
@@ -22,39 +22,7 @@ export const useSettings = () => {
 
 export const SettingsProvider = ({ children }) => {
   const hasRequestedPermission = useRef(false);
-  const [appSettings, setAppSettings] = useState(() => {
-    // Initialize app settings from localStorage
-    try {
-      const savedSettings = localStorage.getItem(STORAGE_KEYS.APP_SETTINGS);
-      if (savedSettings) {
-        const parsedSettings = JSON.parse(savedSettings);
-
-        // Ensure the settings have the correct structure
-        if (parsedSettings.battery && parsedSettings.wakeLock) {
-          return {
-            battery: {
-              notificationsEnabled:
-                parsedSettings.battery.notificationsEnabled ??
-                DEFAULT_APP_SETTINGS.battery.notificationsEnabled,
-              notificationFrequency:
-                parsedSettings.battery.notificationFrequency ??
-                DEFAULT_APP_SETTINGS.battery.notificationFrequency,
-            },
-            wakeLock: {
-              active:
-                parsedSettings.wakeLock.active ??
-                DEFAULT_APP_SETTINGS.wakeLock.active,
-            },
-          };
-        }
-      }
-    } catch (error) {
-      console.error('Error loading settings from localStorage:', error);
-    }
-
-    // Return default settings
-    return DEFAULT_APP_SETTINGS;
-  });
+  const [appSettings, setAppSettings] = useState(DEFAULT_APP_SETTINGS);
 
   // Use custom hooks with app-settings integration
   const {
@@ -62,6 +30,7 @@ export const SettingsProvider = ({ children }) => {
     toggleWakeLock,
     requestWakeLock,
     releaseWakeLock,
+    wakeLockSupported,
   } = useWakeLockState(appSettings.wakeLock.active, active =>
     updateSetting('wakeLock', 'active', active)
   );
@@ -81,18 +50,6 @@ export const SettingsProvider = ({ children }) => {
       requestNotificationPermissionOnly({ showAlerts: false });
     }
   }, [appSettings.battery.notificationsEnabled]);
-
-  // Save app settings to localStorage whenever they change
-  useEffect(() => {
-    try {
-      localStorage.setItem(
-        STORAGE_KEYS.APP_SETTINGS,
-        JSON.stringify(appSettings)
-      );
-    } catch (error) {
-      console.error('Error saving settings to localStorage:', error);
-    }
-  }, [appSettings]);
 
   const updateSetting = (section, key, value) => {
     setAppSettings(prev => ({
@@ -115,6 +72,7 @@ export const SettingsProvider = ({ children }) => {
     handleWakeLockToggle: toggleWakeLock,
     requestWakeLock,
     releaseWakeLock,
+    wakeLockSupported,
   };
 
   return (

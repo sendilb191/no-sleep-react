@@ -360,38 +360,17 @@ async function showBatteryNotification(batteryData) {
   );
 }
 
-// Get stored settings from localStorage (using new app-settings structure)
-async function getStoredSettings() {
-  try {
-    // Try to get settings from localStorage
-    const clients = await self.clients.matchAll();
-    if (clients.length > 0) {
-      // Request settings from main app
-      clients[0].postMessage({ type: 'GET_SETTINGS' });
-    }
-
-    // Return default settings as fallback
-    return {
-      battery: {
-        notificationsEnabled: true,
-        notificationFrequency: 5,
-      },
-      wakeLock: {
-        active: false,
-      },
-    };
-  } catch (error) {
-    console.log('Service Worker: Could not get settings', error);
-    return {
-      battery: {
-        notificationsEnabled: true,
-        notificationFrequency: 5,
-      },
-      wakeLock: {
-        active: false,
-      },
-    };
-  }
+// Get default settings (no localStorage needed)
+async function getDefaultSettings() {
+  return {
+    battery: {
+      notificationsEnabled: true,
+      notificationFrequency: 5,
+    },
+    wakeLock: {
+      active: false,
+    },
+  };
 }
 
 // Background battery check

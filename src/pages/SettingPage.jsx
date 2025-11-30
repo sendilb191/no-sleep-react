@@ -7,18 +7,15 @@ const SettingPage = () => {
 
   const handleNotificationToggle = () => {
     const newValue = !appSettings.battery.notificationsEnabled;
-    console.log('Toggling notifications to:', newValue);
     updateSetting('battery', 'notificationsEnabled', newValue);
   };
 
   const handleFrequencyChange = e => {
     const newFrequency = parseInt(e.target.value);
-    console.log('Changing notification frequency to:', newFrequency, 'minutes');
     updateSetting('battery', 'notificationFrequency', newFrequency);
   };
 
   const handleTestNotification = () => {
-    console.log('Test notification clicked - requesting permission first');
     requestNotificationPermission(testNotification);
   };
 
@@ -33,7 +30,6 @@ const SettingPage = () => {
             checked={appSettings.wakeLock.active}
             onChange={() => {
               const newValue = !appSettings.wakeLock.active;
-              console.log('Wake lock toggle clicked:', newValue);
               updateSetting('wakeLock', 'active', newValue);
             }}
           />

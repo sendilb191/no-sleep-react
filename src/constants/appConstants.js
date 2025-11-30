@@ -19,23 +19,8 @@ export const NOTIFICATION_FREQUENCY_OPTIONS = [
   { value: 30, label: 'Every 30 minutes' },
 ];
 
-// Local storage keys
-export const STORAGE_KEYS = {
-  APP_SETTINGS: 'app-settings',
-};
-
 // Notification conditions
 export const NOTIFICATION_CONDITIONS = {
   MIN_BATTERY_LEVEL: 90, // Only notify when battery > 90%
   REQUIRE_CHARGING: true, // Only notify when device is charging
-};
-
-// Service Worker notification management defaults
-export const SW_NOTIFICATION_DEFAULTS = {
-  enabled: false,
-  frequency: 5, // minutes
-  conditions: {
-    minBatteryLevel: NOTIFICATION_CONDITIONS.MIN_BATTERY_LEVEL,
-    requireCharging: NOTIFICATION_CONDITIONS.REQUIRE_CHARGING,
-  },
 };

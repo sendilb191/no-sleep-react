@@ -144,7 +144,7 @@ appSettings = {
 
 **Key Features:**
 
-- 💾 **localStorage Integration** - Persistent settings storage
+- ⚙️ **Simple Settings** - Easy configuration management
 - 🔄 **Automatic Migration** - Handles old setting formats
 - 🔔 **Permission Management** - Notification permission requests
 - 🎣 **Custom Hooks Integration** - Battery and wake lock state
@@ -152,7 +152,7 @@ appSettings = {
 **Settings Flow:**
 
 ```
-User Changes Setting → Context Updates → localStorage Save → Service Worker Notify
+User Changes Setting → Context Updates → Service Worker Notify
 ```
 
 ---
@@ -468,7 +468,7 @@ npm run preview
 - **🔒 Screen Wake Lock API** - `navigator.wakeLock.request()`
 - **🔔 Notifications API** - `Notification` constructor
 - **⚙️ Service Worker API** - Background processing
-- **💾 localStorage** - Settings persistence
+- **⚙️ React Context** - State management
 
 ### **Browser Compatibility:**
 
@@ -489,21 +489,6 @@ npm run preview
 - Every 10 minutes
 - Every 15 minutes
 - Every 30 minutes
-
-### **Settings Storage:**
-
-```javascript
-// localStorage structure
-{
-  "battery": {
-    "notificationsEnabled": true,
-    "notificationFrequency": 5
-  },
-  "wakeLock": {
-    "active": false
-  }
-}
-```
 
 ---
 

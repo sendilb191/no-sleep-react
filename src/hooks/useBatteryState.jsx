@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import swManager from '../utils/serviceWorkerManager.js';
-import { SW_NOTIFICATION_DEFAULTS } from '../constants/appConstants';
+import { NOTIFICATION_CONDITIONS } from '../constants/appConstants';
 
 const useBatteryState = (
   batteryNotificationsEnabled,
@@ -144,7 +144,10 @@ const useBatteryState = (
             {
               enabled: batteryNotificationsEnabled,
               frequency: notificationFrequency,
-              conditions: SW_NOTIFICATION_DEFAULTS.conditions,
+              conditions: {
+                minBatteryLevel: NOTIFICATION_CONDITIONS.MIN_BATTERY_LEVEL,
+                requireCharging: NOTIFICATION_CONDITIONS.REQUIRE_CHARGING,
+              },
             },
             batteryInfo.level !== null
               ? {
