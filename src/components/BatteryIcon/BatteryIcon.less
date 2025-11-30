@@ -8,6 +8,10 @@
       animation: batteryGlow 2s ease-in-out infinite;
     }
 
+    .battery-fill {
+      animation: chargingPulse 1.5s ease-in-out infinite;
+    }
+
     .charging-wave {
       opacity: 1;
     }
@@ -47,9 +51,8 @@
   height: 100%;
   border-radius: 1px;
   position: relative;
-  transition:
-    width 0.5s ease,
-    background-color 0.3s ease;
+  background-color: rgb(40, 167, 69) !important; /* Always green */
+  transition: width 0.5s ease;
   min-width: 2px;
 
   /* Charging waves animation inside battery */
@@ -137,5 +140,17 @@
   100% {
     opacity: 1;
     transform: translate(-50%, -50%);
+  }
+}
+
+@keyframes chargingPulse {
+  0%,
+  100% {
+    background-color: rgb(40, 167, 69) !important;
+    filter: brightness(1);
+  }
+  50% {
+    background-color: rgb(50, 187, 79) !important;
+    filter: brightness(1.2);
   }
 }

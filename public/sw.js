@@ -149,8 +149,14 @@ function initializeNotificationSettings(settings) {
     currentBatteryData = settings.batteryData;
   }
 
-  console.log('Service Worker: Initialized with conditions:', notificationConditions);
-  console.log('Service Worker: Initialized with settings:', notificationSettings);
+  console.log(
+    'Service Worker: Initialized with conditions:',
+    notificationConditions
+  );
+  console.log(
+    'Service Worker: Initialized with settings:',
+    notificationSettings
+  );
 
   // Mark as initialized
   isInitialized = true;

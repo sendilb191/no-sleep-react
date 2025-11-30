@@ -3,14 +3,8 @@ import React from 'react';
 const BatteryIcon = ({ level = 0, isCharging = false }) => {
   const batteryLevel = Math.max(0, Math.min(100, level));
 
-  // Determine color based on battery level
-  const getBatteryColor = () => {
-    if (batteryLevel > 60) return '#28a745'; // Green
-    if (batteryLevel > 20) return '#ffc107'; // Yellow
-    return '#dc3545'; // Red
-  };
-
-  const fillColor = getBatteryColor();
+  // Always use green color for consistency
+  const fillColor = 'rgb(40, 167, 69)';
 
   return (
     <div className={`battery-container ${isCharging ? 'charging' : ''}`}>

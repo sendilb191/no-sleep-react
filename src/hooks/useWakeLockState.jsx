@@ -7,6 +7,15 @@ const useWakeLockState = (initialActive = false, onActiveChange = null) => {
   const wasActiveBeforeHidden = useRef(false);
   const userHasInteracted = useRef(false);
 
+  // Log wake lock status changes
+  useEffect(() => {
+    if (initialized.current) {
+      console.log(
+        `📱 WAKE LOCK STATUS: ${isActive ? 'ENABLED ✅' : 'DISABLED ❌'}`
+      );
+    }
+  }, [isActive]);
+
   const requestWakeLock = useCallback(async () => {
     // Prevent multiple wake lock requests
     if (wakeLock || isActive) {
@@ -25,11 +34,13 @@ const useWakeLockState = (initialActive = false, onActiveChange = null) => {
         setWakeLock(lock);
         setIsActive(true);
         onActiveChange?.(true);
-        console.log('Wake lock activated successfully');
+        console.log('🔒 WAKE LOCK ENABLED - Device will stay awake');
 
         // Handle wake lock release events
         lock.addEventListener('release', () => {
-          console.log('Wake lock was released by system');
+          console.log(
+            '🔓 WAKE LOCK DISABLED (by system) - Device can sleep normally'
+          );
           setIsActive(false);
           setWakeLock(null);
           // Don't update app-settings when system releases wake lock
@@ -56,15 +67,16 @@ const useWakeLockState = (initialActive = false, onActiveChange = null) => {
       setWakeLock(null);
       setIsActive(false);
       onActiveChange?.(false);
+      console.log('🔓 WAKE LOCK DISABLED - Device can sleep normally');
     }
   }, [wakeLock, onActiveChange]);
 
   const toggleWakeLock = useCallback(() => {
     if (isActive) {
-      console.log('User manually disabling wake lock');
+      console.log('👤 User manually disabling wake lock');
       releaseWakeLock();
     } else {
-      console.log('User manually enabling wake lock');
+      console.log('👤 User manually enabling wake lock');
       requestWakeLock();
     }
   }, [isActive, releaseWakeLock, requestWakeLock]);
@@ -120,11 +132,11 @@ const useWakeLockState = (initialActive = false, onActiveChange = null) => {
     // Sync state based on initialActive setting
     if (initialActive && !isActive) {
       // Try to re-acquire wake lock if setting is active but wake lock was lost
-      console.log('Re-acquiring wake lock due to settings');
+      console.log('⚙️ Re-acquiring wake lock due to settings');
       requestWakeLock();
     } else if (!initialActive && isActive) {
       // Release if user disabled it in settings
-      console.log('Releasing wake lock due to user settings');
+      console.log('⚙️ Releasing wake lock due to user settings');
       releaseWakeLock();
     }
   }, [initialActive, isActive, requestWakeLock, releaseWakeLock]);
@@ -142,7 +154,7 @@ const useWakeLockState = (initialActive = false, onActiveChange = null) => {
             (wasActiveBeforeHidden.current && !isActive) ||
             (initialActive && !isActive)
           ) {
-            console.log('Re-acquiring wake lock after tab became visible');
+            console.log('👁️ Re-acquiring wake lock after tab became visible');
             requestWakeLock();
           }
         }, 100);
@@ -167,7 +179,7 @@ const useWakeLockState = (initialActive = false, onActiveChange = null) => {
         document.visibilityState === 'visible' &&
         document.hasFocus()
       ) {
-        console.log('Periodic wake lock check - re-acquiring');
+        console.log('🔄 Periodic wake lock check - re-acquiring');
         requestWakeLock();
       }
     }, 30000); // Check every 30 seconds
