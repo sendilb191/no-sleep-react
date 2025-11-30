@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import swManager from '../utils/serviceWorkerManager.js';
+import { SW_NOTIFICATION_DEFAULTS } from '../constants/appConstants';
 
 const useBatteryState = (
   batteryNotificationsEnabled,
@@ -130,15 +131,36 @@ const useBatteryState = (
     getBatteryInfo();
   }, [formatTime]); // Battery initialization effect
 
-  // Send notification settings to service worker when they change
+  // Initialize service worker settings on first load, then update when they change
+  const hasInitialized = useRef(false);
+
   useEffect(() => {
     // Ensure service worker is ready before sending settings
     const sendSettings = () => {
       if (swManager.isReady()) {
-        swManager.updateNotificationSettings({
-          enabled: batteryNotificationsEnabled,
-          frequency: notificationFrequency,
-        });
+        if (!hasInitialized.current) {
+          // First time - initialize with complete settings and current battery data if available
+          swManager.initializeSettings(
+            {
+              enabled: batteryNotificationsEnabled,
+              frequency: notificationFrequency,
+              conditions: SW_NOTIFICATION_DEFAULTS.conditions,
+            },
+            batteryInfo.level !== null
+              ? {
+                  level: batteryInfo.level,
+                  charging: batteryInfo.charging,
+                }
+              : null
+          );
+          hasInitialized.current = true;
+        } else {
+          // Subsequent updates
+          swManager.updateNotificationSettings({
+            enabled: batteryNotificationsEnabled,
+            frequency: notificationFrequency,
+          });
+        }
       } else {
         // Retry after a short delay if service worker isn't ready
         setTimeout(sendSettings, 100);
@@ -146,7 +168,12 @@ const useBatteryState = (
     };
 
     sendSettings();
-  }, [batteryNotificationsEnabled, notificationFrequency]);
+  }, [
+    batteryNotificationsEnabled,
+    notificationFrequency,
+    batteryInfo.level,
+    batteryInfo.charging,
+  ]);
 
   // Send battery status updates to service worker
   useEffect(() => {
