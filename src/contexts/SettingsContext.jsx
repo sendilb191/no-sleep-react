@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import useWakeLockState from '../hooks/useWakeLockState';
 import useBatteryState from '../hooks/useBatteryState';
+import { requestNotificationPermissionOnly } from '../utils/notificationUtils';
 
 const SettingsContext = createContext();
 
@@ -128,12 +129,8 @@ export const SettingsProvider = ({ children }) => {
       appSettings.battery.notificationsEnabled &&
       !hasRequestedPermission.current
     ) {
-      if ('Notification' in window && Notification.permission === 'default') {
-        hasRequestedPermission.current = true;
-        Notification.requestPermission().then(permission => {
-          console.log('Notification permission:', permission);
-        });
-      }
+      hasRequestedPermission.current = true;
+      requestNotificationPermissionOnly({ showAlerts: false });
     }
   }, [appSettings.battery.notificationsEnabled]);
 
