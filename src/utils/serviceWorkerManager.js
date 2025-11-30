@@ -88,6 +88,17 @@ class ServiceWorkerManager {
     this.sendMessage('TEST_NOTIFICATION', batteryData);
   }
 
+  // Initialize service worker with settings from main app
+  initializeSettings(settings, batteryData = null) {
+    const initData = {
+      enabled: settings.enabled || false,
+      frequency: settings.frequency || 5,
+      conditions: settings.conditions || null,
+      batteryData: batteryData,
+    };
+    this.sendMessage('INIT_SW_SETTINGS', initData);
+  }
+
   // Check if service worker is ready to receive messages
   isReady() {
     return this.registration && this.registration.active;

@@ -84,6 +84,9 @@ self.addEventListener('message', event => {
   const { type, data } = event.data;
 
   switch (type) {
+    case 'INIT_SW_SETTINGS':
+      initializeNotificationSettings(data);
+      break;
     case 'UPDATE_NOTIFICATION_SETTINGS':
       updateNotificationSettings(data);
       break;
@@ -109,22 +112,64 @@ function handleWakeLockUpdate(wakeLockData) {
   console.log('Service Worker: Legacy wake lock update', wakeLockData);
 }
 
-// Notification management - single source of truth
+// Notification management - initialized from main app
+// All values are set by INIT_SW_SETTINGS message from main app
 let notificationTimer = null;
-let currentBatteryData = null; // Will be set by main app
-let notificationSettings = {
-  enabled: false,
-  frequency: 5, // Will be updated by main app
-};
-let lastNotification = {
-  timestamp: null,
-  batteryLevel: null,
-  chargingStatus: null,
-};
+let currentBatteryData = null;
+let notificationSettings = null;
+let notificationConditions = null;
+let lastNotification = null;
+let isInitialized = false;
+
+// Initialize notification settings from main app
+function initializeNotificationSettings(settings) {
+  console.log('Service Worker: Initializing notification settings:', settings);
+
+  // Set all values from main app - no defaults
+  notificationSettings = {
+    enabled: settings.enabled,
+    frequency: settings.frequency,
+  };
+
+  // Set notification conditions from main app
+  notificationConditions = {
+    minBatteryLevel: settings.conditions?.minBatteryLevel,
+    requireCharging: settings.conditions?.requireCharging,
+  };
+
+  // Initialize last notification tracking
+  lastNotification = {
+    timestamp: null,
+    batteryLevel: null,
+    chargingStatus: null,
+  };
+
+  // Initialize battery data if provided
+  if (settings.batteryData) {
+    currentBatteryData = settings.batteryData;
+  }
+
+  console.log('Service Worker: Initialized with conditions:', notificationConditions);
+  console.log('Service Worker: Initialized with settings:', notificationSettings);
+
+  // Mark as initialized
+  isInitialized = true;
+
+  // Start timer if enabled
+  if (settings.enabled) {
+    startNotificationTimer();
+  }
+}
 
 // Update notification settings and manage timer
 function updateNotificationSettings(settings) {
   console.log('Service Worker: Updating notification settings:', settings);
+
+  // Only update if initialized
+  if (!isInitialized || !notificationSettings) {
+    console.log('Service Worker: Cannot update - not initialized yet');
+    return;
+  }
 
   // Clear existing timer first
   if (notificationTimer) {
@@ -170,7 +215,7 @@ async function cancelExistingNotifications() {
 
 // Start notification timer
 function startNotificationTimer() {
-  if (!notificationSettings.enabled) return;
+  if (!isInitialized || !notificationSettings?.enabled) return;
 
   const intervalMs = notificationSettings.frequency * 60 * 1000;
   console.log(
@@ -184,13 +229,26 @@ function startNotificationTimer() {
     // Use current battery data, or fallback if not available
     const batteryData = currentBatteryData || { level: 0, charging: false };
 
-    // Only show notification if device is charging
-    if (batteryData.charging) {
-      console.log('Service Worker: Device is charging - showing notification');
+    // Check notification conditions
+    const meetsBatteryCondition =
+      batteryData.level > notificationConditions.minBatteryLevel;
+    const meetsChargingCondition =
+      !notificationConditions.requireCharging || batteryData.charging;
+
+    if (meetsBatteryCondition && meetsChargingCondition) {
+      console.log(
+        `Service Worker: Conditions met - battery ${batteryData.level}% > ${notificationConditions.minBatteryLevel}%, charging: ${batteryData.charging} - showing notification`
+      );
       showBatteryNotification(batteryData);
     } else {
+      const reasons = [];
+      if (!meetsChargingCondition) reasons.push('not charging');
+      if (!meetsBatteryCondition)
+        reasons.push(
+          `battery ${batteryData.level}% ≤ ${notificationConditions.minBatteryLevel}%`
+        );
       console.log(
-        'Service Worker: Device not charging - skipping notification'
+        `Service Worker: Skipping notification - ${reasons.join(', ')}`
       );
     }
   }, intervalMs);
@@ -205,6 +263,18 @@ function updateBatteryData(data) {
 // Show battery notification
 async function showBatteryNotification(batteryData) {
   const { level, charging } = batteryData;
+
+  // Double-check conditions before showing notification
+  const meetsBatteryCondition = level > notificationConditions.minBatteryLevel;
+  const meetsChargingCondition =
+    !notificationConditions.requireCharging || charging;
+
+  if (!meetsBatteryCondition || !meetsChargingCondition) {
+    console.log(
+      `Service Worker: Notification blocked - battery: ${level}% (need >${notificationConditions.minBatteryLevel}%), charging: ${charging} (required: ${notificationConditions.requireCharging})`
+    );
+    return;
+  }
 
   const chargingStatus = charging ? 'charging' : 'not charging';
   const now = new Date();
