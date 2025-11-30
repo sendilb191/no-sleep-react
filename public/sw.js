@@ -1,12 +1,6 @@
 // Service Worker for No Sleep App
 const CACHE_NAME = 'no-sleep-v1';
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/no-sleep.svg',
-  '/src/main.jsx',
-  '/src/App.jsx',
-];
+const urlsToCache = ['/', './index.html', './no-sleep.svg'];
 
 // Install event - cache resources
 self.addEventListener('install', event => {
