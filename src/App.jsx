@@ -3,15 +3,11 @@ import { HashRouter, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage.jsx';
 import SettingPage from './pages/SettingPage.jsx';
 import AboutPage from './pages/AboutPage.jsx';
-import Navigation from './pages/Navigation.jsx';
+import Navigation from './components/Navigation.jsx';
 import { SettingsProvider } from './contexts/SettingsContext.jsx';
-import useDynamicTitle from './hooks/useDynamicTitle.jsx';
 import './styles/page.less';
 
 function AppContent() {
-  // Use the dynamic title hook
-  useDynamicTitle();
-
   return (
     <>
       <Navigation />

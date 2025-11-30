@@ -1,12 +1,6 @@
 // Service Worker for No Sleep App
 const CACHE_NAME = 'no-sleep-v1';
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/no-sleep.svg',
-  '/src/main.jsx',
-  '/src/App.jsx',
-];
+const urlsToCache = ['/', './index.html', './no-sleep.svg'];
 
 // Install event - cache resources
 self.addEventListener('install', event => {
@@ -186,10 +180,19 @@ function startNotificationTimer() {
   );
 
   notificationTimer = setInterval(() => {
-    console.log('Service Worker: Timer fired - showing notification');
+    console.log('Service Worker: Timer fired - checking battery status');
     // Use current battery data, or fallback if not available
     const batteryData = currentBatteryData || { level: 0, charging: false };
-    showBatteryNotification(batteryData);
+
+    // Only show notification if device is charging
+    if (batteryData.charging) {
+      console.log('Service Worker: Device is charging - showing notification');
+      showBatteryNotification(batteryData);
+    } else {
+      console.log(
+        'Service Worker: Device not charging - skipping notification'
+      );
+    }
   }, intervalMs);
 }
 

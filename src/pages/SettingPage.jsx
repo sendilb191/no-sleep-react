@@ -1,14 +1,9 @@
 import React from 'react';
 import { useSettings } from '../contexts/SettingsContext';
+import { requestNotificationPermission } from '../utils/notificationUtils';
 
 const SettingPage = () => {
-  const {
-    appSettings,
-    updateSetting,
-    isWakeLockActive,
-    handleWakeLockToggle,
-    testNotification,
-  } = useSettings();
+  const { appSettings, updateSetting, testNotification } = useSettings();
 
   const handleNotificationToggle = () => {
     const newValue = !appSettings.battery.notificationsEnabled;
@@ -24,24 +19,7 @@ const SettingPage = () => {
 
   const handleTestNotification = () => {
     console.log('Test notification clicked - requesting permission first');
-    if ('Notification' in window) {
-      if (Notification.permission === 'granted') {
-        testNotification();
-      } else if (Notification.permission !== 'denied') {
-        Notification.requestPermission().then(permission => {
-          console.log('Notification permission result:', permission);
-          if (permission === 'granted') {
-            testNotification();
-          }
-        });
-      } else {
-        alert(
-          'Notifications are blocked. Please enable them in your browser settings.'
-        );
-      }
-    } else {
-      alert('This browser does not support notifications.');
-    }
+    requestNotificationPermission(testNotification);
   };
 
   return (
@@ -53,14 +31,16 @@ const SettingPage = () => {
           <input
             type='checkbox'
             checked={appSettings.wakeLock.active}
-            onChange={() =>
-              updateSetting('wakeLock', 'active', !appSettings.wakeLock.active)
-            }
+            onChange={() => {
+              const newValue = !appSettings.wakeLock.active;
+              console.log('Wake lock toggle clicked:', newValue);
+              updateSetting('wakeLock', 'active', newValue);
+            }}
           />
           <div className='toggle-content'>
             <span className='setting-title'>Keep Screen Awake</span>
             <span className='setting-desc'>
-              Prevent device from going to sleep
+              Prevent device from going to sleep (requires user interaction)
             </span>
           </div>
         </label>

@@ -5,10 +5,17 @@ const useWakeLockState = (initialActive = false, onActiveChange = null) => {
   const [isActive, setIsActive] = useState(initialActive);
   const initialized = useRef(false);
   const wasActiveBeforeHidden = useRef(false);
+  const userHasInteracted = useRef(false);
 
   const requestWakeLock = useCallback(async () => {
     // Prevent multiple wake lock requests
     if (wakeLock || isActive) {
+      return;
+    }
+
+    // Check if page is visible and we have user interaction
+    if (document.visibilityState !== 'visible') {
+      console.log('Wake Lock cannot be requested: page not visible');
       return;
     }
 
@@ -18,6 +25,7 @@ const useWakeLockState = (initialActive = false, onActiveChange = null) => {
         setWakeLock(lock);
         setIsActive(true);
         onActiveChange?.(true);
+        console.log('Wake lock activated successfully');
 
         // Handle wake lock release events
         lock.addEventListener('release', () => {
@@ -32,6 +40,13 @@ const useWakeLockState = (initialActive = false, onActiveChange = null) => {
       }
     } catch (error) {
       console.error('Failed to activate Wake Lock:', error);
+
+      // If error is due to page visibility or user activation, provide helpful message
+      if (error.name === 'NotAllowedError') {
+        console.log(
+          'Wake Lock requires page to be visible and user interaction. Try clicking on the page first.'
+        );
+      }
     }
   }, [wakeLock, isActive]);
 
@@ -54,13 +69,47 @@ const useWakeLockState = (initialActive = false, onActiveChange = null) => {
     }
   }, [isActive, releaseWakeLock, requestWakeLock]);
 
+  // Track user interaction for wake lock activation
+  useEffect(() => {
+    const handleUserInteraction = () => {
+      userHasInteracted.current = true;
+    };
+
+    // Listen for various user interaction events
+    document.addEventListener('click', handleUserInteraction, { once: true });
+    document.addEventListener('keydown', handleUserInteraction, { once: true });
+    document.addEventListener('touchstart', handleUserInteraction, {
+      once: true,
+    });
+
+    return () => {
+      document.removeEventListener('click', handleUserInteraction);
+      document.removeEventListener('keydown', handleUserInteraction);
+      document.removeEventListener('touchstart', handleUserInteraction);
+    };
+  }, []);
+
   // Initialize wake lock from external state
   useEffect(() => {
     if (initialized.current) return;
     initialized.current = true;
 
+    // Only request wake lock if initialActive is true, but delay until user interaction
     if (initialActive) {
-      requestWakeLock();
+      // If user has already interacted, request immediately
+      if (userHasInteracted.current) {
+        requestWakeLock();
+      } else {
+        // Wait for user interaction, then request wake lock
+        const waitForInteraction = () => {
+          if (userHasInteracted.current && initialActive) {
+            requestWakeLock();
+          } else {
+            setTimeout(waitForInteraction, 100);
+          }
+        };
+        waitForInteraction();
+      }
     }
   }, [requestWakeLock, initialActive]);
 
@@ -87,14 +136,16 @@ const useWakeLockState = (initialActive = false, onActiveChange = null) => {
         // Remember if wake lock was active when tab became hidden
         wasActiveBeforeHidden.current = isActive;
       } else if (document.visibilityState === 'visible') {
-        // Re-request wake lock if settings indicate it should be active or it was active before hiding
-        if (
-          (wasActiveBeforeHidden.current && !isActive) ||
-          (initialActive && !isActive)
-        ) {
-          console.log('Re-acquiring wake lock after tab became visible');
-          requestWakeLock();
-        }
+        // Add a small delay to ensure the page is fully visible before requesting wake lock
+        setTimeout(() => {
+          if (
+            (wasActiveBeforeHidden.current && !isActive) ||
+            (initialActive && !isActive)
+          ) {
+            console.log('Re-acquiring wake lock after tab became visible');
+            requestWakeLock();
+          }
+        }, 100);
       }
     };
 
@@ -109,10 +160,12 @@ const useWakeLockState = (initialActive = false, onActiveChange = null) => {
     if (!initialActive) return;
 
     const intervalId = setInterval(() => {
+      // Only try to re-acquire if page is visible and user has interacted
       if (
         initialActive &&
         !isActive &&
-        document.visibilityState === 'visible'
+        document.visibilityState === 'visible' &&
+        document.hasFocus()
       ) {
         console.log('Periodic wake lock check - re-acquiring');
         requestWakeLock();

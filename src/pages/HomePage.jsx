@@ -3,7 +3,7 @@ import { useSettings } from '../contexts/SettingsContext';
 import BatteryIcon from '../components/BatteryIcon';
 
 const HomePage = () => {
-  const { appSettings, isWakeLockActive, batteryInfo } = useSettings();
+  const { appSettings, batteryInfo } = useSettings();
 
   return (
     <main className='page'>
