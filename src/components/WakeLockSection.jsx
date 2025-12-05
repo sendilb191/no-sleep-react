@@ -1,5 +1,5 @@
 import React from 'react';
-import { FiSun, FiMoon } from 'react-icons/fi';
+import { FiSun, FiMoon, FiEye, FiEyeOff } from 'react-icons/fi';
 
 const WakeLockSection = ({
   isWakeLockActive,
@@ -32,7 +32,7 @@ const WakeLockSection = ({
               <div
                 className={`wake-icon ${isWakeLockActive ? 'active' : 'inactive'}`}
               >
-                {isWakeLockActive ? <FiSun /> : <FiMoon />}
+                {isWakeLockActive ? <FiEye /> : <FiEyeOff />}
               </div>
               <div className='wake-pulse-ring'></div>
             </div>
