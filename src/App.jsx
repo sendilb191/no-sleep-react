@@ -41,6 +41,8 @@ function App() {
             <WakeLockSection
               isWakeLockActive={isWakeLockActive}
               batteryInfo={batteryInfo}
+              wakeLockSupported={wakeLockSupported}
+              fallbackActive={fallbackActive}
             />
           </div>
 
