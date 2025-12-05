@@ -38,7 +38,7 @@ const BatterySection = ({ batteryInfo, isWakeLockActive }) => {
                     ? 'medium'
                     : 'high'
               }`}
-              style={{ height: `${batteryInfo.level}%` }}
+              style={{ width: `${batteryInfo.level}%` }}
             ></div>
             {batteryInfo.charging && (
               <div className='charging-bolt'>

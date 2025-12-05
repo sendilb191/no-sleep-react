@@ -457,9 +457,6 @@ body {
   border-radius: 4px;
   background: #f3f4f6;
   overflow: hidden;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
 }
 
 .battery-tip {
@@ -471,35 +468,47 @@ body {
 }
 
 .battery-level {
-  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
   transition: all 0.6s ease;
   border-radius: 2px;
-  position: relative;
 
   &.high {
-    background: linear-gradient(180deg, #22c55e, #16a34a);
+    background: linear-gradient(90deg, #22c55e, #16a34a);
   }
 
   &.medium {
-    background: linear-gradient(180deg, #f59e0b, #d97706);
+    background: linear-gradient(90deg, #f59e0b, #d97706);
   }
 
   &.low {
-    background: linear-gradient(180deg, #ef4444, #dc2626);
+    background: linear-gradient(90deg, #ef4444, #dc2626);
     animation: low-battery-pulse 1.5s ease-in-out infinite;
   }
 }
 
 .charging-bolt {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: white;
-  font-size: 1.2rem;
-  text-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: black;
+  font-size: 1.1rem;
+  text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
   animation: bolt-flash 1s ease-in-out infinite alternate;
-  z-index: 1;
+  z-index: 2;
+
+  svg {
+    display: block;
+    width: 1.1rem;
+    height: 1.1rem;
+  }
 }
 
 @keyframes charging-glow {
