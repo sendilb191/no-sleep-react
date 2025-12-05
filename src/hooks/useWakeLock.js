@@ -17,6 +17,34 @@ export const useWakeLock = () => {
     }
   }, []);
 
+  // Auto-activate wake lock on app load
+  useEffect(() => {
+    const activateWakeLockOnLoad = async () => {
+      let success = false;
+
+      if ('wakeLock' in navigator) {
+        success = await requestWakeLock();
+      }
+
+      if (!success) {
+        // Use fallback methods if Wake Lock API fails or isn't supported
+        startFallbackMethods();
+        success = true;
+      }
+
+      if (success) {
+        setIsWakeLockActive(true);
+      }
+    };
+
+    // Activate wake lock after a short delay to ensure DOM is ready
+    const timer = setTimeout(() => {
+      activateWakeLockOnLoad();
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   // Handle visibility change (user switches tabs/minimizes)
   useEffect(() => {
     const handleVisibilityChange = async () => {
