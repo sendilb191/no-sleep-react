@@ -430,46 +430,105 @@ body {
   color: #1f2937;
 }
 
-.battery-bar {
-  width: 100%;
-  height: 8px;
-  background: #e5e7eb;
-  border-radius: 4px;
-  overflow: hidden;
+// Battery Icon Display Styles
+.battery-icon-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin-bottom: 0.75rem;
 }
 
-.battery-fill {
-  height: 100%;
-  transition: all 0.3s ease;
-  border-radius: 4px;
-
-  &.high {
-    background: linear-gradient(90deg, #22c55e, #16a34a);
-  }
-
-  &.medium {
-    background: linear-gradient(90deg, #f59e0b, #d97706);
-  }
-
-  &.low {
-    background: linear-gradient(90deg, #ef4444, #dc2626);
-  }
+.battery-visual {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 2px;
 
   &.charging {
-    background: linear-gradient(90deg, #22c55e, #16a34a);
-    animation: charging-fill 2s ease-in-out infinite;
+    animation: charging-glow 2s ease-in-out infinite;
   }
 }
 
-@keyframes charging-fill {
+.battery-body {
+  position: relative;
+  width: 60px;
+  height: 32px;
+  border: 2px solid #374151;
+  border-radius: 4px;
+  background: #f3f4f6;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.battery-tip {
+  width: 4px;
+  height: 16px;
+  background: #374151;
+  border-radius: 0 2px 2px 0;
+  align-self: center;
+}
+
+.battery-level {
+  width: 100%;
+  transition: all 0.6s ease;
+  border-radius: 2px;
+  position: relative;
+
+  &.high {
+    background: linear-gradient(180deg, #22c55e, #16a34a);
+  }
+
+  &.medium {
+    background: linear-gradient(180deg, #f59e0b, #d97706);
+  }
+
+  &.low {
+    background: linear-gradient(180deg, #ef4444, #dc2626);
+    animation: low-battery-pulse 1.5s ease-in-out infinite;
+  }
+}
+
+.charging-bolt {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 1.2rem;
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+  animation: bolt-flash 1s ease-in-out infinite alternate;
+  z-index: 1;
+}
+
+@keyframes charging-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 4px rgba(34, 197, 94, 0.3));
+  }
+  50% {
+    filter: drop-shadow(0 0 8px rgba(34, 197, 94, 0.6));
+  }
+}
+
+@keyframes low-battery-pulse {
   0%,
   100% {
     opacity: 1;
   }
   50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes bolt-flash {
+  0% {
     opacity: 0.8;
-    filter: brightness(1.1);
+  }
+  100% {
+    opacity: 1;
+    text-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
   }
 }
 
