@@ -1,41 +1,74 @@
 import React from 'react';
-import { HashRouter, Routes, Route } from 'react-router-dom';
-import HomePage from './pages/HomePage.jsx';
-import SettingPage from './pages/SettingPage.jsx';
-import AboutPage from './pages/AboutPage.jsx';
-import Navigation from './components/Navigation.jsx';
-import { SettingsProvider } from './contexts/SettingsContext.jsx';
-import './styles/page.less';
-
-function AppContent() {
-  return (
-    <>
-      <Navigation />
-      <section>
-        <Routes>
-          <Route path='/' element={<HomePage />} />
-          <Route path='/setting' element={<SettingPage />} />
-          <Route path='/about' element={<AboutPage />} />
-        </Routes>
-      </section>
-    </>
-  );
-}
+import { useWakeLock } from './hooks/useWakeLock';
+import { useBattery } from './hooks/useBattery';
+import BatterySection from './components/BatterySection';
+import WakeLockSection from './components/WakeLockSection';
+import SettingsCard from './components/SettingsCard';
+import ErrorMessage from './components/ErrorMessage';
+import InfoSection from './components/InfoSection';
+import Instructions from './components/Instructions';
+import HiddenVideo from './components/HiddenVideo';
 
 function App() {
+  const {
+    isWakeLockActive,
+    wakeLockSupported,
+    fallbackActive,
+    error,
+    toggleWakeLock,
+    videoRef,
+  } = useWakeLock();
+
+  const batteryInfo = useBattery();
+
   return (
-    <SettingsProvider>
-      <div className='app-container'>
-        <HashRouter
-          future={{
-            v7_startTransition: true,
-            v7_relativeSplatPath: true,
-          }}
-        >
-          <AppContent />
-        </HashRouter>
+    <div className='app'>
+      <div className='container'>
+        <header className='header'>
+          <h1>🚫😴 No Sleep</h1>
+          <p className='subtitle'>Keep your device awake & monitor battery</p>
+        </header>
+
+        <div className='main-layout'>
+          <div className='left-section'>
+            {/* Battery Section */}
+            <BatterySection
+              batteryInfo={batteryInfo}
+              isWakeLockActive={isWakeLockActive}
+            />
+
+            {/* Wake Lock Section */}
+            <WakeLockSection
+              isWakeLockActive={isWakeLockActive}
+              batteryInfo={batteryInfo}
+            />
+          </div>
+
+          <div className='right-section'>
+            <SettingsCard
+              isWakeLockActive={isWakeLockActive}
+              toggleWakeLock={toggleWakeLock}
+              wakeLockSupported={wakeLockSupported}
+              fallbackActive={fallbackActive}
+              batteryInfo={batteryInfo}
+            />
+          </div>
+        </div>
+
+        <ErrorMessage error={error} />
+
+        <InfoSection
+          wakeLockSupported={wakeLockSupported}
+          fallbackActive={fallbackActive}
+          batteryInfo={batteryInfo}
+        />
+
+        <Instructions />
+
+        {/* Hidden video for fallback */}
+        <HiddenVideo videoRef={videoRef} />
       </div>
-    </SettingsProvider>
+    </div>
   );
 }
 
