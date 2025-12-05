@@ -32,11 +32,7 @@ const BatterySection = ({ batteryInfo, isWakeLockActive }) => {
           <div className='battery-body'>
             <div
               className={`battery-level ${
-                batteryInfo.level <= 20
-                  ? 'low'
-                  : batteryInfo.level <= 50
-                    ? 'medium'
-                    : 'high'
+                batteryInfo.charging ? 'charging' : 'discharging'
               }`}
               style={{ width: `${batteryInfo.level}%` }}
             ></div>
