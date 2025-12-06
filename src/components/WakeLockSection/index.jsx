@@ -1,5 +1,5 @@
 import React from 'react';
-import WakeIcon from '../WakeIcon';
+import WakeIcon from '../_shared/WakeIcon';
 import SectionContainer from '../SectionContainer';
 
 const WakeLockSection = ({
