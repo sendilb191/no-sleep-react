@@ -16,6 +16,8 @@ const SettingsCard = ({
   lastNotificationTimestamp,
   lastNotificationType,
   formatTimestamp,
+  autoReleaseEnabled,
+  setAutoReleaseEnabled,
 }) => {
   return (
     <div className='settings-card'>
@@ -35,6 +37,25 @@ const SettingsCard = ({
               onChange={toggleWakeLock}
             />
             <label htmlFor='wake-lock-toggle' className='switch'></label>
+          </div>
+        </div>
+      </div>
+
+      {/* Auto-Release Wake Lock Setting */}
+      <div className='control-group'>
+        <div className='control-description'>
+          Automatically release wake lock when battery drops below 20% (not
+          charging)
+        </div>
+        <div className='control-setting'>
+          <div className='toggle-switch'>
+            <input
+              type='checkbox'
+              id='auto-release-toggle'
+              checked={autoReleaseEnabled}
+              onChange={e => setAutoReleaseEnabled(e.target.checked)}
+            />
+            <label htmlFor='auto-release-toggle' className='switch'></label>
           </div>
         </div>
       </div>
@@ -115,7 +136,9 @@ const SettingsCard = ({
                     ? '🧪 Test'
                     : lastNotificationType === 'battery-full'
                       ? '🔋 Battery Fully Charged'
-                      : '🔋 Battery Warning'}{' '}
+                      : lastNotificationType === 'auto-release'
+                        ? '🔓 Wake Lock Auto-Released'
+                        : '🔋 Battery Warning'}{' '}
                   - {formatTimestamp(lastNotificationTimestamp)}
                 </span>
               </div>

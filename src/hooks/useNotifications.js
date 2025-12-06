@@ -118,6 +118,25 @@ export const useNotifications = (frequencyMinutes = 5) => {
     setLastNotificationType('battery-full');
   };
 
+  const showAutoReleaseNotification = batteryLevel => {
+    const now = Date.now();
+    const timestamp = new Date(now).toLocaleTimeString();
+    const title = '🔒 Wake Lock Auto-Released';
+    const body = `Wake lock automatically released due to critical battery level (${batteryLevel}%) to preserve battery life.\n\nTriggered at: ${timestamp}`;
+
+    showNotification(title, {
+      body,
+      icon: '/no-sleep.svg',
+      tag: 'auto-release',
+      requireInteraction: false,
+      skipCooldown: true, // Always show this important notification
+    });
+
+    // Update timestamp tracking
+    setLastNotificationTimestamp(now);
+    setLastNotificationType('auto-release');
+  };
+
   const showTestNotification = () => {
     const now = Date.now();
     const timestamp = new Date(now).toLocaleTimeString();
@@ -143,6 +162,7 @@ export const useNotifications = (frequencyMinutes = 5) => {
     showNotification,
     showBatteryWarning,
     showHighBatteryWarning,
+    showAutoReleaseNotification,
     showTestNotification,
     lastNotificationTimestamp,
     lastNotificationType,

@@ -20,12 +20,14 @@ function App() {
   } = useWakeLock();
 
   const [notificationFrequency, setNotificationFrequency] = useState(5); // Default 5 minutes
+  const [autoReleaseEnabled, setAutoReleaseEnabled] = useState(true); // Auto-release when battery < 20%
 
   const {
     notificationPermission,
     requestPermission,
     showBatteryWarning,
     showHighBatteryWarning,
+    showAutoReleaseNotification,
     showTestNotification,
     lastNotificationTimestamp,
     lastNotificationType,
@@ -36,6 +38,13 @@ function App() {
   const batteryInfo = useBattery(
     batteryLevel => {
       showBatteryWarning(batteryLevel);
+      // Auto-release wake lock for critical battery protection
+      if (autoReleaseEnabled && batteryLevel < 20 && isWakeLockActive) {
+        toggleWakeLock(); // Release wake lock to preserve battery
+        if (notificationPermission === 'granted') {
+          showAutoReleaseNotification(batteryLevel);
+        }
+      }
     },
     batteryLevel => {
       showHighBatteryWarning(batteryLevel);
@@ -85,6 +94,8 @@ function App() {
               lastNotificationTimestamp={lastNotificationTimestamp}
               lastNotificationType={lastNotificationType}
               formatTimestamp={formatTimestamp}
+              autoReleaseEnabled={autoReleaseEnabled}
+              setAutoReleaseEnabled={setAutoReleaseEnabled}
             />
           </div>
         </div>
