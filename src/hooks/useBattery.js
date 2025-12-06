@@ -10,8 +10,6 @@ export const useBattery = (onLowBattery, onHighBattery) => {
   });
 
   const batteryRef = useRef(null);
-  const highBatteryNotifiedRef = useRef(false);
-  const lowBatteryNotifiedRef = useRef(false);
 
   // Battery API support and initialization
   useEffect(() => {
@@ -36,29 +34,23 @@ export const useBattery = (onLowBattery, onHighBattery) => {
             });
 
             // Check for low battery condition (< 30% and not charging)
+            // Let the notification system handle frequency - don't block here
             if (level < 30 && !charging && onLowBattery) {
-              if (!lowBatteryNotifiedRef.current) {
-                onLowBattery(level);
-                lowBatteryNotifiedRef.current = true;
-              }
-            } else if (level >= 30 || charging) {
-              // Reset low battery notification when battery improves
-              lowBatteryNotifiedRef.current = false;
+              console.log(
+                'Low battery condition detected, calling notification handler:',
+                level
+              );
+              onLowBattery(level);
             }
 
             // Check for high battery condition (> 90% and charging)
+            // Let the notification system handle frequency - don't block here
             if (level > 90 && charging && onHighBattery) {
-              if (!highBatteryNotifiedRef.current) {
-                console.log(
-                  'Triggering high battery notification for level:',
-                  level
-                );
-                onHighBattery(level);
-                highBatteryNotifiedRef.current = true;
-              }
-            } else if (level <= 85 || !charging) {
-              // Reset high battery notification when battery drops or stops charging
-              highBatteryNotifiedRef.current = false;
+              console.log(
+                'High battery condition detected, calling notification handler:',
+                level
+              );
+              onHighBattery(level);
             }
           };
 

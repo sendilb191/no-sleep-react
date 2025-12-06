@@ -19,7 +19,7 @@ function App() {
     videoRef,
   } = useWakeLock();
 
-  const [notificationFrequency, setNotificationFrequency] = useState(1); // Default 5 minutes
+  const [notificationFrequency, setNotificationFrequency] = useState(1); // Default 1 minute
   const [autoReleaseEnabled, setAutoReleaseEnabled] = useState(true); // Auto-release when battery < 20%
 
   const {
