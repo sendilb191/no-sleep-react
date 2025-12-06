@@ -30,9 +30,12 @@ export const useNotifications = () => {
   const showNotification = (title, options = {}) => {
     // Check if notifications are supported and permitted
     if ('Notification' in window && notificationPermission === 'granted') {
-      // Check cooldown to prevent spam
+      // Check cooldown to prevent spam (skip for test notifications)
       const now = Date.now();
-      if (now - lastNotificationTime.current < NOTIFICATION_COOLDOWN) {
+      if (
+        !options.skipCooldown &&
+        now - lastNotificationTime.current < NOTIFICATION_COOLDOWN
+      ) {
         return;
       }
 
@@ -46,7 +49,10 @@ export const useNotifications = () => {
 
       try {
         const notification = new Notification(title, defaultOptions);
-        lastNotificationTime.current = now;
+        // Only update cooldown for non-test notifications
+        if (!options.skipCooldown) {
+          lastNotificationTime.current = now;
+        }
 
         // Auto close after 10 seconds if not interactive
         if (!defaultOptions.requireInteraction) {
@@ -88,8 +94,9 @@ export const useNotifications = () => {
     showNotification(title, {
       body,
       icon: '/no-sleep.svg',
-      tag: 'test-notification',
+      tag: `test-notification-${Date.now()}`, // Unique tag each time
       requireInteraction: false,
+      skipCooldown: true,
     });
   };
 

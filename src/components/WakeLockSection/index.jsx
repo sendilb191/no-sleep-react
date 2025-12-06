@@ -1,7 +1,6 @@
 import React from 'react';
-import { FiSun, FiMoon } from 'react-icons/fi';
 import WakeIcon from '../WakeIcon';
-import './WakeLockSection.less';
+import SectionContainer from '../SectionContainer';
 
 const WakeLockSection = ({
   isWakeLockActive,
@@ -10,53 +9,41 @@ const WakeLockSection = ({
   fallbackActive,
 }) => {
   return (
-    <div className='section-card wake-lock-section'>
-      <div className='section-main'>
-        <div className='section-header'>
-          <div className='section-icon'>
-            <div
-              className={`status-indicator ${
-                isWakeLockActive ? 'active' : 'inactive'
-              }`}
-            >
-              {isWakeLockActive ? <FiSun /> : <FiMoon />}
-            </div>
-          </div>
-          <div className='section-title'>
-            <h3>Sleep Prevention</h3>
-          </div>
-        </div>
-        <WakeIcon isActive={isWakeLockActive} />
-      </div>
-      <div className='section-status'>
-        <div className='api-status'>
-          <span
-            className={`api-badge ${isWakeLockActive ? 'active' : 'inactive'}`}
-          >
-            Status: {isWakeLockActive ? '🟢 Active' : '🔴 Inactive'}
-          </span>
-          <span
-            className={`api-badge ${wakeLockSupported ? 'supported' : 'unsupported'}`}
-          >
-            Wake Lock API:{' '}
-            {wakeLockSupported ? '✅ Supported' : '❌ Not Supported'}
-          </span>
-          {!wakeLockSupported && (
+    <SectionContainer
+      title='Sleep Prevention'
+      className='wake-lock-section'
+      icon={<WakeIcon isActive={isWakeLockActive} />}
+      status={
+        <div className='section-status'>
+          <div className='api-status'>
             <span
-              className={`api-badge ${fallbackActive ? 'supported' : 'inactive'}`}
+              className={`api-badge ${isWakeLockActive ? 'active' : 'inactive'}`}
             >
-              Fallback: {fallbackActive ? '✅ Active' : '⏸️ Inactive'}
+              Status: {isWakeLockActive ? '🟢 Active' : '🔴 Inactive'}
             </span>
-          )}
+            <span
+              className={`api-badge ${wakeLockSupported ? 'supported' : 'unsupported'}`}
+            >
+              Wake Lock API:{' '}
+              {wakeLockSupported ? '✅ Supported' : '❌ Not Supported'}
+            </span>
+            {!wakeLockSupported && (
+              <span
+                className={`api-badge ${fallbackActive ? 'supported' : 'inactive'}`}
+              >
+                Fallback: {fallbackActive ? '✅ Active' : '⏸️ Inactive'}
+              </span>
+            )}
+          </div>
+          {isWakeLockActive &&
+            batteryInfo.supported &&
+            !batteryInfo.charging &&
+            batteryInfo.level <= 30 && (
+              <div className='power-warning'>⚠️ May drain battery faster</div>
+            )}
         </div>
-        {isWakeLockActive &&
-          batteryInfo.supported &&
-          !batteryInfo.charging &&
-          batteryInfo.level <= 30 && (
-            <div className='power-warning'>⚠️ May drain battery faster</div>
-          )}
-      </div>
-    </div>
+      }
+    />
   );
 };
 
