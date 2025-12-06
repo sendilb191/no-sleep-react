@@ -1,136 +1,28 @@
-import React, { useState } from 'react';
-import { useWakeLock } from './hooks/useWakeLock';
-import { useBattery } from './hooks/useBattery';
-import { useNotifications } from './hooks/useNotifications';
-import BatterySection from './components/BatterySection';
-import WakeLockSection from './components/WakeLockSection';
-import SettingsCard from './components/SettingsCard';
-import ErrorMessage from './components/ErrorMessage';
-import Instructions from './components/Instructions';
-import HiddenVideo from './components/HiddenVideo';
+import React from 'react';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
+import Navigation from './components/Navigation';
+import Home from './pages/Home';
+import InstructionsPage from './pages/Instructions';
 
 function App() {
-  const {
-    isWakeLockActive,
-    wakeLockSupported,
-    fallbackActive,
-    error,
-    toggleWakeLock,
-    videoRef,
-  } = useWakeLock();
-
-  const [notificationFrequency, setNotificationFrequency] = useState(1); // Default 1 minute
-  const [autoReleaseEnabled, setAutoReleaseEnabled] = useState(true); // Auto-release when battery < 20%
-
-  const {
-    notificationPermission,
-    requestPermission,
-    showBatteryWarning,
-    showHighBatteryWarning,
-    showAutoReleaseNotification,
-    showTestNotification,
-    lastNotificationTimestamp,
-    lastNotificationType,
-    formatTimestamp,
-    isSupported: notificationsSupported,
-  } = useNotifications(notificationFrequency);
-
-  const batteryInfo = useBattery(
-    batteryLevel => {
-      showBatteryWarning(batteryLevel);
-      // Auto-release wake lock for critical battery protection
-      if (autoReleaseEnabled && batteryLevel < 20 && isWakeLockActive) {
-        toggleWakeLock(); // Release wake lock to preserve battery
-        if (notificationPermission === 'granted') {
-          showAutoReleaseNotification(batteryLevel);
-        }
-      }
-    },
-    batteryLevel => {
-      // Check current permission directly from browser API as fallback
-      const currentPermission =
-        'Notification' in window ? Notification.permission : 'denied';
-      console.log('High battery notification check:', {
-        batteryLevel,
-        hookPermission: notificationPermission,
-        browserPermission: currentPermission,
-      });
-
-      if (
-        notificationPermission === 'granted' ||
-        currentPermission === 'granted'
-      ) {
-        showHighBatteryWarning(batteryLevel);
-      } else {
-        console.log(
-          'High battery detected but notifications not permitted:',
-          batteryLevel,
-          'Hook permission:',
-          notificationPermission,
-          'Browser permission:',
-          currentPermission
-        );
-      }
-    }
-  );
-
   return (
-    <div className='no-sleep-app'>
-      <div className='app-container'>
-        <header className='app-header'>
-          <h1>🚫😴 No Sleep</h1>
-          <p className='app-subtitle'>
-            Keep your device awake & monitor battery
-          </p>
-        </header>
-
-        <div className='dashboard-layout'>
-          <div className='status-monitoring-panel'>
-            {/* Battery Section */}
-            <BatterySection
-              batteryInfo={batteryInfo}
-              isWakeLockActive={isWakeLockActive}
-            />
-
-            {/* Wake Lock Section */}
-            <WakeLockSection
-              isWakeLockActive={isWakeLockActive}
-              batteryInfo={batteryInfo}
-              wakeLockSupported={wakeLockSupported}
-              fallbackActive={fallbackActive}
-            />
+    <Router>
+      <div className='no-sleep-app'>
+        <div className='app-container'>
+          <div className='app-header-nav'>
+            <header className='app-header'>
+              <h1>🚫😴 No Sleep</h1>
+            </header>
+            <Navigation />
           </div>
 
-          <div className='controls-panel'>
-            <SettingsCard
-              isWakeLockActive={isWakeLockActive}
-              toggleWakeLock={toggleWakeLock}
-              wakeLockSupported={wakeLockSupported}
-              fallbackActive={fallbackActive}
-              batteryInfo={batteryInfo}
-              notificationPermission={notificationPermission}
-              requestPermission={requestPermission}
-              notificationsSupported={notificationsSupported}
-              showTestNotification={showTestNotification}
-              notificationFrequency={notificationFrequency}
-              setNotificationFrequency={setNotificationFrequency}
-              lastNotificationTimestamp={lastNotificationTimestamp}
-              lastNotificationType={lastNotificationType}
-              formatTimestamp={formatTimestamp}
-              autoReleaseEnabled={autoReleaseEnabled}
-              setAutoReleaseEnabled={setAutoReleaseEnabled}
-            />
-          </div>
+          <Routes>
+            <Route path='/' element={<Home />} />
+            <Route path='/instructions' element={<InstructionsPage />} />
+          </Routes>
         </div>
-
-        <ErrorMessage error={error} />
-
-        <Instructions />
-
-        {/* Hidden video for fallback */}
-        <HiddenVideo videoRef={videoRef} />
       </div>
-    </div>
+    </Router>
   );
 }
 
