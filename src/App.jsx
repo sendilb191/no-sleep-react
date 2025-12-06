@@ -6,7 +6,6 @@ import BatterySection from './components/BatterySection';
 import WakeLockSection from './components/WakeLockSection';
 import SettingsCard from './components/SettingsCard';
 import ErrorMessage from './components/ErrorMessage';
-import InfoSection from './components/InfoSection';
 import Instructions from './components/Instructions';
 import HiddenVideo from './components/HiddenVideo';
 
@@ -75,12 +74,6 @@ function App() {
         </div>
 
         <ErrorMessage error={error} />
-
-        <InfoSection
-          wakeLockSupported={wakeLockSupported}
-          fallbackActive={fallbackActive}
-          batteryInfo={batteryInfo}
-        />
 
         <Instructions />
 
