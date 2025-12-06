@@ -7,6 +7,10 @@ const SettingsCard = ({
   wakeLockSupported,
   fallbackActive,
   batteryInfo,
+  notificationPermission,
+  requestPermission,
+  notificationsSupported,
+  showTestNotification,
 }) => {
   return (
     <div className='settings-card'>
@@ -32,6 +36,49 @@ const SettingsCard = ({
           <label htmlFor='wake-lock-toggle' className='switch'></label>
         </div>
       </div>
+
+      {/* Notification Permission */}
+      {notificationsSupported && (
+        <div className='control-group'>
+          <div className='control-info'>
+            <label>Battery Notifications</label>
+            <span className='control-description'>
+              {notificationPermission === 'granted'
+                ? 'Notifications enabled'
+                : notificationPermission === 'denied'
+                  ? 'Notifications blocked'
+                  : 'Enable low battery alerts'}
+            </span>
+          </div>
+          {notificationPermission !== 'granted' && (
+            <button
+              className='permission-button'
+              onClick={requestPermission}
+              disabled={notificationPermission === 'denied'}
+            >
+              {notificationPermission === 'denied' ? 'Blocked' : 'Enable'}
+            </button>
+          )}
+          {notificationPermission === 'granted' && (
+            <div className='permission-status granted'>✓ Enabled</div>
+          )}
+        </div>
+      )}
+
+      {/* Test Notification */}
+      {notificationsSupported && notificationPermission === 'granted' && (
+        <div className='control-group'>
+          <div className='control-info'>
+            <label>Test Notifications</label>
+            <span className='control-description'>
+              Send a test notification to verify functionality
+            </span>
+          </div>
+          <button className='test-button' onClick={showTestNotification}>
+            🧪 Test
+          </button>
+        </div>
+      )}
     </div>
   );
 };

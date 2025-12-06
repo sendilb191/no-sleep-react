@@ -1,6 +1,7 @@
 import React from 'react';
 import { useWakeLock } from './hooks/useWakeLock';
 import { useBattery } from './hooks/useBattery';
+import { useNotifications } from './hooks/useNotifications';
 import BatterySection from './components/BatterySection';
 import WakeLockSection from './components/WakeLockSection';
 import SettingsCard from './components/SettingsCard';
@@ -19,7 +20,17 @@ function App() {
     videoRef,
   } = useWakeLock();
 
-  const batteryInfo = useBattery();
+  const {
+    notificationPermission,
+    requestPermission,
+    showBatteryWarning,
+    showTestNotification,
+    isSupported: notificationsSupported,
+  } = useNotifications();
+
+  const batteryInfo = useBattery(batteryLevel => {
+    showBatteryWarning(batteryLevel);
+  });
 
   return (
     <div className='no-sleep-app'>
@@ -55,6 +66,10 @@ function App() {
               wakeLockSupported={wakeLockSupported}
               fallbackActive={fallbackActive}
               batteryInfo={batteryInfo}
+              notificationPermission={notificationPermission}
+              requestPermission={requestPermission}
+              notificationsSupported={notificationsSupported}
+              showTestNotification={showTestNotification}
             />
           </div>
         </div>

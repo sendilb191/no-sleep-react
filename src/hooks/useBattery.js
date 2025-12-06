@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 
-export const useBattery = () => {
+export const useBattery = onLowBattery => {
   const [batteryInfo, setBatteryInfo] = useState({
     level: null,
     charging: false,
@@ -10,6 +10,7 @@ export const useBattery = () => {
   });
 
   const batteryRef = useRef(null);
+  const lastLowBatteryAlert = useRef(0);
 
   // Battery API support and initialization
   useEffect(() => {
@@ -22,13 +23,26 @@ export const useBattery = () => {
 
           // Update battery info
           const updateBatteryInfo = () => {
+            const level = Math.round(battery.level * 100);
+            const charging = battery.charging;
+
             setBatteryInfo({
-              level: Math.round(battery.level * 100),
-              charging: battery.charging,
+              level,
+              charging,
               chargingTime: battery.chargingTime,
               dischargingTime: battery.dischargingTime,
               supported: true,
             });
+
+            // Check for low battery condition (< 30% and not charging)
+            if (level < 30 && !charging && onLowBattery) {
+              const now = Date.now();
+              // Only trigger notification once every 10 minutes to avoid spam
+              if (now - lastLowBatteryAlert.current > 10 * 60 * 1000) {
+                onLowBattery(level);
+                lastLowBatteryAlert.current = now;
+              }
+            }
           };
 
           // Initial update
