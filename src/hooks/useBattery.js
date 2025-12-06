@@ -10,7 +10,6 @@ export const useBattery = onLowBattery => {
   });
 
   const batteryRef = useRef(null);
-  const lastLowBatteryAlert = useRef(0);
 
   // Battery API support and initialization
   useEffect(() => {
@@ -36,12 +35,7 @@ export const useBattery = onLowBattery => {
 
             // Check for low battery condition (< 30% and not charging)
             if (level < 30 && !charging && onLowBattery) {
-              const now = Date.now();
-              // Only trigger notification once every 10 minutes to avoid spam
-              if (now - lastLowBatteryAlert.current > 10 * 60 * 1000) {
-                onLowBattery(level);
-                lastLowBatteryAlert.current = now;
-              }
+              onLowBattery(level);
             }
           };
 

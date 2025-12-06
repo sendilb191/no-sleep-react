@@ -170,4 +170,42 @@
       }
     }
   }
+
+  // Timestamp Section - Outside of control groups
+  .timestamp-section {
+    margin-top: 1rem;
+    padding: 0.8rem;
+    background: rgba(59, 130, 246, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(59, 130, 246, 0.1);
+
+    .timestamp-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+
+      .timestamp-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem;
+
+        .timestamp-label {
+          color: #6b7280;
+          font-size: 0.75rem;
+          font-weight: 500;
+        }
+
+        .timestamp-value {
+          color: #1f2937;
+          font-weight: 600;
+
+          &.no-notifications {
+            color: #9ca3af;
+            font-style: italic;
+          }
+        }
+      }
+    }
+  }
 }

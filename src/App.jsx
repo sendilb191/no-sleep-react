@@ -26,6 +26,8 @@ function App() {
     requestPermission,
     showBatteryWarning,
     showTestNotification,
+    lastNotificationTimestamp,
+    formatTimestamp,
     isSupported: notificationsSupported,
   } = useNotifications(notificationFrequency);
 
@@ -73,6 +75,8 @@ function App() {
               showTestNotification={showTestNotification}
               notificationFrequency={notificationFrequency}
               setNotificationFrequency={setNotificationFrequency}
+              lastNotificationTimestamp={lastNotificationTimestamp}
+              formatTimestamp={formatTimestamp}
             />
           </div>
         </div>

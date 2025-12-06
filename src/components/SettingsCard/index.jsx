@@ -13,6 +13,8 @@ const SettingsCard = ({
   showTestNotification,
   notificationFrequency,
   setNotificationFrequency,
+  lastNotificationTimestamp,
+  formatTimestamp,
 }) => {
   return (
     <div className='settings-card'>
@@ -96,6 +98,29 @@ const SettingsCard = ({
             <button className='test-button' onClick={showTestNotification}>
               🧪 Test
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Notification Timestamps - Outside controls */}
+      {notificationsSupported && notificationPermission === 'granted' && (
+        <div className='timestamp-section'>
+          <div className='timestamp-info'>
+            {lastNotificationTimestamp && (
+              <div className='timestamp-item'>
+                <span className='timestamp-label'>Last notification:</span>
+                <span className='timestamp-value'>
+                  {formatTimestamp(lastNotificationTimestamp)}
+                </span>
+              </div>
+            )}
+            {!lastNotificationTimestamp && (
+              <div className='timestamp-item'>
+                <span className='timestamp-value no-notifications'>
+                  No notifications sent yet
+                </span>
+              </div>
+            )}
           </div>
         </div>
       )}

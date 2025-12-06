@@ -1,6 +1,6 @@
 # 🚫😴 No Sleep React
 
-A modern React application that prevents your device from going to sleep using the Screen Wake Lock API with intelligent fallback methods for older browsers. Features a comprehensive battery monitoring system and component-based architecture.
+A modern React application that prevents your device from going to sleep using the Screen Wake Lock API with intelligent fallback methods for older browsers. Features comprehensive battery monitoring, web push notifications, and a component-based architecture with an optimized, compact UI design.
 
 ## ✨ Features
 
@@ -8,9 +8,17 @@ A modern React application that prevents your device from going to sleep using t
 
 - **Real-time Battery Monitoring**: Live battery level display with visual battery icon
 - **Charging Status Detection**: Shows charging state with animated indicators
-- **Low Battery Warnings**: Alerts when battery is low (≤20%)
+- **Low Battery Warnings**: Smart alerts when battery is low (≤30%) and not charging
 - **Power Consumption Awareness**: Warns when wake lock may drain battery faster
-- **Visual Battery Icon**: Horizontal fill animation with color-coded levels (green/orange/red)
+- **Visual Battery Icon**: Dynamic battery icon with color-coded levels (green/yellow/red)
+
+### 🔔 **Notification System**
+
+- **Web Push Notifications**: Automatic low battery alerts when device is at risk
+- **Configurable Frequency**: Choose notification intervals from 1 minute to 1 hour
+- **Smart Cooldown**: Prevents notification spam with intelligent timing
+- **Test Functionality**: Built-in test button to verify notification settings
+- **Permission Management**: Easy notification permission setup and status display
 
 ### 🌙 **Wake Lock System**
 
@@ -22,11 +30,13 @@ A modern React application that prevents your device from going to sleep using t
 
 ### 🎨 **User Interface**
 
-- **Two-Column Layout**: Battery and wake lock sections (left) with settings panel (right)
-- **Responsive Design**: Works great on desktop and mobile devices, stacks on mobile
-- **Modern Styling**: Clean gradients, animations, and professional appearance
-- **Component Architecture**: Modular, maintainable React components
-- **Error Handling**: Comprehensive error handling with user-friendly messages
+- **Optimized Dashboard Layout**: Balanced two-column grid with equal panel widths
+- **Compact Design**: Space-efficient layout with reduced spacing for maximum content visibility
+- **Semantic Structure**: Clean `control-description` and `control-setting` organization
+- **Modern Styling**: Glass-morphism effects, subtle animations, and professional appearance
+- **Responsive Design**: Adaptive layout that works seamlessly on desktop and mobile
+- **Component Architecture**: Reusable `SectionContainer` with consistent styling
+- **Enhanced Readability**: Black text for better contrast and improved accessibility
 
 ## 🚀 How It Works
 
@@ -51,23 +61,25 @@ For browsers without Wake Lock API support:
 ```
 src/
 ├── hooks/
-│   ├── useWakeLock.js      # Wake lock state management
-│   └── useBattery.js       # Battery API integration
+│   ├── useWakeLock.js       # Wake lock state management
+│   ├── useBattery.js        # Battery API with notification callbacks
+│   └── useNotifications.js  # Web push notification management
 ├── components/
-│   ├── BatterySection.jsx  # Battery status display
-│   ├── WakeLockSection.jsx # Sleep prevention status
-│   ├── SettingsCard.jsx    # Controls and system info
-│   ├── ErrorMessage.jsx    # Error handling display
-│   ├── InfoSection.jsx     # Technical information
-│   ├── Instructions.jsx    # Usage instructions
-│   └── HiddenVideo.jsx     # Fallback video element
-└── App.jsx                 # Main application component
+│   ├── SectionContainer/    # Reusable section wrapper component
+│   ├── BatterySection/      # Battery status display with icons
+│   ├── WakeLockSection/     # Sleep prevention status and controls
+│   ├── SettingsCard/        # Notification controls and toggles
+│   ├── ErrorMessage/        # Error handling display
+│   ├── Instructions/        # Comprehensive usage documentation
+│   └── HiddenVideo/         # Fallback video element for older browsers
+└── App.jsx                  # Main application orchestrator
 ```
 
 ### **Custom Hooks**
 
 - **`useWakeLock`**: Manages wake lock state, API calls, and fallback methods
-- **`useBattery`**: Handles Battery API integration and real-time monitoring
+- **`useBattery`**: Battery API integration with low battery callback support
+- **`useNotifications`**: Web push notification system with configurable frequency
 
 ## 🛠️ Technical Stack
 
@@ -128,39 +140,45 @@ The build process creates a single HTML file using `vite-plugin-singlefile`, mak
 
 ## 📋 Usage
 
-1. Open the application in your browser
-2. Click "Prevent Sleep" to activate wake lock
-3. Your device will stay awake as long as the tab is active
-4. Click "Allow Sleep" to deactivate and allow normal sleep behavior
-
-### Best Practices
-
-- Keep the browser tab active and visible for best results
-- The app works best when the browser window has focus
-- On mobile, avoid switching apps while wake lock is active
-
-## 📋 Usage
-
 ### **Getting Started**
 
-1. Open the application in your browser
-2. View battery status (if supported) and current wake lock state
-3. Use the toggle switch in the settings panel to activate sleep prevention
-4. Monitor battery level and charging status in real-time
-5. Toggle off when no longer needed to preserve battery life
+1. **Open the application** in your browser
+2. **Enable notifications** (optional): Click "Enable" in the Battery Notifications section
+3. **Set notification frequency** (optional): Choose how often you want low battery alerts
+4. **Test notifications** (optional): Use the test button to verify notifications work
+5. **Activate sleep prevention**: Use the toggle switch in the controls panel
+6. **Monitor status**: Watch battery level and wake lock status in real-time
+7. **Deactivate when done**: Toggle off to allow normal sleep behavior and preserve battery
 
 ### **Interface Overview**
 
-- **Left Panel**: Battery status card and wake lock status card
-- **Right Panel**: Settings with toggle switch and system information
-- **Bottom Sections**: Technical details and usage instructions
+- **🔋 Battery Status Section**: Real-time battery level, charging status, and visual indicators
+- **😴 Sleep Prevention Section**: Wake lock status, API support, and fallback information
+- **⚙️ Controls Panel**:
+  - Sleep prevention toggle switch
+  - Notification permission management
+  - Configurable notification frequency (1 min - 1 hour)
+  - Test notification functionality
+- **📚 Instructions**: Comprehensive documentation of all features and best practices
+
+### **Notification Features**
+
+- **Automatic Alerts**: Get notified when battery drops below 30% while not charging
+- **Frequency Control**: Choose notification intervals:
+  - Every 1 minute (for critical monitoring)
+  - Every 5 minutes (default, balanced approach)
+  - Every 10, 15, 30 minutes (moderate monitoring)
+  - Every 1 hour (minimal notifications)
+- **Smart Cooldown**: Prevents spam while ensuring you don't miss important alerts
+- **Test Functionality**: Verify your notification setup works properly
 
 ### **Best Practices**
 
-- Keep the browser tab active and visible for best results
-- Monitor battery level, especially when not charging
-- The app warns when wake lock may impact battery life
-- Use responsibly to prevent unexpected device shutdowns
+- **Active Tab**: Keep the browser tab active and visible for optimal wake lock performance
+- **Power Management**: Monitor battery levels regularly, especially when using sleep prevention on battery power
+- **Notification Setup**: Enable notifications for important battery warnings and system alerts
+- **Responsible Usage**: Toggle off wake lock when not needed to preserve battery life
+- **Browser Compatibility**: Use modern browsers for best API support and performance
 
 ## 🔍 API Reference
 
@@ -208,12 +226,14 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## 🎯 Key Features Highlights
 
-- **🔋 Smart Battery Integration**: Real-time monitoring with visual indicators
-- **🌙 Reliable Sleep Prevention**: Wake Lock API with robust fallbacks
-- **🎨 Modern UI Design**: Clean, responsive two-column layout
-- **⚡ Performance Optimized**: Component-based architecture for maintainability
-- **📱 Cross-Platform**: Works on desktop and mobile devices
-- **🔧 Developer Friendly**: Well-structured codebase with custom hooks
+- **🔋 Smart Battery Integration**: Real-time monitoring with visual indicators and low battery protection
+- **🔔 Intelligent Notifications**: Configurable web push alerts with spam prevention and test functionality
+- **🌙 Reliable Sleep Prevention**: Wake Lock API with robust fallbacks for universal browser support
+- **🎨 Optimized UI Design**: Compact, space-efficient layout with semantic component structure
+- **⚡ Performance Optimized**: Modular architecture with reusable components and efficient state management
+- **📱 Cross-Platform Compatibility**: Seamless experience on desktop and mobile devices
+- **🔧 Developer Friendly**: Clean codebase with custom hooks, centralized styling, and comprehensive documentation
+- **🛡️ User Safety**: Proactive battery warnings and responsible power management features
 
 ## 🙏 Acknowledgments
 

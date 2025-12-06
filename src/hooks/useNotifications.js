@@ -3,8 +3,16 @@ import { useState, useEffect, useRef } from 'react';
 export const useNotifications = (frequencyMinutes = 5) => {
   const [notificationPermission, setNotificationPermission] =
     useState('default');
+  const [lastNotificationTimestamp, setLastNotificationTimestamp] =
+    useState(null);
   const lastNotificationTime = useRef(0);
   const NOTIFICATION_COOLDOWN = frequencyMinutes * 60 * 1000; // Configurable cooldown
+
+  // Format timestamp for display
+  const formatTimestamp = timestamp => {
+    if (!timestamp) return null;
+    return new Date(timestamp).toLocaleString();
+  };
 
   // Check and request notification permission
   useEffect(() => {
@@ -69,35 +77,38 @@ export const useNotifications = (frequencyMinutes = 5) => {
   };
 
   const showBatteryWarning = batteryLevel => {
+    const now = Date.now();
+    const timestamp = new Date(now).toLocaleTimeString();
     const title = '🔋 Low Battery Warning';
-    const body = `Battery level is ${batteryLevel}% and not charging. Consider connecting your charger.`;
+    const body = `Battery level is ${batteryLevel}% and not charging. Consider connecting your charger.\n\nTriggered at: ${timestamp}`;
 
     showNotification(title, {
       body,
       icon: '/no-sleep.svg',
       tag: 'battery-low',
       requireInteraction: false,
-      actions: [
-        {
-          action: 'dismiss',
-          title: 'Dismiss',
-        },
-      ],
     });
+
+    // Update timestamp tracking
+    setLastNotificationTimestamp(now);
   };
 
   const showTestNotification = () => {
+    const now = Date.now();
+    const timestamp = new Date(now).toLocaleTimeString();
     const title = '🧪 Test Notification';
-    const body =
-      'This is a test notification to verify that notifications are working properly!';
+    const body = `This is a test notification to verify that notifications are working properly!\n\nTriggered at: ${timestamp}`;
 
     showNotification(title, {
       body,
       icon: '/no-sleep.svg',
-      tag: `test-notification-${Date.now()}`, // Unique tag each time
+      tag: `test-notification-${now}`, // Unique tag each time
       requireInteraction: false,
       skipCooldown: true,
     });
+
+    // Update timestamp tracking for test notifications
+    setLastNotificationTimestamp(now);
   };
 
   return {
@@ -106,6 +117,8 @@ export const useNotifications = (frequencyMinutes = 5) => {
     showNotification,
     showBatteryWarning,
     showTestNotification,
+    lastNotificationTimestamp,
+    formatTimestamp,
     isSupported: 'Notification' in window,
   };
 };
