@@ -5,6 +5,7 @@ export const useNotifications = (frequencyMinutes = 5) => {
     useState('default');
   const [lastNotificationTimestamp, setLastNotificationTimestamp] =
     useState(null);
+  const [lastNotificationType, setLastNotificationType] = useState(null);
   const lastNotificationTime = useRef(0);
   const NOTIFICATION_COOLDOWN = frequencyMinutes * 60 * 1000; // Configurable cooldown
 
@@ -49,7 +50,7 @@ export const useNotifications = (frequencyMinutes = 5) => {
 
       // Remove any actions from options to prevent the error
       const { actions, ...safeOptions } = options;
-      
+
       const defaultOptions = {
         icon: '/no-sleep.svg',
         badge: '/no-sleep.svg',
@@ -96,6 +97,25 @@ export const useNotifications = (frequencyMinutes = 5) => {
 
     // Update timestamp tracking
     setLastNotificationTimestamp(now);
+    setLastNotificationType('battery');
+  };
+
+  const showHighBatteryWarning = batteryLevel => {
+    const now = Date.now();
+    const timestamp = new Date(now).toLocaleTimeString();
+    const title = '🔋 Battery Fully Charged';
+    const body = `Battery level is ${batteryLevel}% and still charging. Consider unplugging to preserve battery health.\n\nTriggered at: ${timestamp}`;
+
+    showNotification(title, {
+      body,
+      icon: '/no-sleep.svg',
+      tag: 'battery-high',
+      requireInteraction: false,
+    });
+
+    // Update timestamp tracking
+    setLastNotificationTimestamp(now);
+    setLastNotificationType('battery-full');
   };
 
   const showTestNotification = () => {
@@ -114,6 +134,7 @@ export const useNotifications = (frequencyMinutes = 5) => {
 
     // Update timestamp tracking for test notifications
     setLastNotificationTimestamp(now);
+    setLastNotificationType('test');
   };
 
   return {
@@ -121,8 +142,10 @@ export const useNotifications = (frequencyMinutes = 5) => {
     requestPermission,
     showNotification,
     showBatteryWarning,
+    showHighBatteryWarning,
     showTestNotification,
     lastNotificationTimestamp,
+    lastNotificationType,
     formatTimestamp,
     isSupported: 'Notification' in window,
   };

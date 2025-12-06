@@ -14,6 +14,7 @@ const SettingsCard = ({
   notificationFrequency,
   setNotificationFrequency,
   lastNotificationTimestamp,
+  lastNotificationType,
   formatTimestamp,
 }) => {
   return (
@@ -69,7 +70,7 @@ const SettingsCard = ({
       {notificationsSupported && notificationPermission === 'granted' && (
         <div className='control-group'>
           <div className='control-description'>
-            How often to receive low battery alerts
+            How often to receive battery health alerts
           </div>
           <div className='control-setting'>
             <select
@@ -110,7 +111,12 @@ const SettingsCard = ({
               <div className='timestamp-item'>
                 <span className='timestamp-label'>Last notification:</span>
                 <span className='timestamp-value'>
-                  {formatTimestamp(lastNotificationTimestamp)}
+                  {lastNotificationType === 'test'
+                    ? '🧪 Test'
+                    : lastNotificationType === 'battery-full'
+                      ? '🔋 Battery Fully Charged'
+                      : '🔋 Battery Warning'}{' '}
+                  - {formatTimestamp(lastNotificationTimestamp)}
                 </span>
               </div>
             )}

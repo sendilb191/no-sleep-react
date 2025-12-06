@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 
-export const useBattery = onLowBattery => {
+export const useBattery = (onLowBattery, onHighBattery) => {
   const [batteryInfo, setBatteryInfo] = useState({
     level: null,
     charging: false,
@@ -36,6 +36,11 @@ export const useBattery = onLowBattery => {
             // Check for low battery condition (< 30% and not charging)
             if (level < 30 && !charging && onLowBattery) {
               onLowBattery(level);
+            }
+
+            // Check for high battery condition (> 90% and charging)
+            if (level > 90 && charging && onHighBattery) {
+              onHighBattery(level);
             }
           };
 

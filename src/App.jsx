@@ -25,15 +25,22 @@ function App() {
     notificationPermission,
     requestPermission,
     showBatteryWarning,
+    showHighBatteryWarning,
     showTestNotification,
     lastNotificationTimestamp,
+    lastNotificationType,
     formatTimestamp,
     isSupported: notificationsSupported,
   } = useNotifications(notificationFrequency);
 
-  const batteryInfo = useBattery(batteryLevel => {
-    showBatteryWarning(batteryLevel);
-  });
+  const batteryInfo = useBattery(
+    batteryLevel => {
+      showBatteryWarning(batteryLevel);
+    },
+    batteryLevel => {
+      showHighBatteryWarning(batteryLevel);
+    }
+  );
 
   return (
     <div className='no-sleep-app'>
@@ -76,6 +83,7 @@ function App() {
               notificationFrequency={notificationFrequency}
               setNotificationFrequency={setNotificationFrequency}
               lastNotificationTimestamp={lastNotificationTimestamp}
+              lastNotificationType={lastNotificationType}
               formatTimestamp={formatTimestamp}
             />
           </div>
