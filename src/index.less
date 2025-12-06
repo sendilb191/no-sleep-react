@@ -53,10 +53,15 @@ body {
     // Dashboard Layout
     .dashboard-layout {
       display: grid;
-      grid-template-columns: 2fr 1fr;
+      grid-template-columns: 1.5fr 1fr;
       gap: 2rem;
       margin-bottom: 2rem;
       align-items: start;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 1.5rem;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
 
       .status-monitoring-panel {
         display: flex;
@@ -65,8 +70,8 @@ body {
       }
 
       .controls-panel {
-        position: sticky;
-        top: 2rem;
+        position: static;
+        height: 100%;
       }
     }
   }
