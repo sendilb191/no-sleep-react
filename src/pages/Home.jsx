@@ -23,7 +23,10 @@ const Home = () => {
 
   const {
     notificationPermission,
+    notificationsEnabled,
     requestPermission,
+    enableNotifications,
+    disableNotifications,
     showBatteryWarning,
     showHighBatteryWarning,
     showAutoReleaseNotification,
@@ -99,7 +102,10 @@ const Home = () => {
           fallbackActive={fallbackActive}
           batteryInfo={batteryInfo}
           notificationPermission={notificationPermission}
+          notificationsEnabled={notificationsEnabled}
           requestPermission={requestPermission}
+          enableNotifications={enableNotifications}
+          disableNotifications={disableNotifications}
           notificationsSupported={notificationsSupported}
           showTestNotification={showTestNotification}
           notificationFrequency={notificationFrequency}

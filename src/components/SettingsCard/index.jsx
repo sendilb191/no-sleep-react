@@ -8,7 +8,10 @@ const SettingsCard = ({
   fallbackActive,
   batteryInfo,
   notificationPermission,
+  notificationsEnabled,
   requestPermission,
+  enableNotifications,
+  disableNotifications,
   notificationsSupported,
   showTestNotification,
   notificationFrequency,
@@ -65,10 +68,10 @@ const SettingsCard = ({
         <div className='control-group'>
           <div className='control-description'>
             {notificationPermission === 'granted'
-              ? 'Notifications enabled'
+              ? 'Notifications permission granted'
               : notificationPermission === 'denied'
-                ? 'Notifications blocked'
-                : 'Enable low battery alerts'}
+                ? 'Notifications blocked by browser'
+                : 'Enable notification permission'}
           </div>
           <div className='control-setting'>
             {notificationPermission !== 'granted' && (
@@ -81,8 +84,36 @@ const SettingsCard = ({
               </button>
             )}
             {notificationPermission === 'granted' && (
-              <div className='permission-status granted'>✓ Enabled</div>
+              <div className='permission-status granted'>
+                ✓ Permission Granted
+              </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Notification Enable/Disable Toggle */}
+      {notificationsSupported && notificationPermission === 'granted' && (
+        <div className='control-group'>
+          <div className='control-description'>
+            {notificationsEnabled
+              ? 'Notifications are active'
+              : 'Notifications are disabled'}
+          </div>
+          <div className='control-setting'>
+            <div className='toggle-switch'>
+              <input
+                type='checkbox'
+                id='notifications-toggle'
+                checked={notificationsEnabled}
+                onChange={
+                  notificationsEnabled
+                    ? disableNotifications
+                    : enableNotifications
+                }
+              />
+              <label htmlFor='notifications-toggle' className='switch'></label>
+            </div>
           </div>
         </div>
       )}
