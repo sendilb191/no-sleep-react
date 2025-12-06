@@ -47,15 +47,20 @@ export const useNotifications = (frequencyMinutes = 5) => {
         return;
       }
 
+      // Remove any actions from options to prevent the error
+      const { actions, ...safeOptions } = options;
+      
       const defaultOptions = {
         icon: '/no-sleep.svg',
         badge: '/no-sleep.svg',
         tag: 'battery-warning',
         requireInteraction: true,
-        ...options,
+        ...safeOptions,
       };
 
       try {
+        // Debug: Log the options to see what's being passed
+        console.log('Notification options:', defaultOptions);
         const notification = new Notification(title, defaultOptions);
         // Only update cooldown for non-test notifications
         if (!options.skipCooldown) {
