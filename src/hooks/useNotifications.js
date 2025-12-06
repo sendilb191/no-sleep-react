@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 
-export const useNotifications = () => {
+export const useNotifications = (frequencyMinutes = 5) => {
   const [notificationPermission, setNotificationPermission] =
     useState('default');
   const lastNotificationTime = useRef(0);
-  const NOTIFICATION_COOLDOWN = 5 * 60 * 1000; // 5 minutes cooldown
+  const NOTIFICATION_COOLDOWN = frequencyMinutes * 60 * 1000; // Configurable cooldown
 
   // Check and request notification permission
   useEffect(() => {

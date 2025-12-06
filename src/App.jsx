@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useWakeLock } from './hooks/useWakeLock';
 import { useBattery } from './hooks/useBattery';
 import { useNotifications } from './hooks/useNotifications';
@@ -19,13 +19,15 @@ function App() {
     videoRef,
   } = useWakeLock();
 
+  const [notificationFrequency, setNotificationFrequency] = useState(5); // Default 5 minutes
+
   const {
     notificationPermission,
     requestPermission,
     showBatteryWarning,
     showTestNotification,
     isSupported: notificationsSupported,
-  } = useNotifications();
+  } = useNotifications(notificationFrequency);
 
   const batteryInfo = useBattery(batteryLevel => {
     showBatteryWarning(batteryLevel);
@@ -69,6 +71,8 @@ function App() {
               requestPermission={requestPermission}
               notificationsSupported={notificationsSupported}
               showTestNotification={showTestNotification}
+              notificationFrequency={notificationFrequency}
+              setNotificationFrequency={setNotificationFrequency}
             />
           </div>
         </div>

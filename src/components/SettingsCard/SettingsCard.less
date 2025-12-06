@@ -5,15 +5,15 @@
 .settings-card {
   background: rgba(255, 255, 255, 0.95);
   border-radius: 16px;
-  padding: 1.5rem;
+  padding: 1rem;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   height: 100%;
 
   .settings-title {
     color: #1f2937;
-    margin: 0 0 1.5rem 0;
-    font-size: 1.2rem;
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
     font-weight: 600;
   }
 
@@ -21,26 +21,25 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1rem;
+    padding: 0.6rem;
     background: #f8fafc;
-    border-radius: 12px;
-    margin-bottom: 1rem;
+    border-radius: 6px;
+    margin-bottom: 0.8rem;
+    gap: 1rem;
 
-    .control-info {
+    .control-description {
       flex: 1;
       text-align: left;
+      font-size: 0.85rem;
+      color: #000000;
+      line-height: 1.4;
+      padding: 0.2rem 0;
+    }
 
-      label {
-        display: block;
-        font-weight: 600;
-        color: #374151;
-        margin-bottom: 0.25rem;
-      }
-
-      .control-description {
-        font-size: 0.85rem;
-        color: #6b7280;
-      }
+    .control-setting {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
     // Toggle Switch Component
@@ -120,6 +119,29 @@
         background: #ecfdf5;
         color: #059669;
         border: 1px solid #a7f3d0;
+      }
+    }
+
+    // Frequency Select
+    .frequency-select {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      background: white;
+      color: #374151;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-width: 140px;
+
+      &:hover {
+        border-color: #9ca3af;
+      }
+
+      &:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
       }
     }
 
