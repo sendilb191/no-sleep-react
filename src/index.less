@@ -1,5 +1,8 @@
-// No Sleep React App Styles
+// ===================================================
+// No Sleep React App - Organized Nested CSS Structure
+// ===================================================
 
+// Global Styles
 * {
   margin: 0;
   padding: 0;
@@ -17,58 +20,63 @@ body {
   color: #333;
 }
 
+// Main App Container Structure
 .no-sleep-app {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
-}
 
-.app-container {
-  max-width: 900px;
-  width: 100%;
-  text-align: center;
-}
+  .app-container {
+    max-width: 900px;
+    width: 100%;
+    text-align: center;
 
-.app-header {
-  margin-bottom: 2rem;
+    .app-header {
+      margin-bottom: 2rem;
 
-  h1 {
-    font-size: 3rem;
-    color: white;
-    margin-bottom: 0.5rem;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      h1 {
+        font-size: 3rem;
+        color: white;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .app-subtitle {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.2rem;
+        font-weight: 300;
+      }
+    }
+
+    // Dashboard Layout
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+      align-items: start;
+
+      .status-monitoring-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .controls-panel {
+        position: sticky;
+        top: 2rem;
+      }
+    }
   }
-
-  .app-subtitle {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 1.2rem;
-    font-weight: 300;
-  }
 }
 
-// Dashboard Layout Styles
-.dashboard-layout {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 2rem;
-  margin-bottom: 2rem;
-  align-items: start;
-}
+// ===================================================
+// Shared Component Styles
+// ===================================================
 
-.status-monitoring-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.controls-panel {
-  position: sticky;
-  top: 2rem;
-}
-
-// Section Card Styles
+// Base Section Card
 .section-card {
   background: white;
   border-radius: 16px;
@@ -83,136 +91,140 @@ body {
     transform: translateY(-2px);
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
   }
-}
 
-.section-main {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  min-height: 80px;
-}
-
-.section-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex: 1;
-}
-
-.section-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  background: #f8fafc;
-
-  .icon {
-    font-size: 1.5rem;
-    color: #64748b;
-
-    &.charging {
-      color: #22c55e;
-      animation: charging-pulse 1.5s ease-in-out infinite;
-    }
-  }
-}
-
-.section-title {
-  flex: 1;
-
-  h3 {
-    font-size: 1.1rem;
-    color: #374151;
-    margin: 0 0 0.25rem 0;
-    font-weight: 600;
-  }
-}
-
-.section-status {
-  font-size: 0.9rem;
-  color: #6b7280;
-  line-height: 1.4;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-
-  .api-status {
+  // Section Layout Components
+  .section-main {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 0.25rem;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    min-height: 80px;
   }
 
-  .api-badge {
-    font-size: 0.75rem;
-    font-weight: 500;
-    padding: 0.25rem 0.5rem;
-    border-radius: 6px;
-    background: #f1f5f9;
-    border: 1px solid #e2e8f0;
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+  }
 
-    &.supported {
-      color: #059669;
-      background: #ecfdf5;
-      border-color: #a7f3d0;
-    }
+  .section-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: #f8fafc;
 
-    &.unsupported {
-      color: #dc2626;
-      background: #fef2f2;
-      border-color: #fecaca;
-    }
+    .icon {
+      font-size: 1.5rem;
+      color: #64748b;
 
-    &.inactive {
-      color: #6b7280;
-      background: #f9fafb;
-      border-color: #d1d5db;
+      &.charging {
+        color: #22c55e;
+        animation: charging-pulse 1.5s ease-in-out infinite;
+      }
     }
   }
 
-  .current-status {
+  .section-title {
+    flex: 1;
+
+    h3 {
+      font-size: 1.1rem;
+      color: #374151;
+      margin: 0 0 0.25rem 0;
+      font-weight: 600;
+    }
+  }
+
+  .section-status {
     font-size: 0.9rem;
+    color: #6b7280;
+    line-height: 1.4;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 
-    .status {
+    .api-status {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .api-badge {
+      font-size: 0.75rem;
       font-weight: 500;
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
 
-      &.active {
+      &.supported {
         color: #059669;
+        background: #ecfdf5;
+        border-color: #a7f3d0;
+      }
+
+      &.unsupported {
+        color: #dc2626;
+        background: #fef2f2;
+        border-color: #fecaca;
       }
 
       &.inactive {
         color: #6b7280;
+        background: #f9fafb;
+        border-color: #d1d5db;
       }
     }
-  }
 
-  .charging {
-    color: #22c55e;
-    font-weight: 600;
-  }
+    .current-status {
+      font-size: 0.9rem;
 
-  .discharging {
-    color: #64748b;
-  }
+      .status {
+        font-weight: 500;
 
-  .warning {
-    color: #f59e0b;
-    font-weight: 500;
-  }
+        &.active {
+          color: #059669;
+        }
 
-  .power-warning {
-    color: #ef4444;
-    font-weight: 500;
-    display: block;
-    margin-top: 0.5rem;
-    font-size: 0.85rem;
+        &.inactive {
+          color: #6b7280;
+        }
+      }
+    }
+
+    .charging {
+      color: #22c55e;
+      font-weight: 600;
+    }
+
+    .discharging {
+      color: #64748b;
+    }
+
+    .warning {
+      color: #f59e0b;
+      font-weight: 500;
+    }
+
+    .power-warning {
+      color: #ef4444;
+      font-weight: 500;
+      display: block;
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+    }
   }
 }
 
-// Battery Section Specific
+// ===================================================
+// Battery Section Styles
+// ===================================================
+
 .battery-section {
   &.charging {
     border-color: #22c55e;
@@ -229,7 +241,10 @@ body {
   }
 }
 
-// Wake Lock Section Specific
+// ===================================================
+// Wake Lock Section Styles
+// ===================================================
+
 .wake-lock-section {
   .wake-status {
     font-size: 1rem;
@@ -252,7 +267,10 @@ body {
   }
 }
 
-// Wake Lock Visual Display
+// ===================================================
+// Wake Lock Visual Components
+// ===================================================
+
 .wake-icon-display {
   display: flex;
   justify-content: center;
@@ -304,54 +322,54 @@ body {
     border-color: #9ca3af;
     background: #f3f4f6;
   }
-}
 
-.wake-center {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-}
-
-.wake-icon {
-  font-size: 2.2rem;
-  z-index: 2;
-  transition: all 0.4s ease;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-
-  &.active {
-    color: #22c55e;
-    animation: wake-icon-glow 2.5s ease-in-out infinite;
-    filter: drop-shadow(0 0 8px rgba(34, 197, 94, 0.4));
+  .wake-center {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
   }
 
-  &.inactive {
-    color: #6b7280;
-    opacity: 0.7;
-    animation: wake-icon-blink 3s ease-in-out infinite;
+  .wake-icon {
+    font-size: 2.2rem;
+    z-index: 2;
+    transition: all 0.4s ease;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+
+    &.active {
+      color: #22c55e;
+      animation: wake-icon-glow 2.5s ease-in-out infinite;
+      filter: drop-shadow(0 0 8px rgba(34, 197, 94, 0.4));
+    }
+
+    &.inactive {
+      color: #6b7280;
+      opacity: 0.7;
+      animation: wake-icon-blink 3s ease-in-out infinite;
+    }
   }
-}
 
-.wake-pulse-ring {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 60px;
-  height: 60px;
-  margin-top: -30px;
-  margin-left: -30px;
-  border: 2px solid transparent;
-  border-radius: 50%;
-  z-index: 1;
+  .wake-pulse-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60px;
+    height: 60px;
+    margin-top: -30px;
+    margin-left: -30px;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    z-index: 1;
+  }
 
-  .wake-visual.active & {
+  &.active .wake-pulse-ring {
     border-color: rgba(34, 197, 94, 0.5);
     animation: wake-pulse-waves 2.5s ease-out infinite;
   }
 
-  .wake-visual.inactive & {
+  &.inactive .wake-pulse-ring {
     border-color: rgba(107, 114, 128, 0.3);
     animation: wake-pulse-slow 4s ease-in-out infinite;
   }
@@ -423,155 +441,271 @@ body {
   }
 }
 
-// Settings Card Styles
+// ===================================================
+// Settings Card & Controls
+// ===================================================
+
 .settings-card {
   background: rgba(255, 255, 255, 0.95);
   border-radius: 16px;
   padding: 1.5rem;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-}
 
-.settings-title {
-  color: #1f2937;
-  margin: 0 0 1.5rem 0;
-  font-size: 1.2rem;
-  font-weight: 600;
-}
-
-.control-group {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem;
-  background: #f8fafc;
-  border-radius: 12px;
-  margin-bottom: 1.5rem;
-}
-
-.control-info {
-  flex: 1;
-
-  label {
-    display: block;
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 0.25rem;
-  }
-
-  .control-description {
-    font-size: 0.85rem;
-    color: #6b7280;
-  }
-}
-
-// Toggle Switch Styles
-.toggle-switch {
-  position: relative;
-
-  input[type='checkbox'] {
-    opacity: 0;
-    position: absolute;
-  }
-
-  .switch {
-    display: block;
-    width: 48px;
-    height: 28px;
-    background: #e5e7eb;
-    border-radius: 14px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-
-    &:before {
-      content: '';
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      width: 24px;
-      height: 24px;
-      background: white;
-      border-radius: 50%;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    }
-  }
-
-  input[type='checkbox']:checked + .switch {
-    background: #22c55e;
-
-    &:before {
-      transform: translateX(20px);
-    }
-  }
-}
-
-.status-group {
-  h4 {
-    color: #374151;
-    margin: 0 0 1rem 0;
-    font-size: 1rem;
+  .settings-title {
+    color: #1f2937;
+    margin: 0 0 1.5rem 0;
+    font-size: 1.2rem;
     font-weight: 600;
   }
-}
 
-.status-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid #f1f5f9;
-  font-size: 0.9rem;
-
-  &:last-child {
-    border-bottom: none;
-  }
-
-  span:first-child {
-    color: #4b5563;
-  }
-}
-
-.status-badge {
-  font-size: 0.8rem;
-  font-weight: 500;
-
-  &.supported {
-    color: #22c55e;
-  }
-
-  &.unsupported {
-    color: #ef4444;
-  }
-
-  &.active {
-    color: #22c55e;
-  }
-
-  &.inactive {
-    color: #6b7280;
-  }
-}
-
-// Responsive Layout
-@media (max-width: 768px) {
-  .dashboard-layout {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-
-  .controls-panel {
-    position: static;
-  }
-
-  .app-container {
-    max-width: 100%;
+  .control-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     padding: 1rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+
+    .control-info {
+      flex: 1;
+
+      label {
+        display: block;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.25rem;
+      }
+
+      .control-description {
+        font-size: 0.85rem;
+        color: #6b7280;
+      }
+    }
+
+    // Toggle Switch Component
+    .toggle-switch {
+      position: relative;
+
+      input[type='checkbox'] {
+        opacity: 0;
+        position: absolute;
+      }
+
+      .switch {
+        display: block;
+        width: 48px;
+        height: 28px;
+        background: #e5e7eb;
+        border-radius: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+
+        &:before {
+          content: '';
+          position: absolute;
+          top: 2px;
+          left: 2px;
+          width: 24px;
+          height: 24px;
+          background: white;
+          border-radius: 50%;
+          transition: all 0.3s ease;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+      }
+
+      input[type='checkbox']:checked + .switch {
+        background: #22c55e;
+
+        &:before {
+          transform: translateX(20px);
+        }
+      }
+    }
+  }
+
+  // Status Information Groups
+  .status-group {
+    h4 {
+      color: #374151;
+      margin: 0 0 1rem 0;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .status-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 0.9rem;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      span:first-child {
+        color: #4b5563;
+      }
+
+      .status-badge {
+        font-size: 0.8rem;
+        font-weight: 500;
+
+        &.supported {
+          color: #22c55e;
+        }
+
+        &.unsupported {
+          color: #ef4444;
+        }
+
+        &.active {
+          color: #22c55e;
+        }
+
+        &.inactive {
+          color: #6b7280;
+        }
+      }
+    }
   }
 }
 
-// Legacy Battery Card Styles (keeping for backward compatibility)
+// ===================================================
+// Responsive Layout
+// ===================================================
+
+@media (max-width: 768px) {
+  .no-sleep-app {
+    .app-container {
+      max-width: 100%;
+      padding: 1rem;
+
+      .dashboard-layout {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+
+        .controls-panel {
+          position: static;
+        }
+      }
+    }
+  }
+}
+
+// ===================================================
+// Battery Visual Components & Legacy Styles
+// ===================================================
+
+// Battery Icon Display
+.battery-icon-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 0.75rem;
+  height: 80px;
+
+  .battery-percentage {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1f2937;
+    min-width: 48px;
+    text-align: center;
+  }
+
+  .battery-visual {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    width: 80px;
+    height: 40px;
+
+    .battery-body {
+      position: relative;
+      width: 64px;
+      height: 32px;
+      border: 2px solid #374151;
+      border-radius: 4px;
+      background: #f3f4f6;
+      overflow: hidden;
+
+      .battery-level {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        transition: all 0.6s ease;
+        border-radius: 2px;
+
+        &.charging {
+          background: linear-gradient(90deg, #22c55e, #16a34a);
+          position: relative;
+          overflow: hidden;
+
+          &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+              90deg,
+              transparent,
+              rgba(255, 255, 255, 0.3),
+              transparent
+            );
+            animation: charging-flow 2s ease-in-out infinite;
+          }
+        }
+
+        &.discharging {
+          background: linear-gradient(90deg, #f59e0b, #d97706);
+        }
+      }
+
+      .charging-bolt {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: black;
+        font-size: 1.1rem;
+        text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+        animation: bolt-flash 1s ease-in-out infinite alternate;
+        z-index: 2;
+
+        svg {
+          display: block;
+          width: 1.1rem;
+          height: 1.1rem;
+        }
+      }
+    }
+
+    .battery-tip {
+      width: 4px;
+      height: 16px;
+      background: #374151;
+      border-radius: 0 2px 2px 0;
+      align-self: center;
+    }
+  }
+}
+
+// Legacy Battery Card (backward compatibility)
 .battery-card {
   background: white;
   border-radius: 16px;
@@ -603,34 +737,56 @@ body {
       rgba(239, 68, 68, 0.02)
     );
   }
-}
 
-.battery-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
+  .battery-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
 
-.battery-icon-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  background: #f1f5f9;
-}
+    .battery-icon-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: #f1f5f9;
 
-.battery-main-icon {
-  font-size: 1.5rem;
-  color: #64748b;
+      .battery-main-icon {
+        font-size: 1.5rem;
+        color: #64748b;
 
-  &.charging {
-    color: #22c55e;
-    animation: charging-pulse 1.5s ease-in-out infinite;
+        &.charging {
+          color: #22c55e;
+          animation: charging-pulse 1.5s ease-in-out infinite;
+        }
+      }
+    }
+
+    .battery-details {
+      flex: 1;
+      text-align: left;
+
+      h3 {
+        font-size: 1rem;
+        color: #374151;
+        margin: 0 0 0.25rem 0;
+        font-weight: 600;
+      }
+
+      .battery-percentage {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1f2937;
+      }
+    }
   }
 }
+
+// ===================================================
+// Animations
+// ===================================================
 
 @keyframes charging-pulse {
   0%,
@@ -644,107 +800,6 @@ body {
   }
 }
 
-.battery-details {
-  flex: 1;
-  text-align: left;
-
-  h3 {
-    font-size: 1rem;
-    color: #374151;
-    margin: 0 0 0.25rem 0;
-    font-weight: 600;
-  }
-}
-
-.battery-percentage {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1f2937;
-}
-
-// Battery Icon Display Styles
-.battery-icon-display {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-shrink: 0;
-  gap: 0.75rem;
-  height: 80px;
-
-  .battery-percentage {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: #1f2937;
-    min-width: 48px;
-    text-align: center;
-  }
-}
-
-.battery-visual {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  width: 80px;
-  height: 40px;
-
-  // No animation on container - only on battery level fill
-}
-
-.battery-body {
-  position: relative;
-  width: 64px;
-  height: 32px;
-  border: 2px solid #374151;
-  border-radius: 4px;
-  background: #f3f4f6;
-  overflow: hidden;
-}
-
-.battery-tip {
-  width: 4px;
-  height: 16px;
-  background: #374151;
-  border-radius: 0 2px 2px 0;
-  align-self: center;
-}
-
-.battery-level {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  transition: all 0.6s ease;
-  border-radius: 2px;
-
-  &.charging {
-    background: linear-gradient(90deg, #22c55e, #16a34a);
-    position: relative;
-    overflow: hidden;
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.3),
-        transparent
-      );
-      animation: charging-flow 2s ease-in-out infinite;
-    }
-  }
-
-  &.discharging {
-    background: linear-gradient(90deg, #f59e0b, #d97706);
-  }
-}
-
 @keyframes charging-flow {
   0% {
     left: -100%;
@@ -754,25 +809,12 @@ body {
   }
 }
 
-.charging-bolt {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: black;
-  font-size: 1.1rem;
-  text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
-  animation: bolt-flash 1s ease-in-out infinite alternate;
-  z-index: 2;
-
-  svg {
-    display: block;
-    width: 1.1rem;
-    height: 1.1rem;
+@keyframes bolt-flash {
+  0% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 1;
   }
 }
 
@@ -786,6 +828,16 @@ body {
   }
 }
 
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
 @keyframes low-battery-pulse {
   0%,
   100% {
@@ -796,126 +848,11 @@ body {
   }
 }
 
-@keyframes bolt-flash {
-  0% {
-    opacity: 0.8;
-  }
-  100% {
-    opacity: 1;
-    text-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
-  }
-}
+// ===================================================
+// Additional Component Styles
+// ===================================================
 
-.battery-status-text {
-  font-size: 0.875rem;
-  color: #6b7280;
-  line-height: 1.4;
-
-  .charging {
-    color: #22c55e;
-    font-weight: 600;
-  }
-
-  .discharging {
-    color: #64748b;
-  }
-
-  .warning {
-    color: #f59e0b;
-    font-weight: 500;
-  }
-
-  .power-warning {
-    color: #ef4444;
-    font-weight: 500;
-  }
-}
-
-.status-card {
-  background: white;
-  border-radius: 20px;
-  padding: 2rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
-  }
-}
-
-.status-indicator {
-  font-size: 4rem;
-  margin-bottom: 1rem;
-  transition: all 0.3s ease;
-
-  &.active {
-    color: #4ade80;
-    animation: pulse 2s infinite;
-  }
-
-  &.inactive {
-    color: #64748b;
-  }
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.05);
-  }
-}
-
-.status-card h2 {
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
-  color: #1f2937;
-}
-
-.status-text {
-  color: #6b7280;
-  font-size: 1rem;
-  line-height: 1.5;
-}
-
-.wake-lock-button {
-  background: linear-gradient(45deg, #4ade80, #22c55e);
-  color: white;
-  border: none;
-  border-radius: 50px;
-  padding: 1rem 3rem;
-  font-size: 1.2rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
-  margin-bottom: 2rem;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(34, 197, 94, 0.5);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  &.active {
-    background: linear-gradient(45deg, #ef4444, #dc2626);
-    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
-
-    &:hover {
-      box-shadow: 0 8px 25px rgba(239, 68, 68, 0.5);
-    }
-  }
-}
-
+// Error Message Component
 .error-message {
   background: #fee2e2;
   border: 1px solid #fecaca;
@@ -929,6 +866,7 @@ body {
   font-size: 0.9rem;
 }
 
+// Info Section Component
 .info-section {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 15px;
@@ -936,66 +874,55 @@ body {
   margin-bottom: 2rem;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-}
 
-.info-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  color: white;
-  margin-bottom: 0.75rem;
-  font-size: 0.9rem;
+  .info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: white;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
 
-  &:last-child {
-    margin-bottom: 0;
-  }
-
-  svg {
-    flex-shrink: 0;
-    opacity: 0.8;
-  }
-
-  // Battery status specific styling in info section
-  &.battery-status {
-    .charging-icon {
-      color: #22c55e;
-      animation: charging-glow 1.5s ease-in-out infinite;
+    &:last-child {
+      margin-bottom: 0;
     }
 
-    .charging-text {
-      color: #22c55e;
-      font-weight: 600;
+    svg {
+      flex-shrink: 0;
+      opacity: 0.8;
     }
 
-    .discharging-text {
-      color: rgba(255, 255, 255, 0.8);
-    }
+    &.battery-status {
+      .charging-icon {
+        color: #22c55e;
+        animation: charging-glow 1.5s ease-in-out infinite;
+      }
 
-    .low-battery-warning {
-      color: #fbbf24;
-      font-weight: 600;
-    }
+      .charging-text {
+        color: #22c55e;
+        font-weight: 600;
+      }
 
-    &.low-battery {
-      background: rgba(239, 68, 68, 0.1);
-      border-radius: 8px;
-      padding: 0.5rem;
-      margin: 0.25rem -0.5rem;
-    }
-  }
-}
+      .discharging-text {
+        color: rgba(255, 255, 255, 0.8);
+      }
 
-@keyframes charging-glow {
-  0%,
-  100% {
-    opacity: 0.8;
-  }
-  50% {
-    opacity: 1;
-    filter: drop-shadow(0 0 4px #22c55e);
+      .low-battery-warning {
+        color: #fbbf24;
+        font-weight: 600;
+      }
+
+      &.low-battery {
+        background: rgba(239, 68, 68, 0.1);
+        border-radius: 8px;
+        padding: 0.5rem;
+        margin: 0.25rem -0.5rem;
+      }
+    }
   }
 }
 
+// Instructions Component
 .instructions {
   background: rgba(255, 255, 255, 0.95);
   border-radius: 15px;
@@ -1029,33 +956,19 @@ body {
   }
 }
 
-// Responsive design
-@media (max-width: 768px) {
-  .container {
-    padding: 1rem;
-  }
-
-  .header h1 {
-    font-size: 2.5rem;
-  }
-
-  .status-card {
-    padding: 1.5rem;
-  }
-
-  .wake-lock-button {
-    padding: 0.875rem 2rem;
-    font-size: 1.1rem;
-  }
-}
+// ===================================================
+// Additional Responsive Styles
+// ===================================================
 
 @media (max-width: 480px) {
-  .header h1 {
-    font-size: 2rem;
-  }
-
-  .status-indicator {
-    font-size: 3rem;
+  .no-sleep-app {
+    .app-container {
+      .app-header {
+        h1 {
+          font-size: 2rem;
+        }
+      }
+    }
   }
 
   .instructions {
