@@ -13,9 +13,6 @@ const WakeIcon = ({ isActive }) => {
           <div className='wake-pulse-ring'></div>
         </div>
       </div>
-      <div className={`wake-status-text ${isActive ? 'active' : 'inactive'}`}>
-        {isActive ? 'Active' : 'Inactive'}
-      </div>
     </div>
   );
 };

@@ -31,6 +31,11 @@ const WakeLockSection = ({
       <div className='section-status'>
         <div className='api-status'>
           <span
+            className={`api-badge ${isWakeLockActive ? 'active' : 'inactive'}`}
+          >
+            Status: {isWakeLockActive ? '🟢 Active' : '🔴 Inactive'}
+          </span>
+          <span
             className={`api-badge ${wakeLockSupported ? 'supported' : 'unsupported'}`}
           >
             Wake Lock API:{' '}

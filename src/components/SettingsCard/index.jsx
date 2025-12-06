@@ -32,37 +32,6 @@ const SettingsCard = ({
           <label htmlFor='wake-lock-toggle' className='switch'></label>
         </div>
       </div>
-
-      {/* API Status */}
-      <div className='status-group'>
-        <h4>System Status</h4>
-        <div className='status-item'>
-          <span>Wake Lock API:</span>
-          <span
-            className={`status-badge ${wakeLockSupported ? 'supported' : 'unsupported'}`}
-          >
-            {wakeLockSupported ? '✅ Supported' : '❌ Not Supported'}
-          </span>
-        </div>
-
-        {!wakeLockSupported && (
-          <div className='status-item'>
-            <span>Fallback Mode:</span>
-            <span
-              className={`status-badge ${fallbackActive ? 'active' : 'inactive'}`}
-            >
-              {fallbackActive ? '✅ Active' : '⏸️ Inactive'}
-            </span>
-          </div>
-        )}
-
-        {batteryInfo.supported && (
-          <div className='status-item'>
-            <span>Battery API:</span>
-            <span className='status-badge supported'>✅ Available</span>
-          </div>
-        )}
-      </div>
     </div>
   );
 };
