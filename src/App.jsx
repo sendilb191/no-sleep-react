@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useWakeLock } from './hooks/useWakeLock';
 import { useBattery } from './hooks/useBattery';
+import { useNotifications } from './hooks/useNotifications';
 import BatterySection from './components/BatterySection';
 import WakeLockSection from './components/WakeLockSection';
 import SettingsCard from './components/SettingsCard';
 import ErrorMessage from './components/ErrorMessage';
-import InfoSection from './components/InfoSection';
 import Instructions from './components/Instructions';
 import HiddenVideo from './components/HiddenVideo';
 
@@ -19,18 +19,50 @@ function App() {
     videoRef,
   } = useWakeLock();
 
-  const batteryInfo = useBattery();
+  const [notificationFrequency, setNotificationFrequency] = useState(5); // Default 5 minutes
+  const [autoReleaseEnabled, setAutoReleaseEnabled] = useState(true); // Auto-release when battery < 20%
+
+  const {
+    notificationPermission,
+    requestPermission,
+    showBatteryWarning,
+    showHighBatteryWarning,
+    showAutoReleaseNotification,
+    showTestNotification,
+    lastNotificationTimestamp,
+    lastNotificationType,
+    formatTimestamp,
+    isSupported: notificationsSupported,
+  } = useNotifications(notificationFrequency);
+
+  const batteryInfo = useBattery(
+    batteryLevel => {
+      showBatteryWarning(batteryLevel);
+      // Auto-release wake lock for critical battery protection
+      if (autoReleaseEnabled && batteryLevel < 20 && isWakeLockActive) {
+        toggleWakeLock(); // Release wake lock to preserve battery
+        if (notificationPermission === 'granted') {
+          showAutoReleaseNotification(batteryLevel);
+        }
+      }
+    },
+    batteryLevel => {
+      showHighBatteryWarning(batteryLevel);
+    }
+  );
 
   return (
-    <div className='app'>
-      <div className='container'>
-        <header className='header'>
+    <div className='no-sleep-app'>
+      <div className='app-container'>
+        <header className='app-header'>
           <h1>🚫😴 No Sleep</h1>
-          <p className='subtitle'>Keep your device awake & monitor battery</p>
+          <p className='app-subtitle'>
+            Keep your device awake & monitor battery
+          </p>
         </header>
 
-        <div className='main-layout'>
-          <div className='left-section'>
+        <div className='dashboard-layout'>
+          <div className='status-monitoring-panel'>
             {/* Battery Section */}
             <BatterySection
               batteryInfo={batteryInfo}
@@ -46,24 +78,29 @@ function App() {
             />
           </div>
 
-          <div className='right-section'>
+          <div className='controls-panel'>
             <SettingsCard
               isWakeLockActive={isWakeLockActive}
               toggleWakeLock={toggleWakeLock}
               wakeLockSupported={wakeLockSupported}
               fallbackActive={fallbackActive}
               batteryInfo={batteryInfo}
+              notificationPermission={notificationPermission}
+              requestPermission={requestPermission}
+              notificationsSupported={notificationsSupported}
+              showTestNotification={showTestNotification}
+              notificationFrequency={notificationFrequency}
+              setNotificationFrequency={setNotificationFrequency}
+              lastNotificationTimestamp={lastNotificationTimestamp}
+              lastNotificationType={lastNotificationType}
+              formatTimestamp={formatTimestamp}
+              autoReleaseEnabled={autoReleaseEnabled}
+              setAutoReleaseEnabled={setAutoReleaseEnabled}
             />
           </div>
         </div>
 
         <ErrorMessage error={error} />
-
-        <InfoSection
-          wakeLockSupported={wakeLockSupported}
-          fallbackActive={fallbackActive}
-          batteryInfo={batteryInfo}
-        />
 
         <Instructions />
 

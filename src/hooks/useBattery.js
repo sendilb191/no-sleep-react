@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 
-export const useBattery = () => {
+export const useBattery = (onLowBattery, onHighBattery) => {
   const [batteryInfo, setBatteryInfo] = useState({
     level: null,
     charging: false,
@@ -22,13 +22,26 @@ export const useBattery = () => {
 
           // Update battery info
           const updateBatteryInfo = () => {
+            const level = Math.round(battery.level * 100);
+            const charging = battery.charging;
+
             setBatteryInfo({
-              level: Math.round(battery.level * 100),
-              charging: battery.charging,
+              level,
+              charging,
               chargingTime: battery.chargingTime,
               dischargingTime: battery.dischargingTime,
               supported: true,
             });
+
+            // Check for low battery condition (< 30% and not charging)
+            if (level < 30 && !charging && onLowBattery) {
+              onLowBattery(level);
+            }
+
+            // Check for high battery condition (> 90% and charging)
+            if (level > 90 && charging && onHighBattery) {
+              onHighBattery(level);
+            }
           };
 
           // Initial update
