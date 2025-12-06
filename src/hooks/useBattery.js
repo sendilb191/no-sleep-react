@@ -10,6 +10,8 @@ export const useBattery = (onLowBattery, onHighBattery) => {
   });
 
   const batteryRef = useRef(null);
+  const highBatteryNotifiedRef = useRef(false);
+  const lowBatteryNotifiedRef = useRef(false);
 
   // Battery API support and initialization
   useEffect(() => {
@@ -35,12 +37,28 @@ export const useBattery = (onLowBattery, onHighBattery) => {
 
             // Check for low battery condition (< 30% and not charging)
             if (level < 30 && !charging && onLowBattery) {
-              onLowBattery(level);
+              if (!lowBatteryNotifiedRef.current) {
+                onLowBattery(level);
+                lowBatteryNotifiedRef.current = true;
+              }
+            } else if (level >= 30 || charging) {
+              // Reset low battery notification when battery improves
+              lowBatteryNotifiedRef.current = false;
             }
 
             // Check for high battery condition (> 90% and charging)
             if (level > 90 && charging && onHighBattery) {
-              onHighBattery(level);
+              if (!highBatteryNotifiedRef.current) {
+                console.log(
+                  'Triggering high battery notification for level:',
+                  level
+                );
+                onHighBattery(level);
+                highBatteryNotifiedRef.current = true;
+              }
+            } else if (level <= 85 || !charging) {
+              // Reset high battery notification when battery drops or stops charging
+              highBatteryNotifiedRef.current = false;
             }
           };
 

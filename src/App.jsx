@@ -19,7 +19,7 @@ function App() {
     videoRef,
   } = useWakeLock();
 
-  const [notificationFrequency, setNotificationFrequency] = useState(5); // Default 5 minutes
+  const [notificationFrequency, setNotificationFrequency] = useState(1); // Default 5 minutes
   const [autoReleaseEnabled, setAutoReleaseEnabled] = useState(true); // Auto-release when battery < 20%
 
   const {
@@ -47,7 +47,30 @@ function App() {
       }
     },
     batteryLevel => {
-      showHighBatteryWarning(batteryLevel);
+      // Check current permission directly from browser API as fallback
+      const currentPermission =
+        'Notification' in window ? Notification.permission : 'denied';
+      console.log('High battery notification check:', {
+        batteryLevel,
+        hookPermission: notificationPermission,
+        browserPermission: currentPermission,
+      });
+
+      if (
+        notificationPermission === 'granted' ||
+        currentPermission === 'granted'
+      ) {
+        showHighBatteryWarning(batteryLevel);
+      } else {
+        console.log(
+          'High battery detected but notifications not permitted:',
+          batteryLevel,
+          'Hook permission:',
+          notificationPermission,
+          'Browser permission:',
+          currentPermission
+        );
+      }
     }
   );
 
