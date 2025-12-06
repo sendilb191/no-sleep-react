@@ -1,5 +1,5 @@
 import React from 'react';
-import BatteryIcon from '../BatteryIcon';
+import BatteryIcon from '../_shared/BatteryIcon';
 import SectionContainer from '../SectionContainer';
 
 const BatterySection = ({ batteryInfo, isWakeLockActive }) => {
