@@ -1,5 +1,6 @@
 import React from 'react';
-import { FiSun, FiMoon, FiEye, FiEyeOff } from 'react-icons/fi';
+import { FiSun, FiMoon } from 'react-icons/fi';
+import WakeIcon from '../WakeIcon';
 import './WakeLockSection.less';
 
 const WakeLockSection = ({
@@ -25,25 +26,7 @@ const WakeLockSection = ({
             <h3>Sleep Prevention</h3>
           </div>
         </div>
-        <div className='wake-icon-display'>
-          <div
-            className={`wake-visual ${isWakeLockActive ? 'active' : 'inactive'}`}
-          >
-            <div className='wake-center'>
-              <div
-                className={`wake-icon ${isWakeLockActive ? 'active' : 'inactive'}`}
-              >
-                {isWakeLockActive ? <FiEye /> : <FiEyeOff />}
-              </div>
-              <div className='wake-pulse-ring'></div>
-            </div>
-          </div>
-          <div
-            className={`wake-status-text ${isWakeLockActive ? 'active' : 'inactive'}`}
-          >
-            {isWakeLockActive ? 'Active' : 'Inactive'}
-          </div>
-        </div>
+        <WakeIcon isActive={isWakeLockActive} />
       </div>
       <div className='section-status'>
         <div className='api-status'>
