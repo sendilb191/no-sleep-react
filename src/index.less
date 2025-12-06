@@ -17,7 +17,7 @@ body {
   color: #333;
 }
 
-.app {
+.no-sleep-app {
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -25,13 +25,13 @@ body {
   padding: 20px;
 }
 
-.container {
+.app-container {
   max-width: 900px;
   width: 100%;
   text-align: center;
 }
 
-.header {
+.app-header {
   margin-bottom: 2rem;
 
   h1 {
@@ -41,15 +41,15 @@ body {
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   }
 
-  .subtitle {
+  .app-subtitle {
     color: rgba(255, 255, 255, 0.9);
     font-size: 1.2rem;
     font-weight: 300;
   }
 }
 
-// Main Layout Styles
-.main-layout {
+// Dashboard Layout Styles
+.dashboard-layout {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 2rem;
@@ -57,13 +57,13 @@ body {
   align-items: start;
 }
 
-.left-section {
+.status-monitoring-panel {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-.right-section {
+.controls-panel {
   position: sticky;
   top: 2rem;
 }
@@ -556,16 +556,16 @@ body {
 
 // Responsive Layout
 @media (max-width: 768px) {
-  .main-layout {
+  .dashboard-layout {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
 
-  .right-section {
+  .controls-panel {
     position: static;
   }
 
-  .container {
+  .app-container {
     max-width: 100%;
     padding: 1rem;
   }

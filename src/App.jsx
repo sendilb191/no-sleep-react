@@ -22,15 +22,17 @@ function App() {
   const batteryInfo = useBattery();
 
   return (
-    <div className='app'>
-      <div className='container'>
-        <header className='header'>
+    <div className='no-sleep-app'>
+      <div className='app-container'>
+        <header className='app-header'>
           <h1>🚫😴 No Sleep</h1>
-          <p className='subtitle'>Keep your device awake & monitor battery</p>
+          <p className='app-subtitle'>
+            Keep your device awake & monitor battery
+          </p>
         </header>
 
-        <div className='main-layout'>
-          <div className='left-section'>
+        <div className='dashboard-layout'>
+          <div className='status-monitoring-panel'>
             {/* Battery Section */}
             <BatterySection
               batteryInfo={batteryInfo}
@@ -46,7 +48,7 @@ function App() {
             />
           </div>
 
-          <div className='right-section'>
+          <div className='controls-panel'>
             <SettingsCard
               isWakeLockActive={isWakeLockActive}
               toggleWakeLock={toggleWakeLock}
