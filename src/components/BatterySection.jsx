@@ -1,5 +1,6 @@
 import React from 'react';
 import { FiBattery, FiZap } from 'react-icons/fi';
+import './BatterySection.less';
 
 const BatterySection = ({ batteryInfo, isWakeLockActive }) => {
   if (!batteryInfo.supported) {

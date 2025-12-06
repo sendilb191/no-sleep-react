@@ -1,0 +1,43 @@
+// ===================================================
+// Instructions Component Styles
+// ===================================================
+
+.instructions {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  padding: 1.5rem;
+  text-align: left;
+
+  h3 {
+    color: #1f2937;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+  }
+
+  ul {
+    list-style: none;
+
+    li {
+      color: #4b5563;
+      margin-bottom: 0.5rem;
+      padding-left: 1.5rem;
+      position: relative;
+      line-height: 1.4;
+
+      &:before {
+        content: '•';
+        color: #6366f1;
+        font-weight: bold;
+        position: absolute;
+        left: 0;
+      }
+    }
+  }
+}
+
+// Instructions responsive styles
+@media (max-width: 480px) {
+  .instructions {
+    text-align: center;
+  }
+}

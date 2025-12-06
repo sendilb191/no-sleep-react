@@ -1,5 +1,6 @@
 import React from 'react';
 import { FiAlertCircle } from 'react-icons/fi';
+import './ErrorMessage.less';
 
 const ErrorMessage = ({ error }) => {
   if (!error) return null;

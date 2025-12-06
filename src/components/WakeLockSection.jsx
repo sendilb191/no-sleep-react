@@ -1,5 +1,6 @@
 import React from 'react';
 import { FiSun, FiMoon, FiEye, FiEyeOff } from 'react-icons/fi';
+import './WakeLockSection.less';
 
 const WakeLockSection = ({
   isWakeLockActive,

@@ -1,4 +1,5 @@
 import React from 'react';
+import './Instructions.less';
 
 const Instructions = () => {
   return (

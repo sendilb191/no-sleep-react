@@ -1,5 +1,6 @@
 import React from 'react';
 import { FiInfo, FiBattery, FiZap } from 'react-icons/fi';
+import './InfoSection.less';
 
 const InfoSection = ({ wakeLockSupported, fallbackActive, batteryInfo }) => {
   return (
