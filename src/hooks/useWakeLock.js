@@ -27,7 +27,6 @@ export const useWakeLock = () => {
       }
 
       if (!success) {
-        // Use fallback methods if Wake Lock API fails or isn't supported
         startFallbackMethods();
         success = true;
       }
@@ -95,32 +94,21 @@ export const useWakeLock = () => {
     }
   };
 
-  // Fallback methods for older browsers
   const startFallbackMethods = () => {
-    // Method 1: Hidden video loop
     if (videoRef.current) {
       videoRef.current.play().catch(() => {
         console.log('Video fallback failed');
       });
     }
 
-    // Method 2: Periodic page activity simulation
-    intervalRef.current = setInterval(() => {
-      // Simulate user activity by creating a tiny DOM change
-      document.body.style.background =
-        document.body.style.background === 'inherit' ? '' : 'inherit';
-    }, 30000); // Every 30 seconds
-
     setFallbackActive(true);
   };
 
   const stopFallbackMethods = () => {
-    // Stop video
     if (videoRef.current) {
       videoRef.current.pause();
     }
 
-    // Clear interval
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
@@ -132,12 +120,10 @@ export const useWakeLock = () => {
   // Main toggle function
   const toggleWakeLock = async () => {
     if (isWakeLockActive) {
-      // Turn off
       await releaseWakeLock();
       stopFallbackMethods();
       setIsWakeLockActive(false);
     } else {
-      // Turn on
       let success = false;
 
       if (wakeLockSupported) {
