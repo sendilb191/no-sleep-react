@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 export const useNotifications = (frequencyMinutes = 5) => {
   const [notificationPermission, setNotificationPermission] =
     useState('default');
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [lastNotificationTimestamp, setLastNotificationTimestamp] =
     useState(null);
   const [lastNotificationType, setLastNotificationType] = useState(null);
@@ -95,6 +96,16 @@ export const useNotifications = (frequencyMinutes = 5) => {
     return false;
   };
 
+  const enableNotifications = () => {
+    setNotificationsEnabled(true);
+    console.log('🔔 Notifications enabled');
+  };
+
+  const disableNotifications = () => {
+    setNotificationsEnabled(false);
+    console.log('🔕 Notifications disabled');
+  };
+
   const showNotification = (title, options = {}) => {
     const now = Date.now();
     const cooldownPeriod = getNotificationCooldown();
@@ -114,7 +125,12 @@ export const useNotifications = (frequencyMinutes = 5) => {
         : 'Never',
     });
 
-    // Check if notifications are supported and permitted (check both hook state and browser state)
+    // Check if notifications are enabled, supported and permitted (check both hook state and browser state)
+    if (!notificationsEnabled) {
+      console.log('🔕 Notifications disabled by user - skipping notification');
+      return;
+    }
+
     const browserPermission =
       'Notification' in window ? Notification.permission : 'denied';
     const isPermitted =
@@ -288,6 +304,11 @@ export const useNotifications = (frequencyMinutes = 5) => {
   };
 
   const showBatteryWarning = batteryLevel => {
+    if (!notificationsEnabled) {
+      console.log('🔕 Battery warning skipped - notifications disabled');
+      return;
+    }
+
     console.log('🔋 LOW BATTERY WARNING TRIGGERED:', {
       batteryLevel: batteryLevel + '%',
       trigger: 'Battery < 30% and not charging',
@@ -340,6 +361,11 @@ export const useNotifications = (frequencyMinutes = 5) => {
   };
 
   const showHighBatteryWarning = batteryLevel => {
+    if (!notificationsEnabled) {
+      console.log('🔕 High battery warning skipped - notifications disabled');
+      return;
+    }
+
     console.log('🔋 HIGH BATTERY WARNING TRIGGERED:', {
       batteryLevel: batteryLevel + '%',
       trigger: 'Battery > 90% and charging',
@@ -403,6 +429,13 @@ export const useNotifications = (frequencyMinutes = 5) => {
   };
 
   const showAutoReleaseNotification = batteryLevel => {
+    if (!notificationsEnabled) {
+      console.log(
+        '🔕 Auto-release notification skipped - notifications disabled'
+      );
+      return;
+    }
+
     console.log('🔒 AUTO-RELEASE NOTIFICATION TRIGGERED:', {
       batteryLevel: batteryLevel + '%',
       trigger: 'Critical battery - wake lock auto-released',
@@ -467,7 +500,10 @@ export const useNotifications = (frequencyMinutes = 5) => {
 
   return {
     notificationPermission,
+    notificationsEnabled,
     requestPermission,
+    enableNotifications,
+    disableNotifications,
     showNotification,
     showBatteryWarning,
     showHighBatteryWarning,
