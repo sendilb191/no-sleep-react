@@ -1,9 +1,19 @@
 import { useState, useEffect, useRef } from 'react';
+import { useAudio } from './useAudio';
 
-export const useNotifications = (frequencyMinutes = 5) => {
+export const useNotifications = (
+  frequencyMinutes = 5,
+  soundEnabled = true,
+  notificationsEnabled = true
+) => {
+  const { playNotificationBeep, resumeAudioContext, keepAudioContextActive } =
+    useAudio();
   const [notificationPermission, setNotificationPermission] =
     useState('default');
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [internalNotificationsEnabled, setInternalNotificationsEnabled] =
+    useState(notificationsEnabled);
+  const [internalSoundEnabled, setInternalSoundEnabled] =
+    useState(soundEnabled);
   const [lastNotificationTimestamp, setLastNotificationTimestamp] =
     useState(null);
   const [lastNotificationType, setLastNotificationType] = useState(null);
@@ -68,6 +78,9 @@ export const useNotifications = (frequencyMinutes = 5) => {
     if ('Notification' in window) {
       setNotificationPermission(Notification.permission);
 
+      // Initialize audio context keep-alive for better background audio
+      keepAudioContextActive();
+
       // Also listen for permission changes
       const checkPermission = () => {
         const currentPermission = Notification.permission;
@@ -80,7 +93,7 @@ export const useNotifications = (frequencyMinutes = 5) => {
 
       return () => clearInterval(permissionInterval);
     }
-  }, []);
+  }, [keepAudioContextActive]);
 
   const requestPermission = async () => {
     if ('Notification' in window) {
@@ -97,16 +110,26 @@ export const useNotifications = (frequencyMinutes = 5) => {
   };
 
   const enableNotifications = () => {
-    setNotificationsEnabled(true);
+    setInternalNotificationsEnabled(true);
     console.log('🔔 Notifications enabled');
   };
 
   const disableNotifications = () => {
-    setNotificationsEnabled(false);
+    setInternalNotificationsEnabled(false);
     console.log('🔕 Notifications disabled');
   };
 
-  const showNotification = (title, options = {}) => {
+  const enableSounds = () => {
+    setInternalSoundEnabled(true);
+    console.log('🔊 Sounds enabled');
+  };
+
+  const disableSounds = () => {
+    setInternalSoundEnabled(false);
+    console.log('🔇 Sounds disabled');
+  };
+
+  const showNotification = async (title, options = {}) => {
     const now = Date.now();
     const cooldownPeriod = getNotificationCooldown();
     const timeSinceLastNotification = now - lastNotificationTime.current;
@@ -125,10 +148,25 @@ export const useNotifications = (frequencyMinutes = 5) => {
         : 'Never',
     });
 
-    // Check if notifications are enabled, supported and permitted (check both hook state and browser state)
-    if (!notificationsEnabled) {
-      console.log('🔕 Notifications disabled by user - skipping notification');
-      return;
+    // Handle sound and notification separately
+    const shouldPlaySound =
+      internalSoundEnabled &&
+      (notificationsEnabled || internalNotificationsEnabled);
+    const shouldShowNotification = internalNotificationsEnabled;
+
+    console.log('🎚️ SOUND & NOTIFICATION SETTINGS:', {
+      soundEnabled: internalSoundEnabled,
+      notificationsEnabled: internalNotificationsEnabled,
+      shouldPlaySound,
+      shouldShowNotification,
+    });
+
+    // If neither sound nor notifications are enabled, skip everything
+    if (!shouldPlaySound && !shouldShowNotification) {
+      console.log(
+        '🔕 Both sound and notifications disabled by user - skipping'
+      );
+      return { success: false, reason: 'Both disabled by user' };
     }
 
     const browserPermission =
@@ -191,24 +229,69 @@ export const useNotifications = (frequencyMinutes = 5) => {
           skipCooldown: !!options.skipCooldown,
         });
 
-        const notification = new Notification(title, defaultOptions);
+        // Handle sound separately from notifications
+        let beepPromise = null;
+        if (shouldPlaySound) {
+          await resumeAudioContext();
 
-        // Add event listeners to track notification behavior
-        notification.onshow = () => {
-          console.log('🔔 Notification actually displayed:', title);
-        };
+          // Determine beep type based on notification content
+          let beepType = 'default';
+          if (title.includes('Low Battery')) {
+            beepType = 'battery-low';
+          } else if (
+            title.includes('Battery Fully Charged') ||
+            title.includes('High Battery')
+          ) {
+            beepType = 'battery-high';
+          } else if (title.includes('Test Notification')) {
+            beepType = 'test';
+          }
 
-        notification.onclick = () => {
-          console.log('👆 Notification clicked:', title);
-        };
+          // Play beep sound
+          console.log(
+            '🔊 Playing notification sound:',
+            beepType,
+            'Tab visible:',
+            !document.hidden
+          );
+          beepPromise = playNotificationBeep(beepType);
+        }
 
-        notification.onclose = () => {
-          console.log('❌ Notification closed:', title);
-        };
+        let notification = null;
 
-        notification.onerror = error => {
-          console.error('⚠️ Notification error:', title, error);
-        };
+        // Handle notification display separately from sound
+        if (shouldShowNotification) {
+          // Don't wait for beep to complete before showing notification in background
+          // This ensures notification appears even if audio is throttled
+          if (document.hidden || document.visibilityState !== 'visible') {
+            console.log(
+              '🔊 Background mode: Playing sound and showing notification simultaneously'
+            );
+            // Let beep play in background, continue with notification
+          } else if (beepPromise) {
+            // Wait for beep in foreground for better timing (only if sound is enabled)
+            await beepPromise;
+          }
+
+          notification = new Notification(title, defaultOptions);
+
+          // Add event listeners to track notification behavior
+          notification.onshow = () => {
+            console.log('🔔 Notification actually displayed:', title);
+          };
+
+          notification.onclick = () => {
+            console.log('👆 Notification clicked:', title);
+          };
+
+          notification.onclose = () => {
+            console.log('❌ Notification closed:', title);
+          };
+
+          notification.onerror = error => {
+            console.error('⚠️ Notification error:', title, error);
+          };
+        }
 
         // Only update cooldown for non-test notifications
         if (!options.skipCooldown) {
@@ -223,7 +306,7 @@ export const useNotifications = (frequencyMinutes = 5) => {
         }
 
         // Auto close notifications after 10 seconds, but give high battery notifications much more time
-        if (!defaultOptions.requireInteraction) {
+        if (notification && !defaultOptions.requireInteraction) {
           if (title.includes('Battery Fully Charged')) {
             // High battery notifications stay for 2 minutes (120 seconds)
             setTimeout(() => {
@@ -261,20 +344,32 @@ export const useNotifications = (frequencyMinutes = 5) => {
         });
 
         // Check if notification was created but might be blocked by system
-        setTimeout(() => {
-          if (notification.title) {
-            console.log('🔔 Notification object still exists after 1 second');
-          } else {
-            console.warn(
-              '⚠️ Notification object seems to have been blocked or removed'
-            );
-          }
-        }, 1000);
+        if (notification) {
+          setTimeout(() => {
+            if (notification.title) {
+              console.log('🔔 Notification object still exists after 1 second');
+            } else {
+              console.warn(
+                '⚠️ Notification object seems to have been blocked or removed'
+              );
+            }
+          }, 1000);
+        }
+
+        // Wait for beep to complete if sound-only mode
+        if (beepPromise && !shouldShowNotification) {
+          await beepPromise;
+        }
 
         // Return success indicator and notification
-        return { success: true, notification };
+        return {
+          success: true,
+          notification,
+          soundPlayed: shouldPlaySound,
+          notificationShown: shouldShowNotification && notification !== null,
+        };
       } catch (error) {
-        console.error('❌ NOTIFICATION CREATION FAILED:', {
+        console.error('❌ NOTIFICATION/SOUND FAILED:', {
           title,
           error: error.message,
           errorDetails: error,
@@ -303,9 +398,11 @@ export const useNotifications = (frequencyMinutes = 5) => {
     }
   };
 
-  const showBatteryWarning = batteryLevel => {
-    if (!notificationsEnabled) {
-      console.log('🔕 Battery warning skipped - notifications disabled');
+  const showBatteryWarning = async batteryLevel => {
+    if (!internalSoundEnabled && !internalNotificationsEnabled) {
+      console.log(
+        '🔕 Battery warning skipped - both sound and notifications disabled'
+      );
       return;
     }
 
@@ -338,7 +435,7 @@ export const useNotifications = (frequencyMinutes = 5) => {
 ⏱️ Time Since Last: ${timeSinceLastMinutes} minutes
 🔄 Frequency Setting: ${frequencyMinutes} minute(s)`;
 
-    const result = showNotification(title, {
+    const result = await showNotification(title, {
       body,
       icon: '/no-sleep.svg',
       tag: `battery-low-${now}`, // Use unique tag
@@ -360,9 +457,11 @@ export const useNotifications = (frequencyMinutes = 5) => {
     }
   };
 
-  const showHighBatteryWarning = batteryLevel => {
-    if (!notificationsEnabled) {
-      console.log('🔕 High battery warning skipped - notifications disabled');
+  const showHighBatteryWarning = async batteryLevel => {
+    if (!internalSoundEnabled && !internalNotificationsEnabled) {
+      console.log(
+        '🔕 High battery warning skipped - both sound and notifications disabled'
+      );
       return;
     }
 
@@ -406,7 +505,7 @@ export const useNotifications = (frequencyMinutes = 5) => {
       willBypassCooldown: true, // Skip cooldown since we handle frequency ourselves
     });
 
-    const result = showNotification(title, {
+    const result = await showNotification(title, {
       body,
       icon: '/no-sleep.svg',
       tag: `battery-high-${now}`, // Use unique tag like test notifications
@@ -428,10 +527,10 @@ export const useNotifications = (frequencyMinutes = 5) => {
     }
   };
 
-  const showAutoReleaseNotification = batteryLevel => {
-    if (!notificationsEnabled) {
+  const showAutoReleaseNotification = async batteryLevel => {
+    if (!internalSoundEnabled && !internalNotificationsEnabled) {
       console.log(
-        '🔕 Auto-release notification skipped - notifications disabled'
+        '🔕 Auto-release notification skipped - both sound and notifications disabled'
       );
       return;
     }
@@ -449,7 +548,7 @@ export const useNotifications = (frequencyMinutes = 5) => {
     const title = '🔒 Wake Lock Auto-Released';
     const body = `Wake lock automatically released due to critical battery level (${batteryLevel}%) to preserve battery life.\n\nTriggered at: ${timestamp}`;
 
-    const result = showNotification(title, {
+    const result = await showNotification(title, {
       body,
       icon: '/no-sleep.svg',
       tag: 'auto-release',
@@ -467,7 +566,7 @@ export const useNotifications = (frequencyMinutes = 5) => {
     }
   };
 
-  const showTestNotification = () => {
+  const showTestNotification = async () => {
     console.log('🧪 TEST NOTIFICATION TRIGGERED:', {
       trigger: 'User requested test notification',
       timestamp: new Date().toLocaleTimeString(),
@@ -480,7 +579,7 @@ export const useNotifications = (frequencyMinutes = 5) => {
     const title = '🧪 Test Notification';
     const body = `This is a test notification to verify that notifications are working properly!\n\nTriggered at: ${timestamp}`;
 
-    const result = showNotification(title, {
+    const result = await showNotification(title, {
       body,
       icon: '/no-sleep.svg',
       tag: `test-notification-${now}`, // Unique tag each time
@@ -500,10 +599,13 @@ export const useNotifications = (frequencyMinutes = 5) => {
 
   return {
     notificationPermission,
-    notificationsEnabled,
+    notificationsEnabled: internalNotificationsEnabled,
+    soundEnabled: internalSoundEnabled,
     requestPermission,
     enableNotifications,
     disableNotifications,
+    enableSounds,
+    disableSounds,
     showNotification,
     showBatteryWarning,
     showHighBatteryWarning,

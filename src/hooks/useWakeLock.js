@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
+import { useAudio } from './useAudio';
 
 export const useWakeLock = () => {
+  const { playWakeLockBeep, resumeAudioContext } = useAudio();
   const [isWakeLockActive, setIsWakeLockActive] = useState(false);
   const [wakeLockSupported, setWakeLockSupported] = useState(false);
   const [fallbackActive, setFallbackActive] = useState(false);
@@ -119,25 +121,61 @@ export const useWakeLock = () => {
 
   // Main toggle function
   const toggleWakeLock = async () => {
-    if (isWakeLockActive) {
-      await releaseWakeLock();
-      stopFallbackMethods();
-      setIsWakeLockActive(false);
-    } else {
-      let success = false;
+    try {
+      // Resume audio context before playing beeps
+      await resumeAudioContext();
 
-      if (wakeLockSupported) {
-        success = await requestWakeLock();
+      if (isWakeLockActive) {
+        await releaseWakeLock();
+        stopFallbackMethods();
+        setIsWakeLockActive(false);
+
+        // Play beep for wake lock disabled
+        console.log('🔊 Playing wake lock disabled beep');
+        await playWakeLockBeep(false);
+      } else {
+        let success = false;
+
+        if (wakeLockSupported) {
+          success = await requestWakeLock();
+        }
+
+        if (!success || !wakeLockSupported) {
+          // Use fallback methods
+          startFallbackMethods();
+          success = true;
+        }
+
+        if (success) {
+          setIsWakeLockActive(true);
+
+          // Play beep for wake lock enabled
+          console.log('🔊 Playing wake lock enabled beep');
+          await playWakeLockBeep(true);
+        }
       }
+    } catch (error) {
+      console.warn('Error in toggleWakeLock with beep:', error);
+      // Continue with original functionality even if beep fails
+      if (isWakeLockActive) {
+        await releaseWakeLock();
+        stopFallbackMethods();
+        setIsWakeLockActive(false);
+      } else {
+        let success = false;
 
-      if (!success || !wakeLockSupported) {
-        // Use fallback methods
-        startFallbackMethods();
-        success = true;
-      }
+        if (wakeLockSupported) {
+          success = await requestWakeLock();
+        }
 
-      if (success) {
-        setIsWakeLockActive(true);
+        if (!success || !wakeLockSupported) {
+          startFallbackMethods();
+          success = true;
+        }
+
+        if (success) {
+          setIsWakeLockActive(true);
+        }
       }
     }
   };

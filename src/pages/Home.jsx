@@ -20,13 +20,40 @@ const Home = () => {
 
   const [notificationFrequency, setNotificationFrequency] = useState(1); // Default 1 minute
   const [autoReleaseEnabled, setAutoReleaseEnabled] = useState(true); // Auto-release when battery < 20%
+  const [soundEnabled, setSoundEnabled] = useState(true); // Sound control
+  const [notificationDisplayEnabled, setNotificationDisplayEnabled] =
+    useState(true); // Notification display control
+
+  // Handlers for sound and notification controls
+  const handleSoundToggle = () => {
+    const newState = !soundEnabled;
+    setSoundEnabled(newState);
+    if (newState) {
+      enableSounds();
+    } else {
+      disableSounds();
+    }
+  };
+
+  const handleNotificationToggle = () => {
+    const newState = !notificationDisplayEnabled;
+    setNotificationDisplayEnabled(newState);
+    if (newState) {
+      enableNotifications();
+    } else {
+      disableNotifications();
+    }
+  };
 
   const {
     notificationPermission,
     notificationsEnabled,
+    soundEnabled: hookSoundEnabled,
     requestPermission,
     enableNotifications,
     disableNotifications,
+    enableSounds,
+    disableSounds,
     showBatteryWarning,
     showHighBatteryWarning,
     showAutoReleaseNotification,
@@ -35,20 +62,24 @@ const Home = () => {
     lastNotificationType,
     formatTimestamp,
     isSupported: notificationsSupported,
-  } = useNotifications(notificationFrequency);
+  } = useNotifications(
+    notificationFrequency,
+    soundEnabled,
+    notificationDisplayEnabled
+  );
 
   const batteryInfo = useBattery(
-    batteryLevel => {
-      showBatteryWarning(batteryLevel);
+    async batteryLevel => {
+      await showBatteryWarning(batteryLevel);
       // Auto-release wake lock for critical battery protection
       if (autoReleaseEnabled && batteryLevel < 20 && isWakeLockActive) {
-        toggleWakeLock(); // Release wake lock to preserve battery
+        await toggleWakeLock(); // Release wake lock to preserve battery
         if (notificationPermission === 'granted') {
-          showAutoReleaseNotification(batteryLevel);
+          await showAutoReleaseNotification(batteryLevel);
         }
       }
     },
-    batteryLevel => {
+    async batteryLevel => {
       // Check current permission directly from browser API as fallback
       const currentPermission =
         'Notification' in window ? Notification.permission : 'denied';
@@ -62,7 +93,7 @@ const Home = () => {
         notificationPermission === 'granted' ||
         currentPermission === 'granted'
       ) {
-        showHighBatteryWarning(batteryLevel);
+        await showHighBatteryWarning(batteryLevel);
       } else {
         console.log(
           'High battery detected but notifications not permitted:',
@@ -103,6 +134,9 @@ const Home = () => {
           batteryInfo={batteryInfo}
           notificationPermission={notificationPermission}
           notificationsEnabled={notificationsEnabled}
+          soundEnabled={soundEnabled}
+          handleSoundToggle={handleSoundToggle}
+          handleNotificationToggle={handleNotificationToggle}
           requestPermission={requestPermission}
           enableNotifications={enableNotifications}
           disableNotifications={disableNotifications}

@@ -9,6 +9,9 @@ const SettingsCard = ({
   batteryInfo,
   notificationPermission,
   notificationsEnabled,
+  soundEnabled,
+  handleSoundToggle,
+  handleNotificationToggle,
   requestPermission,
   enableNotifications,
   disableNotifications,
@@ -24,57 +27,66 @@ const SettingsCard = ({
 }) => {
   return (
     <div className='settings-card'>
-      <h3 className='settings-title'>Controls</h3>
+      <h3 className='settings-title'>Settings</h3>
 
-      {/* Wake Lock Toggle */}
-      <div className='control-group'>
-        <div className='control-description'>
-          {isWakeLockActive ? 'Device staying awake' : 'Allow device to sleep'}
-        </div>
-        <div className='control-setting'>
-          <div className='toggle-switch'>
-            <input
-              type='checkbox'
-              id='wake-lock-toggle'
-              checked={isWakeLockActive}
-              onChange={toggleWakeLock}
-            />
-            <label htmlFor='wake-lock-toggle' className='switch'></label>
-          </div>
-        </div>
-      </div>
+      {/* Wake Lock Settings Group */}
+      <div className='settings-group'>
+        <h4 className='group-title'>🌙 Wake Lock</h4>
 
-      {/* Auto-Release Wake Lock Setting */}
-      <div className='control-group'>
-        <div className='control-description'>
-          Automatically release wake lock when battery drops below 20% (not
-          charging)
-        </div>
-        <div className='control-setting'>
-          <div className='toggle-switch'>
-            <input
-              type='checkbox'
-              id='auto-release-toggle'
-              checked={autoReleaseEnabled}
-              onChange={e => setAutoReleaseEnabled(e.target.checked)}
-            />
-            <label htmlFor='auto-release-toggle' className='switch'></label>
-          </div>
-        </div>
-      </div>
-
-      {/* Notification Permission */}
-      {notificationsSupported && (
         <div className='control-group'>
-          <div className='control-description'>
-            {notificationPermission === 'granted'
-              ? 'Notifications permission granted'
-              : notificationPermission === 'denied'
-                ? 'Notifications blocked by browser'
-                : 'Enable notification permission'}
-          </div>
+          <div className='control-description'>Keep screen awake</div>
           <div className='control-setting'>
-            {notificationPermission !== 'granted' && (
+            <div className='toggle-switch'>
+              <input
+                type='checkbox'
+                id='wake-lock-toggle'
+                checked={isWakeLockActive}
+                onChange={toggleWakeLock}
+              />
+              <label htmlFor='wake-lock-toggle' className='switch'></label>
+            </div>
+          </div>
+        </div>
+
+        <div className='control-group'>
+          <div className='control-description'>Auto-release at 20% battery</div>
+          <div className='control-setting'>
+            <div className='toggle-switch'>
+              <input
+                type='checkbox'
+                id='auto-release-toggle'
+                checked={autoReleaseEnabled}
+                onChange={e => setAutoReleaseEnabled(e.target.checked)}
+              />
+              <label htmlFor='auto-release-toggle' className='switch'></label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Alert Settings Group */}
+      <div className='settings-group'>
+        <h4 className='group-title'>🔔 Alerts</h4>
+
+        <div className='control-group'>
+          <div className='control-description'>Sound alerts</div>
+          <div className='control-setting'>
+            <div className='toggle-switch'>
+              <input
+                type='checkbox'
+                id='sound-toggle'
+                checked={soundEnabled}
+                onChange={handleSoundToggle}
+              />
+              <label htmlFor='sound-toggle' className='switch'></label>
+            </div>
+          </div>
+        </div>
+
+        {notificationsSupported && notificationPermission !== 'granted' && (
+          <div className='control-group'>
+            <div className='control-description'>Browser notifications</div>
+            <div className='control-setting'>
               <button
                 className='permission-button'
                 onClick={requestPermission}
@@ -82,106 +94,81 @@ const SettingsCard = ({
               >
                 {notificationPermission === 'denied' ? 'Blocked' : 'Enable'}
               </button>
-            )}
-            {notificationPermission === 'granted' && (
-              <div className='permission-status granted'>
-                ✓ Permission Granted
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Notification Enable/Disable Toggle */}
-      {notificationsSupported && notificationPermission === 'granted' && (
-        <div className='control-group'>
-          <div className='control-description'>
-            {notificationsEnabled
-              ? 'Notifications are active'
-              : 'Notifications are disabled'}
-          </div>
-          <div className='control-setting'>
-            <div className='toggle-switch'>
-              <input
-                type='checkbox'
-                id='notifications-toggle'
-                checked={notificationsEnabled}
-                onChange={
-                  notificationsEnabled
-                    ? disableNotifications
-                    : enableNotifications
-                }
-              />
-              <label htmlFor='notifications-toggle' className='switch'></label>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Notification Frequency */}
-      {notificationsSupported && notificationPermission === 'granted' && (
-        <div className='control-group'>
-          <div className='control-description'>
-            How often to receive battery health alerts
-          </div>
-          <div className='control-setting'>
-            <select
-              className='frequency-select'
-              value={notificationFrequency}
-              onChange={e => setNotificationFrequency(Number(e.target.value))}
-            >
-              <option value={1}>Every 1 minute</option>
-              <option value={5}>Every 5 minutes</option>
-              <option value={10}>Every 10 minutes</option>
-              <option value={15}>Every 15 minutes</option>
-              <option value={30}>Every 30 minutes</option>
-              <option value={60}>Every 1 hour</option>
-            </select>
-          </div>
-        </div>
-      )}
-
-      {/* Test Notification */}
-      {notificationsSupported && notificationPermission === 'granted' && (
-        <div className='control-group'>
-          <div className='control-description'>
-            Send a test notification to verify functionality
-          </div>
-          <div className='control-setting'>
-            <button className='test-button' onClick={showTestNotification}>
-              🧪 Test
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Notification Timestamps - Outside controls */}
-      {notificationsSupported && notificationPermission === 'granted' && (
-        <div className='timestamp-section'>
-          <div className='timestamp-info'>
-            {lastNotificationTimestamp && (
-              <div className='timestamp-item'>
-                <span className='timestamp-label'>Last notification:</span>
-                <span className='timestamp-value'>
-                  {lastNotificationType === 'test'
-                    ? '🧪 Test'
-                    : lastNotificationType === 'battery-full'
-                      ? '🔋 Battery Fully Charged'
-                      : lastNotificationType === 'auto-release'
-                        ? '🔓 Wake Lock Auto-Released'
-                        : '🔋 Battery Warning'}{' '}
-                  - {formatTimestamp(lastNotificationTimestamp)}
-                </span>
+        {notificationsSupported && notificationPermission === 'granted' && (
+          <div className='control-group'>
+            <div className='control-description'>Visual notifications</div>
+            <div className='control-setting'>
+              <div className='toggle-switch'>
+                <input
+                  type='checkbox'
+                  id='notifications-toggle'
+                  checked={notificationsEnabled}
+                  onChange={handleNotificationToggle}
+                />
+                <label
+                  htmlFor='notifications-toggle'
+                  className='switch'
+                ></label>
               </div>
-            )}
-            {!lastNotificationTimestamp && (
-              <div className='timestamp-item'>
-                <span className='timestamp-value no-notifications'>
-                  No notifications sent yet
-                </span>
-              </div>
-            )}
+            </div>
           </div>
+        )}
+      </div>
+
+      {/* Notification Configuration Group */}
+      {notificationsSupported && (soundEnabled || notificationsEnabled) && (
+        <div className='settings-group'>
+          <h4 className='group-title'>⚙️ Alert Configuration</h4>
+
+          <div className='control-group'>
+            <div className='control-description'>Alert frequency</div>
+            <div className='control-setting'>
+              <select
+                className='frequency-select'
+                value={notificationFrequency}
+                onChange={e => setNotificationFrequency(Number(e.target.value))}
+              >
+                <option value={1}>1min</option>
+                <option value={5}>5min</option>
+                <option value={10}>10min</option>
+                <option value={15}>15min</option>
+                <option value={30}>30min</option>
+                <option value={60}>1hr</option>
+              </select>
+            </div>
+          </div>
+
+          <div className='control-group'>
+            <div className='control-description'>Test alerts</div>
+            <div className='control-setting'>
+              <button
+                className='test-button'
+                onClick={() => showTestNotification()}
+              >
+                🧪 Test
+              </button>
+            </div>
+          </div>
+
+          {lastNotificationTimestamp && (
+            <div className='control-group status-group'>
+              <div className='control-description'>
+                Last:{' '}
+                {lastNotificationType === 'test'
+                  ? '🧪'
+                  : lastNotificationType === 'battery-full'
+                    ? '🔋+'
+                    : lastNotificationType === 'auto-release'
+                      ? '🔓'
+                      : '🔋-'}{' '}
+                {formatTimestamp(lastNotificationTimestamp)}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
