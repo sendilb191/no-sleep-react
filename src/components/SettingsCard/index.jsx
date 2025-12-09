@@ -15,6 +15,7 @@ const SettingsCard = ({
   disableNotifications,
   notificationsSupported,
   showTestNotification,
+  testServiceWorker,
   notificationFrequency,
   setNotificationFrequency,
   lastNotificationTimestamp,
@@ -148,6 +149,21 @@ const SettingsCard = ({
                 onClick={() => showTestNotification()}
               >
                 🧪 Test
+              </button>
+            </div>
+          </div>
+
+          <div className='control-group'>
+            <div className='control-description'>
+              Test Service Worker (1min delay)
+            </div>
+            <div className='control-setting'>
+              <button
+                className='test-button'
+                onClick={() => testServiceWorker && testServiceWorker(60)}
+                style={{ background: '#16a34a' }}
+              >
+                🛠️ Test SW
               </button>
             </div>
           </div>

@@ -1,6 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 
-export const useBattery = (onLowBattery, onHighBattery) => {
+export const useBattery = (
+  onLowBattery,
+  onHighBattery,
+  sendBatteryUpdateToSW
+) => {
   const [batteryInfo, setBatteryInfo] = useState({
     level: null,
     charging: false,
@@ -32,6 +36,11 @@ export const useBattery = (onLowBattery, onHighBattery) => {
               dischargingTime: battery.dischargingTime,
               supported: true,
             });
+
+            // Send battery update to service worker for background monitoring
+            if (sendBatteryUpdateToSW) {
+              sendBatteryUpdateToSW({ level, charging });
+            }
 
             // Check for low battery condition (< 30% and not charging)
             // Let the notification system handle frequency - don't block here

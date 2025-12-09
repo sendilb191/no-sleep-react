@@ -13,6 +13,12 @@ export const useAudio = () => {
         // Set volume to reasonable level
         audioRef.current.volume = 0.7;
 
+        // Allow cross-origin and background playback
+        audioRef.current.crossOrigin = 'anonymous';
+
+        // Prevent audio from being paused when tab loses focus
+        audioRef.current.setAttribute('playsinline', true);
+
         console.log('🔊 Announce-tones audio initialized');
       } catch (error) {
         console.warn('Audio initialization failed:', error);
@@ -54,15 +60,25 @@ export const useAudio = () => {
         audio.addEventListener('ended', handleEnded);
         audio.addEventListener('error', handleError);
 
-        // Play the audio
+        // Play the audio with better background support
         const playPromise = audio.play();
         if (playPromise !== undefined) {
           playPromise
             .then(() => {
-              console.log('🔊 Announce-tones playing successfully');
+              console.log(
+                '🔊 Announce-tones playing successfully in',
+                document.hidden ? 'background' : 'foreground'
+              );
             })
             .catch(error => {
-              console.warn('Audio play promise rejected:', error);
+              // Fallback for background tab restrictions
+              if (error.name === 'NotAllowedError' && document.hidden) {
+                console.warn(
+                  'Audio blocked in background tab, this is expected browser behavior'
+                );
+              } else {
+                console.warn('Audio play promise rejected:', error);
+              }
               audio.removeEventListener('ended', handleEnded);
               audio.removeEventListener('error', handleError);
               resolve();
