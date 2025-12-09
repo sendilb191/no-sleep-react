@@ -316,7 +316,6 @@ export const useNotifications = (
       };
 
       try {
-
         // Handle sound separately from notifications
         let beepPromise = null;
         if (shouldPlaySound) {
@@ -405,8 +404,6 @@ export const useNotifications = (
             }, timeout);
           }
         }
-
-
 
         // Check if notification was created but might be blocked by system
         if (notification) {
