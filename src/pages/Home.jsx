@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useWakeLock } from '../hooks/useWakeLock';
 import { useBattery } from '../hooks/useBattery';
 import { useNotifications } from '../hooks/useNotifications';
 import { DEFAULT_SETTINGS } from '../constants/defaultSettings';
@@ -7,9 +6,7 @@ import BatterySection from '../components/BatterySection';
 import WakeLockSection from '../components/WakeLockSection';
 import SettingsCard from '../components/SettingsCard';
 
-const Home = () => {
-  const { isWakeLockActive, toggleWakeLock } = useWakeLock();
-
+const Home = ({ isWakeLockActive, toggleWakeLock }) => {
   const [notificationFrequency, setNotificationFrequency] = useState(
     DEFAULT_SETTINGS.NOTIFICATION_FREQUENCY
   );
