@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useBattery } from '../hooks/useBattery';
 import { useNotifications } from '../hooks/useNotifications';
 import { DEFAULT_SETTINGS } from '../constants/defaultSettings';
@@ -6,20 +6,18 @@ import BatterySection from '../components/BatterySection';
 import WakeLockSection from '../components/WakeLockSection';
 import SettingsCard from '../components/SettingsCard';
 
-const Home = ({ isWakeLockActive, toggleWakeLock }) => {
-  const [notificationFrequency, setNotificationFrequency] = useState(
-    DEFAULT_SETTINGS.NOTIFICATION_FREQUENCY
-  );
-  const [autoReleaseEnabled, setAutoReleaseEnabled] = useState(
-    DEFAULT_SETTINGS.AUTO_RELEASE_ENABLED
-  );
-  const [soundEnabled, setSoundEnabled] = useState(
-    DEFAULT_SETTINGS.SOUND_ENABLED
-  );
-  const [notificationDisplayEnabled, setNotificationDisplayEnabled] = useState(
-    DEFAULT_SETTINGS.NOTIFICATION_DISPLAY_ENABLED
-  );
-
+const Home = ({
+  isWakeLockActive,
+  toggleWakeLock,
+  notificationFrequency,
+  setNotificationFrequency,
+  autoReleaseEnabled,
+  setAutoReleaseEnabled,
+  soundEnabled,
+  setSoundEnabled,
+  notificationDisplayEnabled,
+  setNotificationDisplayEnabled,
+}) => {
   // Handlers for sound and notification controls
   const handleSoundToggle = () => {
     const newState = !soundEnabled;
@@ -59,6 +57,7 @@ const Home = ({ isWakeLockActive, toggleWakeLock }) => {
     formatTimestamp,
     sendBatteryUpdateToSW,
     testServiceWorker,
+    serviceWorkerStatus,
     isSupported: notificationsSupported,
   } = useNotifications(
     notificationFrequency,
@@ -68,7 +67,9 @@ const Home = ({ isWakeLockActive, toggleWakeLock }) => {
 
   const batteryInfo = useBattery(
     async batteryLevel => {
-      await showBatteryWarning(batteryLevel);
+      // Send battery data to Service Worker for background notifications
+      // Service Worker is the single source of truth for notifications
+
       // Auto-release wake lock for critical battery protection
       if (
         autoReleaseEnabled &&
@@ -76,9 +77,7 @@ const Home = ({ isWakeLockActive, toggleWakeLock }) => {
         isWakeLockActive
       ) {
         await toggleWakeLock(); // Release wake lock to preserve battery
-        if (notificationPermission === 'granted') {
-          await showAutoReleaseNotification(batteryLevel);
-        }
+        // Note: Service Worker handles the notification for this event
       }
     },
     async batteryLevel => {
@@ -147,6 +146,7 @@ const Home = ({ isWakeLockActive, toggleWakeLock }) => {
           lastNotificationTimestamp={lastNotificationTimestamp}
           lastNotificationType={lastNotificationType}
           formatTimestamp={formatTimestamp}
+          serviceWorkerStatus={serviceWorkerStatus}
           autoReleaseEnabled={autoReleaseEnabled}
           setAutoReleaseEnabled={setAutoReleaseEnabled}
         />

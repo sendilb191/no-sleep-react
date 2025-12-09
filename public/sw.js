@@ -3,7 +3,7 @@
 
 // Store battery and notification settings
 let batterySettings = {
-  frequency: 5, // minutes
+  frequency: 5, // minutes (will be updated from main thread)
   soundEnabled: true,
   notificationsEnabled: true,
   autoReleaseEnabled: true,
@@ -75,6 +75,7 @@ function handleBatteryUpdate(batteryData) {
 }
 
 // Check if battery notifications should be sent
+// Service Worker is the single source of truth for reliable background notifications
 function checkBatteryNotifications(level, charging) {
   const now = Date.now();
   const timeSinceLastNotification = now - lastNotificationTime;
@@ -114,6 +115,7 @@ function checkBatteryNotifications(level, charging) {
 }
 
 // Send battery notification from service worker
+// Service Worker is the single source of truth for reliable background notifications
 function sendBatteryNotification(type, level) {
   if (!batterySettings.notificationsEnabled) return;
 
@@ -152,6 +154,15 @@ function sendBatteryNotification(type, level) {
     .then(() => {
       lastNotificationTime = Date.now();
       console.log(`SW: Sent ${type} battery notification`);
+
+      // Notify main thread about the notification
+      notifyMainThread('NOTIFICATION_SENT', {
+        type,
+        level,
+        timestamp: lastNotificationTime,
+        title,
+        body,
+      });
     })
     .catch(err => console.error('SW: Notification failed', err));
 }

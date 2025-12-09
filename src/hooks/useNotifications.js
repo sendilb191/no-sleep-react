@@ -17,6 +17,7 @@ export const useNotifications = (
   const [lastNotificationTimestamp, setLastNotificationTimestamp] =
     useState(null);
   const [lastNotificationType, setLastNotificationType] = useState(null);
+  const [serviceWorkerStatus, setServiceWorkerStatus] = useState('checking');
   const lastNotificationTime = useRef(0);
   const lastBatteryNotificationTime = useRef(0); // Separate tracking for battery notifications
 
@@ -79,6 +80,9 @@ export const useNotifications = (
   // Send settings to service worker
   const updateServiceWorkerSettings = useCallback(() => {
     if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+      console.log(
+        `🔧 Updating SW settings - frequency: ${frequencyMinutes}min`
+      );
       navigator.serviceWorker.controller.postMessage({
         type: 'SETTINGS_UPDATE',
         data: {
@@ -157,21 +161,26 @@ export const useNotifications = (
           .register('/sw.js')
           .then(registration => {
             console.log('Service Worker registered with battery monitoring');
+            setServiceWorkerStatus('registered');
 
             // Wait for service worker to be ready
             if (registration.installing) {
+              setServiceWorkerStatus('installing');
               registration.installing.addEventListener('statechange', () => {
                 if (registration.installing.state === 'activated') {
+                  setServiceWorkerStatus('active');
                   initializeServiceWorker();
                 }
               });
             } else if (registration.active) {
+              setServiceWorkerStatus('active');
               initializeServiceWorker();
             }
           })
-          .catch(err =>
-            console.log('Service Worker registration failed:', err)
-          );
+          .catch(err => {
+            console.log('Service Worker registration failed:', err);
+            setServiceWorkerStatus('failed');
+          });
 
         // Initialize service worker
         const initializeServiceWorker = () => {
@@ -215,6 +224,20 @@ export const useNotifications = (
                 // Play audio notification for successful test
                 playNotificationBeep('test');
               }
+              break;
+            case 'NOTIFICATION_SENT':
+              console.log('SW sent notification:', data);
+              // Update last notification timestamp and type
+              setLastNotificationTimestamp(data.timestamp);
+              setLastNotificationType(
+                data.type === 'low'
+                  ? 'battery-low'
+                  : data.type === 'high'
+                    ? 'battery-full'
+                    : data.type === 'critical'
+                      ? 'auto-release'
+                      : data.type
+              );
               break;
           }
         });
@@ -802,6 +825,7 @@ export const useNotifications = (
     formatTimestamp,
     sendBatteryUpdateToSW,
     testServiceWorker,
+    serviceWorkerStatus,
     isSupported: 'Notification' in window,
   };
 };
