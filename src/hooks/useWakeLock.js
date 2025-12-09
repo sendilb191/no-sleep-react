@@ -24,14 +24,12 @@ export const useWakeLock = () => {
       if ('wakeLock' in navigator) {
         wakeLockRef.current = await navigator.wakeLock.request('screen');
         wakeLockRef.current.addEventListener('release', () => {
-          console.log('Wake Lock was released');
+          // Wake Lock was released
         });
-        console.log('Wake Lock is active');
         return true;
       }
       return false;
     } catch (err) {
-      console.error('Failed to request wake lock:', err);
       return false;
     }
   };
@@ -42,9 +40,8 @@ export const useWakeLock = () => {
       try {
         await wakeLockRef.current.release();
         wakeLockRef.current = null;
-        console.log('Wake Lock released');
       } catch (err) {
-        console.error('Failed to release wake lock:', err);
+        // Handle wake lock release error silently
       }
     }
   };

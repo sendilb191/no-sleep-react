@@ -1,5 +1,5 @@
 // ===================================================
-// No Sleep React App - Organized Nested CSS Structure
+// No Sleep React App - GitHub-inspired Design System
 // ===================================================
 
 // Global Styles
@@ -11,13 +11,20 @@
 
 body {
   font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    'Google Sans',
+    Roboto,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Helvetica,
+    Arial,
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: #f8f9fa;
   min-height: 100vh;
   color: #000000;
+  line-height: 1.5;
 }
 
 .no-sleep-app {
@@ -25,47 +32,67 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    background-color: #f8f9fa;
 
     .app-content {
       flex: 1;
-      padding: 1rem;
+      padding: 32px 24px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
       overflow-y: auto;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      background-color: #f8f9fa;
     }
 
     .dashboard-layout {
-      max-width: 800px;
+      max-width: 1200px;
       width: 100%;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-      margin-bottom: 1.5rem;
-      border-radius: 16px;
-      padding: 1rem;
+      gap: 24px;
+      margin-bottom: 24px;
+
+      @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
 
       .status-monitoring-panel {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
+        gap: 16px;
       }
 
       .controls-panel {
         position: static;
-        height: 100%;
+        height: fit-content;
       }
     }
   }
 }
 
+// GitHub-style animations
 @keyframes pulse {
   0%,
   100% {
     opacity: 1;
   }
   50% {
-    opacity: 0.5;
+    opacity: 0.7;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

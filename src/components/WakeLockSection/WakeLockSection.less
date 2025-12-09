@@ -3,35 +3,5 @@
 // ===================================================
 
 .wake-lock-section {
-  .wake-status {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #1f2937;
-  }
-
-  .status-indicator {
-    font-size: 1.5rem;
-    transition: all 0.3s ease;
-
-    &.active {
-      color: #22c55e;
-      animation: pulse 2s infinite;
-    }
-
-    &.inactive {
-      color: #64748b;
-    }
-  }
-}
-
-// Wake Icon Display styles moved to WakeIconDisplay.less
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
+  // All styles handled by SectionContainer
 }

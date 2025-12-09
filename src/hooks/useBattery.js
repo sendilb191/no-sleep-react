@@ -45,20 +45,12 @@ export const useBattery = (
             // Check for low battery condition (< 30% and not charging)
             // Let the notification system handle frequency - don't block here
             if (level < 30 && !charging && onLowBattery) {
-              console.log(
-                'Low battery condition detected, calling notification handler:',
-                level
-              );
               onLowBattery(level);
             }
 
             // Check for high battery condition (> 90% and charging)
             // Let the notification system handle frequency - don't block here
             if (level > 90 && charging && onHighBattery) {
-              console.log(
-                'High battery condition detected, calling notification handler:',
-                level
-              );
               onHighBattery(level);
             }
           };
@@ -90,7 +82,6 @@ export const useBattery = (
           setBatteryInfo(prev => ({ ...prev, supported: false }));
         }
       } catch (error) {
-        console.warn('Battery API not available:', error);
         setBatteryInfo(prev => ({ ...prev, supported: false }));
       }
     };

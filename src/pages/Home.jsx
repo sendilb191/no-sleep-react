@@ -42,15 +42,12 @@ const Home = ({
   const {
     notificationPermission,
     notificationsEnabled,
-    soundEnabled: hookSoundEnabled,
     requestPermission,
     enableNotifications,
     disableNotifications,
     enableSounds,
     disableSounds,
-    showBatteryWarning,
     showHighBatteryWarning,
-    showAutoReleaseNotification,
     showTestNotification,
     lastNotificationTimestamp,
     lastNotificationType,
@@ -84,26 +81,12 @@ const Home = ({
       // Check current permission directly from browser API as fallback
       const currentPermission =
         'Notification' in window ? Notification.permission : 'denied';
-      console.log('High battery notification check:', {
-        batteryLevel,
-        hookPermission: notificationPermission,
-        browserPermission: currentPermission,
-      });
 
       if (
         notificationPermission === 'granted' ||
         currentPermission === 'granted'
       ) {
         await showHighBatteryWarning(batteryLevel);
-      } else {
-        console.log(
-          'High battery detected but notifications not permitted:',
-          batteryLevel,
-          'Hook permission:',
-          notificationPermission,
-          'Browser permission:',
-          currentPermission
-        );
       }
     },
     sendBatteryUpdateToSW // Pass service worker communication function
@@ -129,15 +112,12 @@ const Home = ({
         <SettingsCard
           isWakeLockActive={isWakeLockActive}
           toggleWakeLock={toggleWakeLock}
-          batteryInfo={batteryInfo}
           notificationPermission={notificationPermission}
           notificationsEnabled={notificationsEnabled}
           soundEnabled={soundEnabled}
           handleSoundToggle={handleSoundToggle}
           handleNotificationToggle={handleNotificationToggle}
           requestPermission={requestPermission}
-          enableNotifications={enableNotifications}
-          disableNotifications={disableNotifications}
           notificationsSupported={notificationsSupported}
           showTestNotification={showTestNotification}
           testServiceWorker={testServiceWorker}
