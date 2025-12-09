@@ -4,8 +4,6 @@ import './SettingsCard.less';
 const SettingsCard = ({
   isWakeLockActive,
   toggleWakeLock,
-  wakeLockSupported,
-  fallbackActive,
   batteryInfo,
   notificationPermission,
   notificationsEnabled,

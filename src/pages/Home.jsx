@@ -5,18 +5,9 @@ import { useNotifications } from '../hooks/useNotifications';
 import BatterySection from '../components/BatterySection';
 import WakeLockSection from '../components/WakeLockSection';
 import SettingsCard from '../components/SettingsCard';
-import ErrorMessage from '../components/ErrorMessage';
-import HiddenVideo from '../components/HiddenVideo';
 
 const Home = () => {
-  const {
-    isWakeLockActive,
-    wakeLockSupported,
-    fallbackActive,
-    error,
-    toggleWakeLock,
-    videoRef,
-  } = useWakeLock();
+  const { isWakeLockActive, toggleWakeLock } = useWakeLock();
 
   const [notificationFrequency, setNotificationFrequency] = useState(1); // Default 1 minute
   const [autoReleaseEnabled, setAutoReleaseEnabled] = useState(true); // Auto-release when battery < 20%
@@ -120,8 +111,6 @@ const Home = () => {
         <WakeLockSection
           isWakeLockActive={isWakeLockActive}
           batteryInfo={batteryInfo}
-          wakeLockSupported={wakeLockSupported}
-          fallbackActive={fallbackActive}
         />
       </div>
 
@@ -129,8 +118,6 @@ const Home = () => {
         <SettingsCard
           isWakeLockActive={isWakeLockActive}
           toggleWakeLock={toggleWakeLock}
-          wakeLockSupported={wakeLockSupported}
-          fallbackActive={fallbackActive}
           batteryInfo={batteryInfo}
           notificationPermission={notificationPermission}
           notificationsEnabled={notificationsEnabled}
@@ -151,11 +138,6 @@ const Home = () => {
           setAutoReleaseEnabled={setAutoReleaseEnabled}
         />
       </div>
-
-      <ErrorMessage error={error} />
-
-      {/* Hidden video for fallback */}
-      <HiddenVideo videoRef={videoRef} />
     </div>
   );
 };
