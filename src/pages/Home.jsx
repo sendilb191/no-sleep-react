@@ -1,32 +1,53 @@
-import React, { useState } from 'react';
-import { useWakeLock } from '../hooks/useWakeLock';
+import React from 'react';
 import { useBattery } from '../hooks/useBattery';
 import { useNotifications } from '../hooks/useNotifications';
+import { DEFAULT_SETTINGS } from '../constants/defaultSettings';
 import BatterySection from '../components/BatterySection';
 import WakeLockSection from '../components/WakeLockSection';
 import SettingsCard from '../components/SettingsCard';
-import ErrorMessage from '../components/ErrorMessage';
-import HiddenVideo from '../components/HiddenVideo';
 
-const Home = () => {
-  const {
-    isWakeLockActive,
-    wakeLockSupported,
-    fallbackActive,
-    error,
-    toggleWakeLock,
-    videoRef,
-  } = useWakeLock();
+const Home = ({
+  isWakeLockActive,
+  toggleWakeLock,
+  notificationFrequency,
+  setNotificationFrequency,
+  autoReleaseEnabled,
+  setAutoReleaseEnabled,
+  soundEnabled,
+  setSoundEnabled,
+  notificationDisplayEnabled,
+  setNotificationDisplayEnabled,
+}) => {
+  // Handlers for sound and notification controls
+  const handleSoundToggle = () => {
+    const newState = !soundEnabled;
+    setSoundEnabled(newState);
+    if (newState) {
+      enableSounds();
+    } else {
+      disableSounds();
+    }
+  };
 
-  const [notificationFrequency, setNotificationFrequency] = useState(1); // Default 1 minute
-  const [autoReleaseEnabled, setAutoReleaseEnabled] = useState(true); // Auto-release when battery < 20%
+  const handleNotificationToggle = () => {
+    const newState = !notificationDisplayEnabled;
+    setNotificationDisplayEnabled(newState);
+    if (newState) {
+      enableNotifications();
+    } else {
+      disableNotifications();
+    }
+  };
 
   const {
     notificationPermission,
     notificationsEnabled,
+    soundEnabled: hookSoundEnabled,
     requestPermission,
     enableNotifications,
     disableNotifications,
+    enableSounds,
+    disableSounds,
     showBatteryWarning,
     showHighBatteryWarning,
     showAutoReleaseNotification,
@@ -34,21 +55,32 @@ const Home = () => {
     lastNotificationTimestamp,
     lastNotificationType,
     formatTimestamp,
+    sendBatteryUpdateToSW,
+    testServiceWorker,
+    serviceWorkerStatus,
     isSupported: notificationsSupported,
-  } = useNotifications(notificationFrequency);
+  } = useNotifications(
+    notificationFrequency,
+    soundEnabled,
+    notificationDisplayEnabled
+  );
 
   const batteryInfo = useBattery(
-    batteryLevel => {
-      showBatteryWarning(batteryLevel);
+    async batteryLevel => {
+      // Send battery data to Service Worker for background notifications
+      // Service Worker is the single source of truth for notifications
+
       // Auto-release wake lock for critical battery protection
-      if (autoReleaseEnabled && batteryLevel < 20 && isWakeLockActive) {
-        toggleWakeLock(); // Release wake lock to preserve battery
-        if (notificationPermission === 'granted') {
-          showAutoReleaseNotification(batteryLevel);
-        }
+      if (
+        autoReleaseEnabled &&
+        batteryLevel < DEFAULT_SETTINGS.CRITICAL_BATTERY_THRESHOLD &&
+        isWakeLockActive
+      ) {
+        await toggleWakeLock(); // Release wake lock to preserve battery
+        // Note: Service Worker handles the notification for this event
       }
     },
-    batteryLevel => {
+    async batteryLevel => {
       // Check current permission directly from browser API as fallback
       const currentPermission =
         'Notification' in window ? Notification.permission : 'denied';
@@ -62,7 +94,7 @@ const Home = () => {
         notificationPermission === 'granted' ||
         currentPermission === 'granted'
       ) {
-        showHighBatteryWarning(batteryLevel);
+        await showHighBatteryWarning(batteryLevel);
       } else {
         console.log(
           'High battery detected but notifications not permitted:',
@@ -73,7 +105,8 @@ const Home = () => {
           currentPermission
         );
       }
-    }
+    },
+    sendBatteryUpdateToSW // Pass service worker communication function
   );
 
   return (
@@ -89,8 +122,6 @@ const Home = () => {
         <WakeLockSection
           isWakeLockActive={isWakeLockActive}
           batteryInfo={batteryInfo}
-          wakeLockSupported={wakeLockSupported}
-          fallbackActive={fallbackActive}
         />
       </div>
 
@@ -98,30 +129,28 @@ const Home = () => {
         <SettingsCard
           isWakeLockActive={isWakeLockActive}
           toggleWakeLock={toggleWakeLock}
-          wakeLockSupported={wakeLockSupported}
-          fallbackActive={fallbackActive}
           batteryInfo={batteryInfo}
           notificationPermission={notificationPermission}
           notificationsEnabled={notificationsEnabled}
+          soundEnabled={soundEnabled}
+          handleSoundToggle={handleSoundToggle}
+          handleNotificationToggle={handleNotificationToggle}
           requestPermission={requestPermission}
           enableNotifications={enableNotifications}
           disableNotifications={disableNotifications}
           notificationsSupported={notificationsSupported}
           showTestNotification={showTestNotification}
+          testServiceWorker={testServiceWorker}
           notificationFrequency={notificationFrequency}
           setNotificationFrequency={setNotificationFrequency}
           lastNotificationTimestamp={lastNotificationTimestamp}
           lastNotificationType={lastNotificationType}
           formatTimestamp={formatTimestamp}
+          serviceWorkerStatus={serviceWorkerStatus}
           autoReleaseEnabled={autoReleaseEnabled}
           setAutoReleaseEnabled={setAutoReleaseEnabled}
         />
       </div>
-
-      <ErrorMessage error={error} />
-
-      {/* Hidden video for fallback */}
-      <HiddenVideo videoRef={videoRef} />
     </div>
   );
 };
