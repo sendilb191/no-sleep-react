@@ -2,12 +2,7 @@ import React from 'react';
 import WakeIcon from '../_shared/WakeIcon';
 import SectionContainer from '../SectionContainer';
 
-const WakeLockSection = ({
-  isWakeLockActive,
-  batteryInfo,
-  wakeLockSupported,
-  fallbackActive,
-}) => {
+const WakeLockSection = ({ isWakeLockActive, batteryInfo }) => {
   return (
     <SectionContainer
       title='Sleep Prevention'
@@ -21,19 +16,6 @@ const WakeLockSection = ({
             >
               Status: {isWakeLockActive ? '🟢 Active' : '🔴 Inactive'}
             </span>
-            <span
-              className={`api-badge ${wakeLockSupported ? 'supported' : 'unsupported'}`}
-            >
-              Wake Lock API:{' '}
-              {wakeLockSupported ? '✅ Supported' : '❌ Not Supported'}
-            </span>
-            {!wakeLockSupported && (
-              <span
-                className={`api-badge ${fallbackActive ? 'supported' : 'inactive'}`}
-              >
-                Fallback: {fallbackActive ? '✅ Active' : '⏸️ Inactive'}
-              </span>
-            )}
           </div>
           {isWakeLockActive &&
             batteryInfo.supported &&

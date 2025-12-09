@@ -1,29 +1,23 @@
-import React, { useState } from 'react';
-import { useWakeLock } from '../hooks/useWakeLock';
+import React from 'react';
 import { useBattery } from '../hooks/useBattery';
 import { useNotifications } from '../hooks/useNotifications';
+import { DEFAULT_SETTINGS } from '../constants/defaultSettings';
 import BatterySection from '../components/BatterySection';
 import WakeLockSection from '../components/WakeLockSection';
 import SettingsCard from '../components/SettingsCard';
-import ErrorMessage from '../components/ErrorMessage';
-import HiddenVideo from '../components/HiddenVideo';
 
-const Home = () => {
-  const {
-    isWakeLockActive,
-    wakeLockSupported,
-    fallbackActive,
-    error,
-    toggleWakeLock,
-    videoRef,
-  } = useWakeLock();
-
-  const [notificationFrequency, setNotificationFrequency] = useState(1); // Default 1 minute
-  const [autoReleaseEnabled, setAutoReleaseEnabled] = useState(true); // Auto-release when battery < 20%
-  const [soundEnabled, setSoundEnabled] = useState(true); // Sound control
-  const [notificationDisplayEnabled, setNotificationDisplayEnabled] =
-    useState(true); // Notification display control
-
+const Home = ({
+  isWakeLockActive,
+  toggleWakeLock,
+  notificationFrequency,
+  setNotificationFrequency,
+  autoReleaseEnabled,
+  setAutoReleaseEnabled,
+  soundEnabled,
+  setSoundEnabled,
+  notificationDisplayEnabled,
+  setNotificationDisplayEnabled,
+}) => {
   // Handlers for sound and notification controls
   const handleSoundToggle = () => {
     const newState = !soundEnabled;
@@ -61,6 +55,9 @@ const Home = () => {
     lastNotificationTimestamp,
     lastNotificationType,
     formatTimestamp,
+    sendBatteryUpdateToSW,
+    testServiceWorker,
+    serviceWorkerStatus,
     isSupported: notificationsSupported,
   } = useNotifications(
     notificationFrequency,
@@ -70,13 +67,17 @@ const Home = () => {
 
   const batteryInfo = useBattery(
     async batteryLevel => {
-      await showBatteryWarning(batteryLevel);
+      // Send battery data to Service Worker for background notifications
+      // Service Worker is the single source of truth for notifications
+
       // Auto-release wake lock for critical battery protection
-      if (autoReleaseEnabled && batteryLevel < 20 && isWakeLockActive) {
+      if (
+        autoReleaseEnabled &&
+        batteryLevel < DEFAULT_SETTINGS.CRITICAL_BATTERY_THRESHOLD &&
+        isWakeLockActive
+      ) {
         await toggleWakeLock(); // Release wake lock to preserve battery
-        if (notificationPermission === 'granted') {
-          await showAutoReleaseNotification(batteryLevel);
-        }
+        // Note: Service Worker handles the notification for this event
       }
     },
     async batteryLevel => {
@@ -104,7 +105,8 @@ const Home = () => {
           currentPermission
         );
       }
-    }
+    },
+    sendBatteryUpdateToSW // Pass service worker communication function
   );
 
   return (
@@ -120,8 +122,6 @@ const Home = () => {
         <WakeLockSection
           isWakeLockActive={isWakeLockActive}
           batteryInfo={batteryInfo}
-          wakeLockSupported={wakeLockSupported}
-          fallbackActive={fallbackActive}
         />
       </div>
 
@@ -129,8 +129,6 @@ const Home = () => {
         <SettingsCard
           isWakeLockActive={isWakeLockActive}
           toggleWakeLock={toggleWakeLock}
-          wakeLockSupported={wakeLockSupported}
-          fallbackActive={fallbackActive}
           batteryInfo={batteryInfo}
           notificationPermission={notificationPermission}
           notificationsEnabled={notificationsEnabled}
@@ -142,20 +140,17 @@ const Home = () => {
           disableNotifications={disableNotifications}
           notificationsSupported={notificationsSupported}
           showTestNotification={showTestNotification}
+          testServiceWorker={testServiceWorker}
           notificationFrequency={notificationFrequency}
           setNotificationFrequency={setNotificationFrequency}
           lastNotificationTimestamp={lastNotificationTimestamp}
           lastNotificationType={lastNotificationType}
           formatTimestamp={formatTimestamp}
+          serviceWorkerStatus={serviceWorkerStatus}
           autoReleaseEnabled={autoReleaseEnabled}
           setAutoReleaseEnabled={setAutoReleaseEnabled}
         />
       </div>
-
-      <ErrorMessage error={error} />
-
-      {/* Hidden video for fallback */}
-      <HiddenVideo videoRef={videoRef} />
     </div>
   );
 };

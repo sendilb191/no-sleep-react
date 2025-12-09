@@ -4,8 +4,6 @@ import './SettingsCard.less';
 const SettingsCard = ({
   isWakeLockActive,
   toggleWakeLock,
-  wakeLockSupported,
-  fallbackActive,
   batteryInfo,
   notificationPermission,
   notificationsEnabled,
@@ -17,11 +15,13 @@ const SettingsCard = ({
   disableNotifications,
   notificationsSupported,
   showTestNotification,
+  testServiceWorker,
   notificationFrequency,
   setNotificationFrequency,
   lastNotificationTimestamp,
   lastNotificationType,
   formatTimestamp,
+  serviceWorkerStatus,
   autoReleaseEnabled,
   setAutoReleaseEnabled,
 }) => {
@@ -154,21 +154,72 @@ const SettingsCard = ({
             </div>
           </div>
 
+          <div className='control-group'>
+            <div className='control-description'>
+              Test Service Worker (1min delay)
+            </div>
+            <div className='control-setting'>
+              <button
+                className='test-button'
+                onClick={() => testServiceWorker && testServiceWorker(60)}
+                style={{ background: '#16a34a' }}
+              >
+                🛠️ Test SW
+              </button>
+            </div>
+          </div>
+
           {lastNotificationTimestamp && (
             <div className='control-group status-group'>
               <div className='control-description'>
-                Last:{' '}
+                Last Notification:{' '}
                 {lastNotificationType === 'test'
-                  ? '🧪'
+                  ? '🧪 Test'
                   : lastNotificationType === 'battery-full'
-                    ? '🔋+'
-                    : lastNotificationType === 'auto-release'
-                      ? '🔓'
-                      : '🔋-'}{' '}
-                {formatTimestamp(lastNotificationTimestamp)}
+                    ? '🔋+ High Battery'
+                    : lastNotificationType === 'battery-low'
+                      ? '🔋- Low Battery'
+                      : lastNotificationType === 'auto-release'
+                        ? '🔓 Auto-Release'
+                        : '📢 Notification'}{' '}
+                - {formatTimestamp(lastNotificationTimestamp)}
+              </div>
+              <div
+                className='control-description'
+                style={{
+                  fontSize: '0.85em',
+                  opacity: 0.7,
+                  marginTop: '0.25rem',
+                }}
+              >
+                💡 Service Worker handles background notifications when tab is
+                inactive
               </div>
             </div>
           )}
+
+          <div className='control-group status-group'>
+            <div className='control-description'>
+              Service Worker Status:{' '}
+              {serviceWorkerStatus === 'checking' && '🔄 Checking...'}
+              {serviceWorkerStatus === 'installing' && '⚙️ Installing...'}
+              {serviceWorkerStatus === 'registered' && '📝 Registered'}
+              {serviceWorkerStatus === 'active' && '✅ Active & Monitoring'}
+              {serviceWorkerStatus === 'failed' && '❌ Failed'}
+            </div>
+            <div
+              className='control-description'
+              style={{
+                fontSize: '0.85em',
+                opacity: 0.7,
+                marginTop: '0.25rem',
+              }}
+            >
+              {serviceWorkerStatus === 'active'
+                ? '🎯 Background notifications enabled - works when tab is inactive'
+                : '⚠️ Background notifications may not work reliably'}
+            </div>
+          </div>
         </div>
       )}
     </div>
