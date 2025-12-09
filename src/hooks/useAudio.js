@@ -18,10 +18,7 @@ export const useAudio = () => {
 
         // Prevent audio from being paused when tab loses focus
         audioRef.current.setAttribute('playsinline', true);
-
-        console.log('🔊 Announce-tones audio initialized');
       } catch (error) {
-        console.warn('Audio initialization failed:', error);
         return null;
       }
     }
@@ -34,7 +31,6 @@ export const useAudio = () => {
       try {
         const audio = initAudio();
         if (!audio) {
-          console.warn('Audio not available');
           resolve();
           return;
         }
@@ -51,7 +47,6 @@ export const useAudio = () => {
 
         // Handle audio errors
         const handleError = error => {
-          console.warn('Audio playback error:', error);
           audio.removeEventListener('ended', handleEnded);
           audio.removeEventListener('error', handleError);
           resolve();
@@ -65,27 +60,16 @@ export const useAudio = () => {
         if (playPromise !== undefined) {
           playPromise
             .then(() => {
-              console.log(
-                '🔊 Announce-tones playing successfully in',
-                document.hidden ? 'background' : 'foreground'
-              );
+              // Audio playing successfully
             })
             .catch(error => {
-              // Fallback for background tab restrictions
-              if (error.name === 'NotAllowedError' && document.hidden) {
-                console.warn(
-                  'Audio blocked in background tab, this is expected browser behavior'
-                );
-              } else {
-                console.warn('Audio play promise rejected:', error);
-              }
+              // Fallback for background tab restrictions - handle silently
               audio.removeEventListener('ended', handleEnded);
               audio.removeEventListener('error', handleError);
               resolve();
             });
         }
       } catch (error) {
-        console.warn('Error playing announce-tones:', error);
         resolve();
       }
     });
@@ -95,19 +79,10 @@ export const useAudio = () => {
   const playNotificationBeep = useCallback(
     async (type = 'default') => {
       try {
-        console.log(
-          '🔊 Playing announce-tones for notification:',
-          type,
-          'Background:',
-          document.hidden
-        );
-
         // Play the announce-tones file for all notification types
         await playAnnounceTone();
-
-        console.log('🔊 Announce-tones playback completed for:', type);
       } catch (error) {
-        console.warn('Error playing announce-tones:', error);
+        // Handle audio error silently
       }
     },
     [playAnnounceTone]
@@ -117,22 +92,10 @@ export const useAudio = () => {
   const playWakeLockBeep = useCallback(
     async enabled => {
       try {
-        console.log(
-          '🔊 Playing announce-tones for wake lock:',
-          enabled ? 'enabled' : 'disabled',
-          'Background:',
-          document.hidden
-        );
-
         // Play the announce-tones file for wake lock status changes
         await playAnnounceTone();
-
-        console.log(
-          '🔊 Announce-tones playback completed for wake lock:',
-          enabled ? 'enabled' : 'disabled'
-        );
       } catch (error) {
-        console.warn('Error playing announce-tones for wake lock:', error);
+        // Handle audio error silently
       }
     },
     [playAnnounceTone]
@@ -141,13 +104,11 @@ export const useAudio = () => {
   // Simple audio context resume for compatibility
   const resumeAudioContext = useCallback(async () => {
     // Not needed for HTML5 Audio element, but kept for compatibility
-    console.log('🔊 Audio context resume called (using HTML5 Audio)');
   }, []);
 
   // Keep audio context active (simplified for HTML5 Audio)
   const keepAudioContextActive = useCallback(async () => {
     // Not needed for HTML5 Audio element, but kept for compatibility
-    console.log('🔊 Audio context keep-alive called (using HTML5 Audio)');
   }, []);
 
   return {

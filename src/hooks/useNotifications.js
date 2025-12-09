@@ -24,10 +24,6 @@ export const useNotifications = (
   // Calculate cooldown dynamically based on current frequency setting
   const getNotificationCooldown = () => {
     const cooldown = frequencyMinutes * 60 * 1000;
-    console.log('Calculating notification cooldown:', {
-      frequencyMinutes,
-      cooldown,
-    });
     return cooldown;
   };
 
@@ -46,13 +42,9 @@ export const useNotifications = (
     return shouldShow;
   };
 
-  // Log when frequency changes
+  // Track frequency changes
   useEffect(() => {
-    console.log(
-      'useNotifications: frequency changed to',
-      frequencyMinutes,
-      'minutes'
-    );
+    // Frequency changed - no logging needed in production
   }, [frequencyMinutes]);
 
   // Format timestamp for display
@@ -67,9 +59,6 @@ export const useNotifications = (
   // Send settings to service worker
   const updateServiceWorkerSettings = useCallback(() => {
     if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-      console.log(
-        `🔧 Updating SW settings - frequency: ${frequencyMinutes}min`
-      );
       navigator.serviceWorker.controller.postMessage({
         type: 'SETTINGS_UPDATE',
         data: {
@@ -97,17 +86,13 @@ export const useNotifications = (
 
   // Test service worker functionality
   const testServiceWorker = useCallback((delaySeconds = 60) => {
-    console.log(`🧪 Testing Service Worker with ${delaySeconds}s delay...`);
-
     if ('serviceWorker' in navigator) {
       if (navigator.serviceWorker.controller) {
-        console.log('✅ Service Worker controller available');
         try {
           navigator.serviceWorker.controller.postMessage({
             type: 'SW_TEST',
             data: { delay: delaySeconds },
           });
-          console.log('✅ Message sent to Service Worker');
 
           // Show immediate feedback
           if (window.Notification && Notification.permission === 'granted') {
@@ -120,16 +105,12 @@ export const useNotifications = (
 
           return true;
         } catch (error) {
-          console.error('❌ Failed to send message to Service Worker:', error);
           return false;
         }
       } else {
-        console.warn('⚠️ Service Worker controller not available');
-        console.log('SW registration state:', navigator.serviceWorker.ready);
         return false;
       }
     } else {
-      console.warn('❌ Service Worker not supported');
       return false;
     }
   }, []);
@@ -147,7 +128,6 @@ export const useNotifications = (
         navigator.serviceWorker
           .register('/sw.js')
           .then(registration => {
-            console.log('Service Worker registered with battery monitoring');
             setServiceWorkerStatus('registered');
 
             // Wait for service worker to be ready
@@ -165,20 +145,17 @@ export const useNotifications = (
             }
           })
           .catch(err => {
-            console.log('Service Worker registration failed:', err);
             setServiceWorkerStatus('failed');
           });
 
         // Initialize service worker
         const initializeServiceWorker = () => {
           if (navigator.serviceWorker.controller) {
-            console.log('Initializing Service Worker...');
             navigator.serviceWorker.controller.postMessage({
               type: 'START_MONITORING',
             });
             updateServiceWorkerSettings();
           } else {
-            console.log('Service Worker controller not ready, waiting...');
             // Wait a bit and try again
             setTimeout(() => {
               if (navigator.serviceWorker.controller) {
@@ -197,23 +174,18 @@ export const useNotifications = (
 
           switch (type) {
             case 'RELEASE_WAKE_LOCK':
-              console.log('SW requested wake lock release:', data);
               break;
             case 'SW_BATTERY_UPDATE':
-              console.log('SW battery update:', data);
               break;
             case 'SW_TEST_SCHEDULED':
-              console.log('SW test scheduled:', data);
               break;
             case 'SW_TEST_COMPLETED':
-              console.log('SW test completed:', data);
               if (data.success) {
                 // Play audio notification for successful test
                 playNotificationBeep('test');
               }
               break;
             case 'NOTIFICATION_SENT':
-              console.log('SW sent notification:', data);
               // Update last notification timestamp and type
               setLastNotificationTimestamp(data.timestamp);
               setLastNotificationType(
@@ -232,15 +204,7 @@ export const useNotifications = (
 
       // Handle page visibility changes for better background notification support
       const handleVisibilityChange = () => {
-        if (document.visibilityState === 'visible') {
-          console.log(
-            '📱 Tab became visible - notifications will work normally'
-          );
-        } else {
-          console.log(
-            '📱 Tab became hidden - using background notification mode'
-          );
-        }
+        // Handle visibility changes for better notification support
       };
 
       document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -249,7 +213,6 @@ export const useNotifications = (
       const checkPermission = () => {
         const currentPermission = Notification.permission;
         setNotificationPermission(currentPermission);
-        console.log('Notification permission updated:', currentPermission);
       };
 
       // Check permission periodically in case it changes
@@ -287,7 +250,6 @@ export const useNotifications = (
         setNotificationPermission(permission);
         return permission === 'granted';
       } catch (error) {
-        console.warn('Error requesting notification permission:', error);
         return false;
       }
     }
@@ -296,42 +258,24 @@ export const useNotifications = (
 
   const enableNotifications = () => {
     setInternalNotificationsEnabled(true);
-    console.log('🔔 Notifications enabled');
   };
 
   const disableNotifications = () => {
     setInternalNotificationsEnabled(false);
-    console.log('🔕 Notifications disabled');
   };
 
   const enableSounds = () => {
     setInternalSoundEnabled(true);
-    console.log('🔊 Sounds enabled');
   };
 
   const disableSounds = () => {
     setInternalSoundEnabled(false);
-    console.log('🔇 Sounds disabled');
   };
 
   const showNotification = async (title, options = {}) => {
     const now = Date.now();
     const cooldownPeriod = getNotificationCooldown();
     const timeSinceLastNotification = now - lastNotificationTime.current;
-
-    console.log('🔔 NOTIFICATION CHECK STARTED:', {
-      title,
-      timestamp: new Date(now).toLocaleTimeString(),
-      options,
-      frequencyMinutes,
-      cooldownPeriodMs: cooldownPeriod,
-      cooldownPeriodMinutes: cooldownPeriod / (60 * 1000),
-      timeSinceLastNotificationMs: timeSinceLastNotification,
-      timeSinceLastNotificationMinutes: timeSinceLastNotification / (60 * 1000),
-      lastNotificationTime: lastNotificationTime.current
-        ? new Date(lastNotificationTime.current).toLocaleTimeString()
-        : 'Never',
-    });
 
     // Handle sound and notification separately
     const shouldPlaySound =
@@ -372,12 +316,6 @@ export const useNotifications = (
       };
 
       try {
-        console.log('📤 CREATING NOTIFICATION:', {
-          title,
-          options: defaultOptions,
-          willUpdateCooldown: !options.skipCooldown,
-          skipCooldown: !!options.skipCooldown,
-        });
 
         // Handle sound separately from notifications
         let beepPromise = null;
@@ -398,12 +336,6 @@ export const useNotifications = (
           }
 
           // Play beep sound
-          console.log(
-            '🔊 Playing notification sound:',
-            beepType,
-            'Tab visible:',
-            !document.hidden
-          );
           beepPromise = playNotificationBeep(beepType);
         }
 
@@ -425,10 +357,7 @@ export const useNotifications = (
                 new Promise(resolve => setTimeout(resolve, 1000)),
               ]);
             } catch (error) {
-              console.warn(
-                'Audio timeout or error, continuing with notification:',
-                error
-              );
+              // Audio timeout or error, continue silently
             }
           }
 
@@ -436,32 +365,25 @@ export const useNotifications = (
 
           // Add event listeners to track notification behavior
           notification.onshow = () => {
-            console.log('🔔 Notification actually displayed:', title);
+            // Notification displayed
           };
 
           notification.onclick = () => {
-            console.log('👆 Notification clicked:', title);
+            // Notification clicked
           };
 
           notification.onclose = () => {
-            console.log('❌ Notification closed:', title);
+            // Notification closed
           };
 
           notification.onerror = error => {
-            console.error('⚠️ Notification error:', title, error);
+            // Handle notification error silently
           };
         }
 
         // Only update cooldown for non-test notifications
         if (!options.skipCooldown) {
           lastNotificationTime.current = now;
-          console.log('⏱️ COOLDOWN UPDATED:', {
-            newLastNotificationTime: new Date(now).toLocaleTimeString(),
-            nextNotificationAllowedAt: new Date(
-              now + cooldownPeriod
-            ).toLocaleTimeString(),
-            cooldownPeriodMinutes: cooldownPeriod / (60 * 1000),
-          });
         }
 
         // Auto close notifications - longer time for background tabs
@@ -474,43 +396,22 @@ export const useNotifications = (
             const timeout = isBackgroundTab ? 180000 : 120000;
             setTimeout(() => {
               notification.close();
-              console.log('🔕 Auto-closed high battery notification:', title);
             }, timeout);
           } else {
             // Other notifications: 30 seconds (background) or 10 seconds (foreground)
             const timeout = isBackgroundTab ? 30000 : 10000;
             setTimeout(() => {
               notification.close();
-              console.log('🔕 Auto-closed notification:', title);
             }, timeout);
           }
         }
 
-        console.log('✅ NOTIFICATION SENT SUCCESSFULLY:', {
-          title,
-          timestamp: new Date(now).toLocaleTimeString(),
-          tag: defaultOptions.tag,
-          requireInteraction: defaultOptions.requireInteraction,
-          autoClose:
-            !defaultOptions.requireInteraction &&
-            !title.includes('Battery Fully Charged'),
-          notificationObject: notification,
-          browserInfo: {
-            userAgent: navigator.userAgent,
-            platform: navigator.platform,
-          },
-        });
+
 
         // Check if notification was created but might be blocked by system
         if (notification) {
           setTimeout(() => {
-            if (notification.title) {
-              console.log('🔔 Notification object still exists after 1 second');
-            } else {
-              console.warn(
-                '⚠️ Notification object seems to have been blocked or removed'
-              );
-            }
+            // Check notification status silently
           }, 1000);
         }
 
@@ -527,55 +428,20 @@ export const useNotifications = (
           notificationShown: shouldShowNotification && notification !== null,
         };
       } catch (error) {
-        console.error('❌ NOTIFICATION/SOUND FAILED:', {
-          title,
-          error: error.message,
-          errorDetails: error,
-          timestamp: new Date().toLocaleTimeString(),
-        });
         return { success: false, error };
       }
     } else {
-      const browserPermission =
-        'Notification' in window ? Notification.permission : 'denied';
-      console.log('❌ NOTIFICATION REJECTED:', {
-        title,
-        reason: 'Permission or support issue',
-        details: {
-          notificationSupported: 'Notification' in window,
-          hookPermission: notificationPermission,
-          browserPermission: browserPermission,
-          isPermitted,
-          specificReason: !('Notification' in window)
-            ? 'Notifications not supported by browser'
-            : `Permission denied - Hook: ${notificationPermission}, Browser: ${browserPermission}`,
-        },
-        timestamp: new Date().toLocaleTimeString(),
-      });
       return { success: false, reason: 'Permission denied or not supported' };
     }
   };
 
   const showHighBatteryWarning = async batteryLevel => {
     if (!internalSoundEnabled && !internalNotificationsEnabled) {
-      console.log(
-        '🔕 High battery warning skipped - both sound and notifications disabled'
-      );
       return;
     }
 
-    console.log('🔋 HIGH BATTERY WARNING TRIGGERED:', {
-      batteryLevel: batteryLevel + '%',
-      trigger: 'Battery > 90% and charging',
-      timestamp: new Date().toLocaleTimeString(),
-      willRespectFrequency: true,
-    });
-
     // Check if enough time has passed based on user's frequency setting
     if (!shouldShowBatteryNotification('high-battery')) {
-      console.log(
-        '🔋 High battery notification skipped due to frequency limit'
-      );
       return;
     }
 
@@ -609,8 +475,6 @@ export const useNotifications = (
       setLastNotificationTimestamp(now);
       setLastNotificationType('battery-full');
       lastBatteryNotificationTime.current = now; // Update battery notification timestamp
-    } else {
-      console.log('❌ High battery notification failed:', result);
     }
   };
 
@@ -632,9 +496,6 @@ export const useNotifications = (
     if (result && result.success) {
       setLastNotificationTimestamp(now);
       setLastNotificationType('test');
-      console.log('Test notification sent successfully');
-    } else {
-      console.log('Test notification failed:', result);
     }
   };
 

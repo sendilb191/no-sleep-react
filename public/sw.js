@@ -15,18 +15,15 @@ let batterySettings = {
 let lastNotificationTime = 0;
 
 self.addEventListener('install', event => {
-  console.log('Service Worker: Installed with battery monitoring');
   self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
-  console.log('Service Worker: Activated with battery monitoring');
   event.waitUntil(self.clients.claim());
 });
 
 // Handle messages from main thread
 self.addEventListener('message', event => {
-  console.log('SW: Received message:', event.data);
   const { type, data } = event.data;
 
   switch (type) {
@@ -35,17 +32,13 @@ self.addEventListener('message', event => {
       break;
     case 'SETTINGS_UPDATE':
       batterySettings = { ...batterySettings, ...data };
-      console.log('SW: Settings updated', batterySettings);
       break;
     case 'SW_TEST':
-      console.log('SW: Starting test with delay:', data?.delay || 60);
       scheduleServiceWorkerTest(data?.delay || 60);
       break;
     case 'START_MONITORING':
-      console.log('SW: Starting monitoring');
       break;
     case 'STOP_MONITORING':
-      console.log('SW: Stopping monitoring');
       break;
     case 'PING':
       // Respond to ping to check if SW is alive
@@ -54,17 +47,13 @@ self.addEventListener('message', event => {
       }
       break;
     default:
-      console.log('SW: Unknown message type:', type);
+      break;
   }
 });
 
 // Handle battery updates from main thread
 function handleBatteryUpdate(batteryData) {
   const { level, charging } = batteryData;
-
-  console.log(
-    `SW: Battery update - ${level}% ${charging ? 'charging' : 'discharging'}`
-  );
 
   // Check if notifications are needed
   checkBatteryNotifications(level, charging);
@@ -149,7 +138,6 @@ function sendBatteryNotification(type, level) {
     .showNotification(title, options)
     .then(() => {
       lastNotificationTime = Date.now();
-      console.log(`SW: Sent ${type} battery notification`);
 
       // Notify main thread about the notification
       notifyMainThread('NOTIFICATION_SENT', {
@@ -160,7 +148,7 @@ function sendBatteryNotification(type, level) {
         body,
       });
     })
-    .catch(err => console.error('SW: Notification failed', err));
+    .catch(err => {});
 }
 
 // Notify main thread of events
@@ -174,8 +162,6 @@ function notifyMainThread(type, data) {
 
 // Handle notification click events
 self.addEventListener('notificationclick', event => {
-  console.log('SW: Notification clicked:', event.notification.tag);
-
   event.notification.close();
 
   // Focus or open the app window
@@ -200,7 +186,6 @@ self.addEventListener('notificationclick', event => {
 // Periodic Background Sync for battery monitoring
 self.addEventListener('sync', event => {
   if (event.tag === 'battery-check') {
-    console.log('SW: Background sync - battery check');
     event.waitUntil(periodicBatteryCheck());
   }
 });
@@ -214,27 +199,20 @@ async function periodicBatteryCheck() {
       const level = Math.round(battery.level * 100);
       const charging = battery.charging;
 
-      console.log(
-        `SW: Periodic check - ${level}% ${charging ? 'charging' : 'discharging'}`
-      );
-
       // Update our stored values
       handleBatteryUpdate({ level, charging });
 
       // Notify main thread of the update
       notifyMainThread('SW_BATTERY_UPDATE', { level, charging });
     } else {
-      console.log('SW: Battery API not available in service worker context');
     }
   } catch (error) {
-    console.error('SW: Periodic battery check failed', error);
+    // Handle periodic battery check failure silently
   }
 }
 
 // Service Worker test functionality
 function scheduleServiceWorkerTest(delaySeconds) {
-  console.log(`SW: Test scheduled for ${delaySeconds} seconds`);
-
   const startTime = Date.now();
 
   // Send immediate confirmation
@@ -249,10 +227,6 @@ function scheduleServiceWorkerTest(delaySeconds) {
     const actualTime = Date.now();
     const expectedTime = startTime + delaySeconds * 1000;
     const accuracy = Math.abs(actualTime - expectedTime);
-
-    console.log(
-      `SW: Test notification triggered after ${delaySeconds}s (accuracy: ${accuracy}ms)`
-    );
 
     // Send test notification
     const title = '🧪 Service Worker Test';
@@ -270,7 +244,6 @@ function scheduleServiceWorkerTest(delaySeconds) {
     self.registration
       .showNotification(title, options)
       .then(() => {
-        console.log('SW: Test notification sent successfully');
         // Notify main thread that test completed
         notifyMainThread('SW_TEST_COMPLETED', {
           scheduledAt: startTime,
@@ -280,7 +253,6 @@ function scheduleServiceWorkerTest(delaySeconds) {
         });
       })
       .catch(err => {
-        console.error('SW: Test notification failed', err);
         notifyMainThread('SW_TEST_COMPLETED', {
           scheduledAt: startTime,
           triggeredAt: actualTime,
