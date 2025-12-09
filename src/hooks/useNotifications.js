@@ -43,19 +43,6 @@ export const useNotifications = (
     const shouldShow =
       timeSinceLastBatteryNotification >= frequencyMs - bufferMs;
 
-    console.log('🔋 BATTERY NOTIFICATION FREQUENCY CHECK:', {
-      notificationType,
-      timeSinceLastMs: timeSinceLastBatteryNotification,
-      timeSinceLastMinutes: timeSinceLastBatteryNotification / (60 * 1000),
-      frequencyRequiredMs: frequencyMs,
-      frequencyRequiredMinutes: frequencyMinutes,
-      bufferMs,
-      shouldShow,
-      lastBatteryNotificationTime: lastBatteryNotificationTime.current
-        ? new Date(lastBatteryNotificationTime.current).toLocaleTimeString()
-        : 'Never',
-    });
-
     return shouldShow;
   };
 
@@ -352,18 +339,8 @@ export const useNotifications = (
       (notificationsEnabled || internalNotificationsEnabled);
     const shouldShowNotification = internalNotificationsEnabled;
 
-    console.log('🎚️ SOUND & NOTIFICATION SETTINGS:', {
-      soundEnabled: internalSoundEnabled,
-      notificationsEnabled: internalNotificationsEnabled,
-      shouldPlaySound,
-      shouldShowNotification,
-    });
-
     // If neither sound nor notifications are enabled, skip everything
     if (!shouldPlaySound && !shouldShowNotification) {
-      console.log(
-        '🔕 Both sound and notifications disabled by user - skipping'
-      );
       return { success: false, reason: 'Both disabled by user' };
     }
 
@@ -371,13 +348,6 @@ export const useNotifications = (
       'Notification' in window ? Notification.permission : 'denied';
     const isPermitted =
       notificationPermission === 'granted' || browserPermission === 'granted';
-
-    console.log('🔐 PERMISSION CHECK:', {
-      notificationSupported: 'Notification' in window,
-      hookPermission: notificationPermission,
-      browserPermission,
-      isPermitted,
-    });
 
     if ('Notification' in window && isPermitted) {
       // Check cooldown to prevent spam (skip for test notifications)
@@ -387,24 +357,6 @@ export const useNotifications = (
         !options.skipCooldown &&
         now - lastNotificationTime.current < cooldownPeriod
       ) {
-        console.log('❌ NOTIFICATION BLOCKED BY COOLDOWN:', {
-          title,
-          reason: 'Frequency limit exceeded',
-          timeSinceLastNotification: now - lastNotificationTime.current,
-          timeSinceLastNotificationMinutes:
-            (now - lastNotificationTime.current) / (60 * 1000),
-          cooldownPeriod,
-          cooldownPeriodMinutes: cooldownPeriod / (60 * 1000),
-          frequencyMinutes,
-          timeUntilNextAllowed:
-            cooldownPeriod - (now - lastNotificationTime.current),
-          timeUntilNextAllowedMinutes:
-            (cooldownPeriod - (now - lastNotificationTime.current)) /
-            (60 * 1000),
-          nextNotificationAllowedAt: new Date(
-            lastNotificationTime.current + cooldownPeriod
-          ).toLocaleTimeString(),
-        });
         return { success: false, reason: 'Blocked by cooldown' };
       }
 
@@ -464,9 +416,6 @@ export const useNotifications = (
             document.hidden || document.visibilityState !== 'visible';
 
           if (isBackgroundTab) {
-            console.log(
-              '🔔 Background mode: Showing notification immediately (audio may be restricted)'
-            );
             // Show notification immediately in background - don't wait for audio
           } else if (beepPromise) {
             // Only wait for beep in foreground for better timing
@@ -609,17 +558,8 @@ export const useNotifications = (
 
   const showBatteryWarning = async batteryLevel => {
     if (!internalSoundEnabled && !internalNotificationsEnabled) {
-      console.log(
-        '🔕 Battery warning skipped - both sound and notifications disabled'
-      );
       return;
     }
-
-    console.log('🔋 LOW BATTERY WARNING TRIGGERED:', {
-      batteryLevel: batteryLevel + '%',
-      trigger: 'Battery < 30% and not charging',
-      timestamp: new Date().toLocaleTimeString(),
-    });
 
     // Check if enough time has passed based on user's frequency setting
     if (!shouldShowBatteryNotification('low-battery')) {
@@ -706,14 +646,6 @@ export const useNotifications = (
 ⏱️ Time Since Last: ${timeSinceLastMinutes} minutes
 🔄 Frequency Setting: ${frequencyMinutes} minute(s)`;
 
-    console.log('📱 Attempting to show high battery notification:', {
-      batteryLevel,
-      permission: notificationPermission,
-      currentTime,
-      frequencyMinutes,
-      willBypassCooldown: true, // Skip cooldown since we handle frequency ourselves
-    });
-
     const result = await showNotification(title, {
       body,
       icon: '/no-sleep.svg',
@@ -727,10 +659,6 @@ export const useNotifications = (
       setLastNotificationTimestamp(now);
       setLastNotificationType('battery-full');
       lastBatteryNotificationTime.current = now; // Update battery notification timestamp
-      console.log(
-        '✅ High battery notification sent successfully - next allowed at:',
-        new Date(now + frequencyMinutes * 60 * 1000).toLocaleTimeString()
-      );
     } else {
       console.log('❌ High battery notification failed:', result);
     }
@@ -743,14 +671,6 @@ export const useNotifications = (
       );
       return;
     }
-
-    console.log('🔒 AUTO-RELEASE NOTIFICATION TRIGGERED:', {
-      batteryLevel: batteryLevel + '%',
-      trigger: 'Critical battery - wake lock auto-released',
-      timestamp: new Date().toLocaleTimeString(),
-      willBypassCooldown: true,
-      priority: 'HIGH - Critical system notification',
-    });
 
     const now = Date.now();
     const timestamp = new Date(now).toLocaleTimeString();
@@ -776,13 +696,6 @@ export const useNotifications = (
   };
 
   const showTestNotification = async () => {
-    console.log('🧪 TEST NOTIFICATION TRIGGERED:', {
-      trigger: 'User requested test notification',
-      timestamp: new Date().toLocaleTimeString(),
-      willBypassCooldown: true,
-      purpose: 'Testing notification functionality',
-    });
-
     const now = Date.now();
     const timestamp = new Date(now).toLocaleTimeString();
     const title = '🧪 Test Notification';
