@@ -3,8 +3,11 @@
 // ===================================================
 
 export const DEFAULT_SETTINGS = {
+  // Wake Lock settings
+  WAKE_LOCK_ENABLED_BY_DEFAULT: true, // Enable wake lock automatically on app load
+
   // Notification settings
-  NOTIFICATION_FREQUENCY: 5, // Default 5 minutes
+  NOTIFICATION_FREQUENCY: 1, // Default 5 minutes
   NOTIFICATION_DISPLAY_ENABLED: true,
   SOUND_ENABLED: true,
 

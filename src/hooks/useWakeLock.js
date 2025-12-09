@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { DEFAULT_SETTINGS } from '../constants/defaultSettings';
 
 export const useWakeLock = () => {
   const [isWakeLockActive, setIsWakeLockActive] = useState(false);
@@ -60,6 +61,20 @@ export const useWakeLock = () => {
       }
     }
   };
+
+  // Enable wake lock by default on mount (if configured)
+  useEffect(() => {
+    const enableDefaultWakeLock = async () => {
+      if (DEFAULT_SETTINGS.WAKE_LOCK_ENABLED_BY_DEFAULT) {
+        const success = await requestWakeLock();
+        if (success) {
+          setIsWakeLockActive(true);
+        }
+      }
+    };
+
+    enableDefaultWakeLock();
+  }, []);
 
   // Cleanup on unmount
   useEffect(() => {
