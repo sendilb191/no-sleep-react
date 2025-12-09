@@ -3,18 +3,6 @@
   margin: 0;
   box-sizing: border-box;
   font-family: cursive;
-  transform: none !important;
-  transition: transform 0s !important;
-  user-select: none !important;
-  -webkit-user-select: none !important;
-  -moz-user-select: none !important;
-  -ms-user-select: none !important;
-}
-
-*:hover,
-*:active,
-*:focus {
-  transform: none !important;
 }
 
 :root {
