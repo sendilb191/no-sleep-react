@@ -26,10 +26,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
 
   .app-container {
-    max-width: 900px;
     width: 100%;
     text-align: center;
 
@@ -77,46 +75,6 @@ body {
   }
 }
 
-// ===================================================
-// Shared Component Styles
-// ===================================================
-
-// Component-specific styles moved to individual component files
-
-// ===================================================
-// Component-specific styles moved to individual .less files
-// Import them in respective components for better modularity
-// ===================================================
-
-// ===================================================
-// Responsive Layout
-// ===================================================
-
-@media (max-width: 768px) {
-  .no-sleep-app {
-    .app-container {
-      max-width: 100%;
-      padding: 1rem;
-
-      .dashboard-layout {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-
-        .controls-panel {
-          position: static;
-        }
-      }
-    }
-  }
-}
-
-// Battery visual components moved to BatterySection.less
-
-// ===================================================
-// Shared Animations (Component-specific animations moved to respective .less files)
-// ===================================================
-
-// Common pulse animation used across components
 @keyframes pulse {
   0%,
   100% {
@@ -124,27 +82,5 @@ body {
   }
   50% {
     opacity: 0.5;
-  }
-}
-
-// Component-specific styles moved to individual component files
-
-// ===================================================
-// Additional Responsive Styles
-// ===================================================
-
-@media (max-width: 480px) {
-  .no-sleep-app {
-    .app-container {
-      .app-header {
-        h1 {
-          font-size: 2rem;
-        }
-      }
-    }
-  }
-
-  .instructions {
-    text-align: center;
   }
 }
