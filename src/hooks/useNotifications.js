@@ -556,56 +556,6 @@ export const useNotifications = (
     }
   };
 
-  const showBatteryWarning = async batteryLevel => {
-    if (!internalSoundEnabled && !internalNotificationsEnabled) {
-      return;
-    }
-
-    // Check if enough time has passed based on user's frequency setting
-    if (!shouldShowBatteryNotification('low-battery')) {
-      console.log('🔋 Low battery notification skipped due to frequency limit');
-      return;
-    }
-
-    const now = Date.now();
-    const currentTime = new Date(now).toLocaleTimeString();
-    const lastNotificationTime = lastBatteryNotificationTime.current
-      ? new Date(lastBatteryNotificationTime.current).toLocaleTimeString()
-      : 'Never';
-    const timeSinceLastMinutes = lastBatteryNotificationTime.current
-      ? ((now - lastBatteryNotificationTime.current) / (60 * 1000)).toFixed(1)
-      : 'N/A';
-
-    const title = '🔋 Low Battery Warning';
-    const body = `Battery level is ${batteryLevel}% and not charging. Consider connecting your charger.
-
-📅 Current Time: ${currentTime}
-🕒 Last Notification: ${lastNotificationTime}
-⏱️ Time Since Last: ${timeSinceLastMinutes} minutes
-🔄 Frequency Setting: ${frequencyMinutes} minute(s)`;
-
-    const result = await showNotification(title, {
-      body,
-      icon: '/no-sleep.svg',
-      tag: `battery-low-${now}`, // Use unique tag
-      requireInteraction: false,
-      skipCooldown: true, // Skip cooldown since we handle frequency ourselves
-    });
-
-    // Only update timestamp tracking if notification was successful
-    if (result && result.success) {
-      setLastNotificationTimestamp(now);
-      setLastNotificationType('battery');
-      lastBatteryNotificationTime.current = now; // Update battery notification timestamp
-      console.log(
-        '✅ Low battery notification sent successfully - next allowed at:',
-        new Date(now + frequencyMinutes * 60 * 1000).toLocaleTimeString()
-      );
-    } else {
-      console.log('❌ Low battery notification failed:', result);
-    }
-  };
-
   const showHighBatteryWarning = async batteryLevel => {
     if (!internalSoundEnabled && !internalNotificationsEnabled) {
       console.log(
@@ -664,37 +614,6 @@ export const useNotifications = (
     }
   };
 
-  const showAutoReleaseNotification = async batteryLevel => {
-    if (!internalSoundEnabled && !internalNotificationsEnabled) {
-      console.log(
-        '🔕 Auto-release notification skipped - both sound and notifications disabled'
-      );
-      return;
-    }
-
-    const now = Date.now();
-    const timestamp = new Date(now).toLocaleTimeString();
-    const title = '🔒 Wake Lock Auto-Released';
-    const body = `Wake lock automatically released due to critical battery level (${batteryLevel}%) to preserve battery life.\n\nTriggered at: ${timestamp}`;
-
-    const result = await showNotification(title, {
-      body,
-      icon: '/no-sleep.svg',
-      tag: 'auto-release',
-      requireInteraction: false,
-      skipCooldown: true, // Always show this important notification
-    });
-
-    // Only update timestamp tracking if notification was successful
-    if (result && result.success) {
-      setLastNotificationTimestamp(now);
-      setLastNotificationType('auto-release');
-      console.log('Auto-release notification sent successfully');
-    } else {
-      console.log('Auto-release notification failed:', result);
-    }
-  };
-
   const showTestNotification = async () => {
     const now = Date.now();
     const timestamp = new Date(now).toLocaleTimeString();
@@ -729,9 +648,7 @@ export const useNotifications = (
     enableSounds,
     disableSounds,
     showNotification,
-    showBatteryWarning,
     showHighBatteryWarning,
-    showAutoReleaseNotification,
     showTestNotification,
     lastNotificationTimestamp,
     lastNotificationType,

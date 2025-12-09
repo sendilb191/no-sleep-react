@@ -42,15 +42,12 @@ const Home = ({
   const {
     notificationPermission,
     notificationsEnabled,
-    soundEnabled: hookSoundEnabled,
     requestPermission,
     enableNotifications,
     disableNotifications,
     enableSounds,
     disableSounds,
-    showBatteryWarning,
     showHighBatteryWarning,
-    showAutoReleaseNotification,
     showTestNotification,
     lastNotificationTimestamp,
     lastNotificationType,
@@ -129,15 +126,12 @@ const Home = ({
         <SettingsCard
           isWakeLockActive={isWakeLockActive}
           toggleWakeLock={toggleWakeLock}
-          batteryInfo={batteryInfo}
           notificationPermission={notificationPermission}
           notificationsEnabled={notificationsEnabled}
           soundEnabled={soundEnabled}
           handleSoundToggle={handleSoundToggle}
           handleNotificationToggle={handleNotificationToggle}
           requestPermission={requestPermission}
-          enableNotifications={enableNotifications}
-          disableNotifications={disableNotifications}
           notificationsSupported={notificationsSupported}
           showTestNotification={showTestNotification}
           testServiceWorker={testServiceWorker}

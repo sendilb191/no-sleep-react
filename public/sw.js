@@ -13,8 +13,6 @@ let batterySettings = {
 };
 
 let lastNotificationTime = 0;
-let lastBatteryLevel = 100;
-let isCharging = false;
 
 self.addEventListener('install', event => {
   console.log('Service Worker: Installed with battery monitoring');
@@ -63,8 +61,6 @@ self.addEventListener('message', event => {
 // Handle battery updates from main thread
 function handleBatteryUpdate(batteryData) {
   const { level, charging } = batteryData;
-  lastBatteryLevel = level;
-  isCharging = charging;
 
   console.log(
     `SW: Battery update - ${level}% ${charging ? 'charging' : 'discharging'}`
@@ -295,32 +291,3 @@ function scheduleServiceWorkerTest(delaySeconds) {
       });
   }, delaySeconds * 1000);
 }
-
-// Set up periodic monitoring interval
-let monitoringInterval = null;
-
-// Start monitoring when first client connects
-self.addEventListener('message', event => {
-  if (event.data.type === 'START_MONITORING' && !monitoringInterval) {
-    console.log('SW: Starting periodic battery monitoring');
-
-    // Check every 30 seconds when in background
-    monitoringInterval = setInterval(() => {
-      // Register background sync if supported
-      if (self.registration.sync) {
-        self.registration.sync
-          .register('battery-check')
-          .catch(err =>
-            console.log('SW: Background sync registration failed', err)
-          );
-      }
-
-      // Also do direct check
-      periodicBatteryCheck();
-    }, 30000);
-  } else if (event.data.type === 'STOP_MONITORING' && monitoringInterval) {
-    console.log('SW: Stopping periodic battery monitoring');
-    clearInterval(monitoringInterval);
-    monitoringInterval = null;
-  }
-});
