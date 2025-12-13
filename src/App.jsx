@@ -1,71 +1,96 @@
-import React, { useState } from 'react';
-import { HashRouter as Router, Routes, Route } from 'react-router-dom';
+import React from 'react';
+import './App.css';
 import { useWakeLock } from './hooks/useWakeLock';
-import { DEFAULT_SETTINGS } from './constants/defaultSettings';
-import Navigation from './components/_shared/Navigation';
-import Home from './pages/Home';
-import InstructionsPage from './pages/Instructions';
+import StatusDot from './components/StatusDot';
 
 function App() {
-  // Lift wake lock state to App level to persist across page navigation
-  const { isWakeLockActive, toggleWakeLock } = useWakeLock();
-
-  // Lift all notification settings to App level
-  const [notificationFrequency, setNotificationFrequency] = useState(
-    DEFAULT_SETTINGS.NOTIFICATION_FREQUENCY
-  );
-  const [autoReleaseEnabled, setAutoReleaseEnabled] = useState(
-    DEFAULT_SETTINGS.AUTO_RELEASE_ENABLED
-  );
-  const [soundEnabled, setSoundEnabled] = useState(
-    DEFAULT_SETTINGS.SOUND_ENABLED
-  );
-  const [notificationDisplayEnabled, setNotificationDisplayEnabled] = useState(
-    DEFAULT_SETTINGS.NOTIFICATION_DISPLAY_ENABLED
-  );
+  const { isActive, isSupported, error, userWantsWakeLock, toggleWakeLock } =
+    useWakeLock();
 
   return (
-    <Router
-      future={{
-        v7_startTransition: true,
-        v7_relativeSplatPath: true,
-      }}
-    >
-      <div className='no-sleep-app'>
-        <div className='app-container'>
-          <div className='app-header-nav'>
-            <header className='app-header'>
-              <h1>🚫😴 No Sleep</h1>
-            </header>
-            <Navigation />
+    <div className='app'>
+      <div className='container'>
+        <h1>🔒 Wake Lock App</h1>
+        <p className='subtitle'>Keep your screen awake</p>
+
+        <div className='status-card'>
+          <div className='status-indicator'>
+            <StatusDot isActive={isActive} />
+            <span className='status-text'>
+              {isActive
+                ? 'Screen Wake Lock Active'
+                : userWantsWakeLock
+                  ? 'Wake Lock Requested (will reactivate when tab is focused)'
+                  : 'Screen Wake Lock Inactive'}
+            </span>
           </div>
-          <div className='app-content'>
-            <Routes>
-              <Route
-                path='/'
-                element={
-                  <Home
-                    isWakeLockActive={isWakeLockActive}
-                    toggleWakeLock={toggleWakeLock}
-                    notificationFrequency={notificationFrequency}
-                    setNotificationFrequency={setNotificationFrequency}
-                    autoReleaseEnabled={autoReleaseEnabled}
-                    setAutoReleaseEnabled={setAutoReleaseEnabled}
-                    soundEnabled={soundEnabled}
-                    setSoundEnabled={setSoundEnabled}
-                    notificationDisplayEnabled={notificationDisplayEnabled}
-                    setNotificationDisplayEnabled={
-                      setNotificationDisplayEnabled
-                    }
-                  />
-                }
-              />
-              <Route path='/instructions' element={<InstructionsPage />} />
-            </Routes>
-          </div>
+
+          {userWantsWakeLock && !isActive && (
+            <div className='auto-reactivate-info'>
+              <p>
+                💡 Wake lock will automatically reactivate when you return to
+                this tab
+              </p>
+            </div>
+          )}
+
+          {isSupported ? (
+            <button
+              className={`wake-lock-btn ${userWantsWakeLock ? 'active' : 'inactive'}`}
+              onClick={toggleWakeLock}
+            >
+              {userWantsWakeLock
+                ? '🔓 Turn Off Wake Lock'
+                : '🔒 Keep Screen Awake'}
+            </button>
+          ) : (
+            <div className='unsupported'>
+              <p>❌ Wake Lock API not supported</p>
+              <p className='help-text'>
+                Please use a modern browser like Chrome, Edge, or Safari on
+                mobile.
+              </p>
+            </div>
+          )}
+
+          {error && (
+            <div className='error-message'>
+              <p>⚠️ {error}</p>
+            </div>
+          )}
+        </div>
+
+        <div className='info-card'>
+          <h3>How it works:</h3>
+          <ul>
+            <li>
+              Wake lock is automatically activated when you load this page
+            </li>
+            <li>
+              Wake lock automatically reactivates when you focus this tab/window
+            </li>
+            <li>
+              The wake lock will be automatically released if you switch tabs or
+              minimize the browser
+            </li>
+            <li>You can manually turn off the wake lock anytime</li>
+            <li>This only works on HTTPS websites or localhost</li>
+          </ul>
+        </div>
+
+        <div className='compatibility-info'>
+          <h4>Browser Compatibility:</h4>
+          <p>
+            <strong>Supported:</strong> Chrome 84+, Edge 84+, Safari 13.1+
+            (mobile)
+          </p>
+          <p>
+            <strong>Current Status:</strong>{' '}
+            {isSupported ? '✅ Supported' : '❌ Not Supported'}
+          </p>
         </div>
       </div>
-    </Router>
+    </div>
   );
 }
 
