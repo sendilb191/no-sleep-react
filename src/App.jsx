@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import { useWakeLock } from './hooks/useWakeLock';
+import StatusDot from './components/StatusDot';
 
 function App() {
   const { isActive, isSupported, error, userWantsWakeLock, toggleWakeLock } =
@@ -14,9 +15,7 @@ function App() {
 
         <div className='status-card'>
           <div className='status-indicator'>
-            <div
-              className={`status-dot ${isActive ? 'active' : 'inactive'}`}
-            ></div>
+            <StatusDot isActive={isActive} />
             <span className='status-text'>
               {isActive
                 ? 'Screen Wake Lock Active'

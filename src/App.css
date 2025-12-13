@@ -108,33 +108,6 @@ h1 {
   gap: 12px;
 }
 
-.status-dot {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  transition: all 0.3s ease;
-}
-
-.status-dot.active {
-  background: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
-  animation: pulse 2s infinite;
-}
-
-.status-dot.inactive {
-  background: #ef4444;
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-}
-
 .status-text {
   font-weight: 600;
   font-size: 1.1rem;
