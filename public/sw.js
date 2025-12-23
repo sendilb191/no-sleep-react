@@ -14,7 +14,7 @@ let batterySettings = {
 
 let lastNotificationTime = 0;
 
-self.addEventListener('install', event => {
+self.addEventListener('install', _event => {
   self.skipWaiting();
 });
 
@@ -148,7 +148,9 @@ function sendBatteryNotification(type, level) {
         body,
       });
     })
-    .catch(err => {});
+    .catch(_err => {
+      // Notification failed silently
+    });
 }
 
 // Notify main thread of events
@@ -204,9 +206,8 @@ async function periodicBatteryCheck() {
 
       // Notify main thread of the update
       notifyMainThread('SW_BATTERY_UPDATE', { level, charging });
-    } else {
     }
-  } catch (error) {
+  } catch {
     // Handle periodic battery check failure silently
   }
 }

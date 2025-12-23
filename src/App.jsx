@@ -1,4 +1,3 @@
-import React from 'react';
 import './App.css';
 import { useWakeLock } from './hooks/useWakeLock';
 import StatusDot from './components/StatusDot';
