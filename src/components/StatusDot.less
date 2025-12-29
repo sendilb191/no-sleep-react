@@ -1,31 +1,33 @@
 .status-dot-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  // Size variants
+  &.status-dot--sm .status-dot {
+    width: 6px;
+    height: 6px;
+  }
+
+  &.status-dot--md .status-dot {
+    width: 8px;
+    height: 8px;
+  }
+
+  &.status-dot--lg .status-dot {
+    width: 10px;
+    height: 10px;
+  }
+
   .status-dot {
-    width: 16px;
-    height: 16px;
     border-radius: 50%;
     transition: all 0.3s ease;
+    flex-shrink: 0;
 
     &.active {
       background: #10b981;
-      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
       animation: pulse-active 2s ease-in-out infinite;
-      position: relative;
-
-      &::before {
-        content: '';
-        position: absolute;
-        top: -4px;
-        left: -4px;
-        right: -4px;
-        bottom: -4px;
-        border-radius: 50%;
-        background: radial-gradient(
-          circle,
-          rgba(16, 185, 129, 0.4) 0%,
-          transparent 70%
-        );
-        animation: ripple 2s ease-out infinite;
-      }
     }
 
     &.inactive {
@@ -38,24 +40,11 @@
     0%,
     100% {
       transform: scale(1);
-      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
     }
     50% {
-      transform: scale(1.15);
-      box-shadow:
-        0 0 0 6px rgba(16, 185, 129, 0.5),
-        0 0 15px rgba(16, 185, 129, 0.4);
-    }
-  }
-
-  @keyframes ripple {
-    0% {
-      transform: scale(0.8);
-      opacity: 1;
-    }
-    100% {
-      transform: scale(2);
-      opacity: 0;
+      transform: scale(1.1);
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.4);
     }
   }
 }
