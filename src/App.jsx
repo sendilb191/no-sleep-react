@@ -3,6 +3,7 @@ import { useWakeLock } from './hooks/useWakeLock';
 import { useBattery } from './hooks/useBattery';
 import WakeLock from './components/WakeLock/WakeLock';
 import Battery from './components/Battery/Battery';
+import History from './components/History/History';
 
 function App() {
   const {
@@ -12,6 +13,9 @@ function App() {
     selectedTimer,
     formatTimeRemaining,
     startTimer,
+    history,
+    formatDuration,
+    clearHistory,
   } = useWakeLock();
   const {
     level,
@@ -42,6 +46,12 @@ function App() {
           charging={charging}
           isSupported={batterySupported}
           getBatteryColor={getBatteryColor}
+        />
+
+        <History
+          history={history}
+          formatDuration={formatDuration}
+          clearHistory={clearHistory}
         />
       </section>
     </main>

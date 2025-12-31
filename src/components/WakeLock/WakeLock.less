@@ -1,19 +1,6 @@
 /* WakeLock Component Styles - Desktop Optimized */
 
 .wakelock-card {
-  .status-indicator {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--spacing-md);
-
-    .status-text {
-      font-weight: 600;
-      font-size: var(--font-size-base);
-      color: var(--black);
-    }
-  }
-
   .error-message {
     background: #fee2e2;
     border: 1px solid var(--dark-grey);
@@ -24,70 +11,57 @@
     text-align: center;
   }
 
-  .unsupported {
-    text-align: center;
+  .help-text {
     color: var(--black);
+    font-size: var(--font-size-sm);
+  }
 
-    .help-text {
+  .timer-label {
+    font-size: var(--font-size-base);
+    color: var(--black);
+    font-weight: 500;
+  }
+
+  .timer-buttons {
+    display: flex;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+    justify-content: center;
+
+    .timer-btn {
+      padding: var(--spacing-sm) var(--spacing-md);
+      border: 2px solid var(--dark-grey);
+      border-radius: var(--radius-sm);
+      background: var(--white);
       color: var(--black);
       font-size: var(--font-size-sm);
-      margin-top: var(--spacing-sm);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: var(--dark-grey);
+        color: var(--black);
+      }
+
+      &.active {
+        background: var(--dark-grey);
+        border-color: var(--dark-grey);
+        color: var(--white);
+      }
     }
   }
 
-  .timer-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--spacing-md);
+  .timer-countdown {
+    font-size: var(--font-size-base);
+    color: var(--black);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--gray-50);
+    border-radius: var(--radius-sm);
 
-    .timer-label {
-      font-size: var(--font-size-base);
-      color: var(--black);
-      font-weight: 500;
-    }
-
-    .timer-buttons {
-      display: flex;
-      gap: var(--spacing-md);
-      flex-wrap: nowrap;
-      justify-content: center;
-
-      .timer-btn {
-        padding: var(--spacing-sm) var(--spacing-md);
-        border: 2px solid var(--dark-grey);
-        border-radius: var(--radius-sm);
-        background: var(--white);
-        color: var(--black);
-        font-size: var(--font-size-sm);
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-
-        &:hover {
-          border-color: var(--dark-grey);
-          color: var(--black);
-        }
-
-        &.active {
-          background: var(--dark-grey);
-          border-color: var(--dark-grey);
-          color: var(--white);
-        }
-      }
-    }
-
-    .timer-countdown {
-      font-size: var(--font-size-base);
-      color: var(--black);
-      padding: var(--spacing-sm) var(--spacing-md);
-      background: var(--gray-50);
-      border-radius: var(--radius-sm);
-
-      strong {
-        color: var(--primary);
-        font-weight: 700;
-      }
+    strong {
+      color: var(--primary);
+      font-weight: 700;
     }
   }
 }
