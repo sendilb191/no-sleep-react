@@ -1,0 +1,69 @@
+/* History Component Styles */
+
+.history-card {
+  .history-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+
+    .clear-btn {
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border: 2px solid var(--dark-grey);
+      border-radius: var(--radius-sm);
+      background: var(--white);
+      color: var(--black);
+      font-size: var(--font-size-sm);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: var(--dark-grey);
+        color: var(--white);
+      }
+    }
+  }
+
+  .no-history {
+    color: var(--black);
+    font-size: var(--font-size-base);
+  }
+
+  .total-time {
+    color: var(--black);
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .history-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--spacing-sm) var(--spacing-md);
+      background: var(--gray-50);
+      border-radius: var(--radius-sm);
+
+      .session-date {
+        font-size: var(--font-size-base);
+        color: var(--black);
+      }
+
+      .session-duration {
+        font-size: var(--font-size-base);
+        font-weight: 600;
+        color: var(--black);
+      }
+    }
+  }
+}

@@ -1,76 +1,56 @@
 /* Battery Component Styles - Desktop Optimized */
 
 .battery-card {
-  h2 {
-    font-size: var(--font-size-xl);
-    color: var(--black);
-    text-align: center;
-    margin: 0;
-  }
-
-  .battery-status {
+  .battery-visual {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
     gap: var(--spacing-md);
+    margin: 0;
 
-    .battery-visual {
+    .battery-icon {
       display: flex;
       align-items: center;
-      gap: var(--spacing-md);
 
-      .battery-icon {
-        display: flex;
-        align-items: center;
+      .battery-body {
+        width: 90px;
+        height: 45px;
+        background: var(--gray-100);
+        border: 2px solid var(--dark-grey);
+        border-radius: 6px;
+        overflow: hidden;
 
-        .battery-body {
-          width: 90px;
-          height: 45px;
-          background: var(--gray-100);
-          border: 2px solid var(--dark-grey);
-          border-radius: 6px;
-          overflow: hidden;
-
-          .battery-fill {
-            height: 100%;
-            transition:
-              width 0.3s,
-              background-color 0.3s;
-          }
-        }
-
-        .battery-tip {
-          width: 6px;
-          height: 20px;
-          background: var(--black);
-          border-radius: 0 3px 3px 0;
-          margin-left: -1px;
+        .battery-fill {
+          height: 100%;
+          transition:
+            width 0.3s,
+            background-color 0.3s;
         }
       }
 
-      .battery-level {
-        font-size: var(--font-size-2xl);
-        font-weight: 700;
-        color: var(--black);
+      .battery-tip {
+        width: 6px;
+        height: 20px;
+        background: var(--black);
+        border-radius: 0 3px 3px 0;
+        margin-left: -1px;
       }
     }
 
-    .charging-status {
-      font-size: var(--font-size-base);
-      font-weight: 500;
+    .battery-level {
+      font-size: var(--font-size-2xl);
+      font-weight: 700;
       color: var(--black);
     }
   }
 
-  .unsupported {
-    text-align: center;
+  .charging-status {
+    font-size: var(--font-size-base);
+    font-weight: 500;
     color: var(--black);
+  }
 
-    .help-text {
-      color: var(--black);
-      font-size: var(--font-size-sm);
-      margin-top: var(--spacing-sm);
-    }
+  .help-text {
+    color: var(--black);
+    font-size: var(--font-size-sm);
   }
 }
