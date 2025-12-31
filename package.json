@@ -9,7 +9,11 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "format": "prettier --write \"src/**/*.{js,jsx,css,less}\" \"*.{js,json}\""
+    "stylelint": "stylelint \"src/**/*.{css,less}\"",
+    "stylelint:fix": "stylelint \"src/**/*.{css,less}\" --fix",
+    "format": "prettier --write \"src/**/*.{js,jsx,css,less}\" \"*.{js,json}\"",
+    "check": "npm run format && npm run lint && npm run stylelint",
+    "fix": "npm run format && npm run lint:fix && npm run stylelint:fix"
   },
   "dependencies": {
     "react": "^18.2.0",

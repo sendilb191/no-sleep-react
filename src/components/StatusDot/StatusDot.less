@@ -3,22 +3,7 @@
   align-items: center;
   justify-content: center;
 
-  // Size variants
-  &.status-dot--sm .status-dot {
-    width: 6px;
-    height: 6px;
-  }
-
-  &.status-dot--md .status-dot {
-    width: 8px;
-    height: 8px;
-  }
-
-  &.status-dot--lg .status-dot {
-    width: 10px;
-    height: 10px;
-  }
-
+  /* Size variants - Desktop Optimized */
   .status-dot {
     border-radius: 50%;
     transition: all 0.3s ease;
@@ -26,25 +11,41 @@
 
     &.active {
       background: #10b981;
-      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+      box-shadow: 0 0 0 3px rgb(16 185 129 / 30%);
       animation: pulse-active 2s ease-in-out infinite;
     }
 
     &.inactive {
       background: #ef4444;
-      box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+      box-shadow: 0 0 0 3px rgb(239 68 68 / 20%);
     }
+  }
+
+  &.status-dot--sm .status-dot {
+    width: 10px;
+    height: 10px;
+  }
+
+  &.status-dot--md .status-dot {
+    width: 12px;
+    height: 12px;
+  }
+
+  &.status-dot--lg .status-dot {
+    width: 16px;
+    height: 16px;
   }
 
   @keyframes pulse-active {
     0%,
     100% {
       transform: scale(1);
-      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+      box-shadow: 0 0 0 3px rgb(16 185 129 / 30%);
     }
+
     50% {
       transform: scale(1.1);
-      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.4);
+      box-shadow: 0 0 0 6px rgb(16 185 129 / 40%);
     }
   }
 }
