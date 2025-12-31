@@ -1,39 +1,51 @@
 import './WakeLock.less';
 import StatusDot from '../StatusDot/StatusDot';
+import { TIMER_PRESETS } from '../../hooks/useWakeLock';
 
 function WakeLock({
   isActive,
   isSupported,
   error,
-  userWantsWakeLock,
-  toggleWakeLock,
+  selectedTimer,
+  formatTimeRemaining,
+  startTimer,
 }) {
+  const timeDisplay = formatTimeRemaining?.();
+
   return (
     <article className='card wakelock-card'>
       <div className='status-indicator'>
         <StatusDot isActive={isActive} />
         <span className='status-text'>
-          {isActive
-            ? 'Screen Wake Lock Active'
-            : userWantsWakeLock
-              ? 'Wake Lock Requested (will reactivate when tab is focused)'
-              : 'Screen Wake Lock Inactive'}
+          {isActive ? 'Screen Wake Lock Active' : 'Screen Wake Lock Inactive'}
         </span>
       </div>
 
-      {userWantsWakeLock && !isActive && (
-        <p className='info-message'>
-          💡 Wake lock will automatically reactivate when you return to this tab
-        </p>
-      )}
-
       {isSupported ? (
-        <button
-          className={`btn btn-primary ${userWantsWakeLock ? 'active' : ''}`}
-          onClick={toggleWakeLock}
-        >
-          {userWantsWakeLock ? '🔓 Turn Off Wake Lock' : '🔒 Keep Screen Awake'}
-        </button>
+        <div className='timer-section'>
+          <label className='timer-label'>Auto turn off:</label>
+          <div className='timer-buttons'>
+            {TIMER_PRESETS.map(preset => (
+              <button
+                key={preset.label}
+                className={`timer-btn ${selectedTimer === preset.value ? 'active' : ''}`}
+                onClick={() => startTimer(preset.value)}
+              >
+                {preset.label}
+              </button>
+            ))}
+          </div>
+          {timeDisplay && (
+            <div className='timer-countdown'>
+              ⏱️ Turns off in: <strong>{timeDisplay}</strong>
+            </div>
+          )}
+          {!timeDisplay && (
+            <div className='timer-countdown'>
+              ⏱️ Turns off in: <strong>∞</strong>
+            </div>
+          )}
+        </div>
       ) : (
         <div className='unsupported'>
           <p>❌ Wake Lock API not supported</p>

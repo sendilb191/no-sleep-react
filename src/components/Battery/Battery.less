@@ -2,9 +2,10 @@
 
 .battery-card {
   h2 {
-    font-size: var(--font-size-2xl);
-    color: var(--gray-900);
+    font-size: var(--font-size-xl);
+    color: var(--black);
     text-align: center;
+    margin: 0;
   }
 
   .battery-status {
@@ -12,7 +13,6 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    flex: 1;
     gap: var(--spacing-md);
 
     .battery-visual {
@@ -25,11 +25,11 @@
         align-items: center;
 
         .battery-body {
-          width: 80px;
-          height: 40px;
+          width: 70px;
+          height: 35px;
           background: var(--gray-100);
-          border: 2px solid var(--gray-900);
-          border-radius: 6px;
+          border: 2px solid var(--dark-grey);
+          border-radius: 5px;
           overflow: hidden;
 
           .battery-fill {
@@ -41,35 +41,35 @@
         }
 
         .battery-tip {
-          width: 6px;
-          height: 18px;
-          background: var(--gray-900);
-          border-radius: 0 3px 3px 0;
+          width: 5px;
+          height: 16px;
+          background: var(--black);
+          border-radius: 0 2px 2px 0;
           margin-left: -1px;
         }
       }
 
       .battery-level {
-        font-size: var(--font-size-3xl);
+        font-size: var(--font-size-2xl);
         font-weight: 700;
-        color: var(--gray-900);
+        color: var(--black);
       }
     }
 
     .charging-status {
-      font-size: var(--font-size-lg);
+      font-size: var(--font-size-base);
       font-weight: 500;
-      color: var(--gray-900);
+      color: var(--black);
     }
   }
 
   .unsupported {
     text-align: center;
-    color: var(--gray-600);
+    color: var(--black);
 
     .help-text {
-      color: var(--gray-500);
-      font-size: var(--font-size-base);
+      color: var(--black);
+      font-size: var(--font-size-sm);
       margin-top: var(--spacing-sm);
     }
   }

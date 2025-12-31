@@ -5,8 +5,14 @@ import WakeLock from './components/WakeLock/WakeLock';
 import Battery from './components/Battery/Battery';
 
 function App() {
-  const { isActive, isSupported, error, userWantsWakeLock, toggleWakeLock } =
-    useWakeLock();
+  const {
+    isActive,
+    isSupported,
+    error,
+    selectedTimer,
+    formatTimeRemaining,
+    startTimer,
+  } = useWakeLock();
   const {
     level,
     charging,
@@ -26,8 +32,9 @@ function App() {
           isActive={isActive}
           isSupported={isSupported}
           error={error}
-          userWantsWakeLock={userWantsWakeLock}
-          toggleWakeLock={toggleWakeLock}
+          selectedTimer={selectedTimer}
+          formatTimeRemaining={formatTimeRemaining}
+          startTimer={startTimer}
         />
 
         <Battery
