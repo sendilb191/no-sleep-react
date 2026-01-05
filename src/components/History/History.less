@@ -11,6 +11,7 @@
     .card-title {
       width: auto;
       flex: 1;
+      justify-content: flex-start;
     }
 
     .clear-btn {
@@ -48,19 +49,48 @@
     width: 100%;
     max-height: 250px;
     overflow-y: auto;
-    border: 1px solid var(--dark-grey);
-    border-radius: var(--radius-sm);
+    padding-right: var(--spacing-xs);
+
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: var(--gray-100);
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--dark-grey);
+      border-radius: 4px;
+
+      &:hover {
+        background: var(--black);
+      }
+    }
   }
 
   .history-table {
     width: 100%;
     border-collapse: collapse;
     text-align: left;
+    border: 1px solid var(--dark-grey);
+    border-radius: var(--radius-sm);
 
     thead {
       position: sticky;
       top: 0;
       background: var(--white);
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: var(--dark-grey);
+      }
 
       th {
         padding: var(--spacing-sm) var(--spacing-md);
@@ -68,9 +98,11 @@
         font-weight: 600;
         color: var(--dark-grey);
         border-bottom: 2px solid var(--dark-grey);
+        border-right: 1px solid var(--dark-grey);
 
         &:last-child {
           text-align: right;
+          border-right: none;
         }
       }
     }
@@ -86,16 +118,22 @@
         }
 
         border-bottom: 1px solid var(--dark-grey);
+
+        &:last-child {
+          border-bottom: none;
+        }
       }
 
       td {
         padding: var(--spacing-sm) var(--spacing-md);
         font-size: var(--font-size-base);
         color: var(--black);
+        border-right: 1px solid var(--dark-grey);
 
         &:last-child {
           text-align: right;
           font-weight: 600;
+          border-right: none;
         }
       }
     }
