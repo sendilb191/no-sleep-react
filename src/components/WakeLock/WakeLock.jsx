@@ -15,18 +15,20 @@ function WakeLock({
 
   return (
     <article className='card wakelock-card'>
-      <h2 className='card-title'>
-        <StatusDot isActive={isActive} />
-        {isActive ? (
-          <>
-            <FaLock /> Screen Wake Lock Active
-          </>
-        ) : (
-          <>
-            <FaLockOpen /> Screen Wake Lock Inactive
-          </>
-        )}
-      </h2>
+      <div className='card-title-wrapper'>
+        <h2 className='card-title'>
+          {isActive ? (
+            <>
+              <FaLock /> Wake Lock Active
+            </>
+          ) : (
+            <>
+              <FaLockOpen /> Wake Lock Inactive
+            </>
+          )}
+        </h2>
+        <StatusDot isActive={isActive} size='lg' />
+      </div>
 
       <div className='card-content'>
         {isSupported ? (
