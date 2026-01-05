@@ -9,7 +9,7 @@ export const TIMER_PRESETS = [
 ];
 
 const HISTORY_KEY = 'wakeLockHistory';
-const MAX_HISTORY = 3;
+const MAX_HISTORY = 20;
 
 // Helper to load history from localStorage
 const loadHistory = () => {

@@ -1,4 +1,5 @@
 import './WakeLock.less';
+import { FaLock, FaLockOpen, FaClock, FaTimesCircle } from 'react-icons/fa';
 import StatusDot from '../StatusDot/StatusDot';
 import { TIMER_PRESETS } from '../../hooks/useWakeLock';
 
@@ -14,12 +15,20 @@ function WakeLock({
 
   return (
     <article className='card wakelock-card'>
-      <h2 className='card-title'>
-        <StatusDot isActive={isActive} />
-        {isActive
-          ? '🔒 Screen Wake Lock Active'
-          : '🔓 Screen Wake Lock Inactive'}
-      </h2>
+      <div className='card-title-wrapper'>
+        <h2 className='card-title'>
+          {isActive ? (
+            <>
+              <FaLock /> Wake Lock Active
+            </>
+          ) : (
+            <>
+              <FaLockOpen /> Wake Lock Inactive
+            </>
+          )}
+        </h2>
+        <StatusDot isActive={isActive} size='lg' />
+      </div>
 
       <div className='card-content'>
         {isSupported ? (
@@ -37,12 +46,14 @@ function WakeLock({
               ))}
             </nav>
             <p className='timer-countdown'>
-              ⏱️ Turns off in: <strong>{timeDisplay || '∞'}</strong>
+              <FaClock /> Turns off in: <strong>{timeDisplay || '∞'}</strong>
             </p>
           </>
         ) : (
           <>
-            <p>❌ Wake Lock API not supported</p>
+            <p>
+              <FaTimesCircle /> Wake Lock API not supported
+            </p>
             <p className='help-text'>
               Please use a modern browser like Chrome, Edge, or Safari on
               mobile.

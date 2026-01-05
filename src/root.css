@@ -74,6 +74,12 @@ body {
   min-height: 100vh;
 }
 
+/* React Icons - Global Styles */
+svg {
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
 #root {
   min-height: 100vh;
 }
