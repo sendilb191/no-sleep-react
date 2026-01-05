@@ -1,4 +1,5 @@
 import './History.less';
+import { FaHistory } from 'react-icons/fa';
 
 function History({ history, formatDuration, clearHistory }) {
   const formatDate = timestamp => {
@@ -16,7 +17,9 @@ function History({ history, formatDuration, clearHistory }) {
   return (
     <article className='card history-card'>
       <header className='history-header'>
-        <h2 className='card-title'>📜 Recent Sessions</h2>
+        <h2 className='card-title'>
+          <FaHistory /> Recent Sessions
+        </h2>
         {history.length > 0 && (
           <button className='clear-btn' onClick={clearHistory}>
             Clear
@@ -31,18 +34,24 @@ function History({ history, formatDuration, clearHistory }) {
         {history.length === 0 ? (
           <p className='no-history'>No sessions recorded yet</p>
         ) : (
-          <ul className='history-list'>
-            {history.map(session => (
-              <li key={session.id} className='history-item'>
-                <time className='session-date'>
-                  {formatDate(session.startTime)}
-                </time>
-                <data className='session-duration'>
-                  {formatDuration(session.duration)}
-                </data>
-              </li>
-            ))}
-          </ul>
+          <div className='history-table-wrapper'>
+            <table className='history-table'>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Duration</th>
+                </tr>
+              </thead>
+              <tbody>
+                {history.map(session => (
+                  <tr key={session.id}>
+                    <td>{formatDate(session.startTime)}</td>
+                    <td>{formatDuration(session.duration)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </article>

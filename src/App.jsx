@@ -1,4 +1,5 @@
 import './App.less';
+import { FaLock } from 'react-icons/fa';
 import { useWakeLock } from './hooks/useWakeLock';
 import { useBattery } from './hooks/useBattery';
 import WakeLock from './components/WakeLock/WakeLock';
@@ -27,7 +28,9 @@ function App() {
   return (
     <main className='app'>
       <header className='header'>
-        <h1>🔒 Wake Lock App</h1>
+        <h1>
+          <FaLock /> Wake Lock App
+        </h1>
         <p className='subtitle'>Keep your screen awake</p>
       </header>
 

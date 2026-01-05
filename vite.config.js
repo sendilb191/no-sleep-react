@@ -8,8 +8,12 @@ export default defineConfig({
     open: true,
   },
   base: './',
+  css: {
+    devSourcemap: true,
+  },
   build: {
     target: 'es2015',
     minify: 'esbuild',
+    sourcemap: true,
   },
 });

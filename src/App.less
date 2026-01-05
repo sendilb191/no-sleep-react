@@ -16,12 +16,20 @@
     flex-shrink: 0;
 
     h1 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-sm);
       font-size: var(--font-size-3xl);
       color: var(--white);
       text-shadow: 0 2px 4px rgb(0 0 0 / 30%);
       font-weight: 700;
       letter-spacing: -0.02em;
       margin: 0;
+
+      svg {
+        font-size: 0.9em;
+      }
     }
 
     .subtitle {
@@ -61,6 +69,16 @@
         color: var(--black);
         margin: 0;
         flex-shrink: 0;
+        width: 100%;
+
+        svg {
+          font-size: 1em;
+        }
+
+        .status-dot-container {
+          order: 1;
+          margin-left: auto;
+        }
       }
 
       .card-content {
