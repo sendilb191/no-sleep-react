@@ -17,11 +17,18 @@ A minimal React application that prevents your device screen from going to sleep
 - **Charging Status**: Shows whether device is charging or on battery
 - **Color-coded Indicator**: Battery fill color reflects charge level
 
+### 📜 **Session History**
+
+- **Track Sessions**: Records all wake lock sessions with start time and duration
+- **Total Time**: Displays cumulative time across all sessions
+- **Persistent Storage**: History saved to localStorage
+- **Clear Option**: One-click button to clear all history
+
 ### 🎨 **Clean UI**
 
 - **Desktop Optimized**: Centered layout designed for desktop screens
 - **Minimal Colors**: Only white and black for text, dark grey for borders
-- **Two-Card Layout**: Wake Lock and Battery status side by side
+- **Three-Card Layout**: Wake Lock, Battery status, and Session History
 
 ## 🚀 How It Works
 
@@ -42,6 +49,7 @@ src/
 ├── components/
 │   ├── WakeLock/            # Wake lock status & timer UI
 │   ├── Battery/             # Battery status display
+│   ├── History/             # Session history table
 │   └── StatusDot/           # Active/inactive indicator
 ├── App.jsx                  # Main app component
 ├── App.less                 # App layout styles

@@ -1,37 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useHistory } from './useHistory';
+import { TIMER_PRESETS } from '../constants';
 
-// Timer presets in minutes
-export const TIMER_PRESETS = [
-  { label: 'Off', value: null },
-  { label: '30m', value: 30 },
-  { label: '1h', value: 60 },
-  { label: '2h', value: 120 },
-];
-
-const HISTORY_KEY = 'wakeLockHistory';
-const MAX_HISTORY = 20;
-
-// Helper to load history from localStorage
-const loadHistory = () => {
-  try {
-    const stored = window.localStorage.getItem(HISTORY_KEY);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
-};
-
-// Helper to save history to localStorage
-const saveHistory = history => {
-  try {
-    window.localStorage.setItem(
-      HISTORY_KEY,
-      JSON.stringify(history.slice(0, MAX_HISTORY))
-    );
-  } catch {
-    // Ignore storage errors
-  }
-};
+export { TIMER_PRESETS };
 
 export const useWakeLock = () => {
   const [wakeLock, setWakeLock] = useState(null);
@@ -40,36 +11,21 @@ export const useWakeLock = () => {
   const [error, setError] = useState('');
   const [selectedTimer, setSelectedTimer] = useState(null);
   const [timeRemaining, setTimeRemaining] = useState(null);
-  const [history, setHistory] = useState(() => loadHistory());
+
+  // Use history hook for session tracking
+  const {
+    history,
+    startSession,
+    endSession,
+    formatDuration,
+    startAutoSave,
+    stopAutoSave,
+  } = useHistory();
 
   // Track if we're just switching tabs (to prevent glitch)
   const isReactivating = useRef(false);
   const timerRef = useRef(null);
   const countdownRef = useRef(null);
-  const sessionStartRef = useRef(null);
-
-  // Save session to history
-  const saveSession = useCallback(() => {
-    if (sessionStartRef.current) {
-      const duration = Math.floor(
-        (Date.now() - sessionStartRef.current) / 1000
-      );
-      // Only save if session was longer than 5 seconds
-      if (duration > 5) {
-        const newSession = {
-          id: Date.now(),
-          startTime: sessionStartRef.current,
-          duration,
-        };
-        setHistory(prev => {
-          const updated = [newSession, ...prev].slice(0, MAX_HISTORY);
-          saveHistory(updated);
-          return updated;
-        });
-      }
-      sessionStartRef.current = null;
-    }
-  }, []);
 
   // Handle wake lock activation
   const requestWakeLock = useCallback(async () => {
@@ -86,10 +42,9 @@ export const useWakeLock = () => {
       setWakeLock(lock);
       setIsActive(true);
 
-      // Start session tracking if not already started
-      if (!sessionStartRef.current) {
-        sessionStartRef.current = Date.now();
-      }
+      // Start session tracking
+      startSession();
+      startAutoSave();
 
       // Listen for wake lock release
       lock.addEventListener('release', () => {
@@ -107,12 +62,13 @@ export const useWakeLock = () => {
       console.error('Wake lock request failed:', err);
       setIsActive(false);
     }
-  }, []);
+  }, [startSession, startAutoSave]);
 
   // Handle wake lock deactivation
   const releaseWakeLock = useCallback(async () => {
-    // Save session before releasing
-    saveSession();
+    // End session and stop auto-save
+    endSession();
+    stopAutoSave();
 
     // Clear any active timers
     if (timerRef.current) {
@@ -139,7 +95,7 @@ export const useWakeLock = () => {
     } else {
       setIsActive(false);
     }
-  }, [saveSession, wakeLock]);
+  }, [endSession, stopAutoSave, wakeLock]);
 
   // Start timer to auto-turn off wake lock
   const startTimer = useCallback(
@@ -213,30 +169,10 @@ export const useWakeLock = () => {
       }
     };
 
-    // Save session when page is being closed
-    const handleBeforeUnload = () => {
-      if (sessionStartRef.current) {
-        const duration = Math.floor(
-          (Date.now() - sessionStartRef.current) / 1000
-        );
-        if (duration > 5) {
-          const newSession = {
-            id: Date.now(),
-            startTime: sessionStartRef.current,
-            duration,
-          };
-          const currentHistory = loadHistory();
-          saveHistory([newSession, ...currentHistory]);
-        }
-      }
-    };
-
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('beforeunload', handleBeforeUnload);
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('beforeunload', handleBeforeUnload);
       if (wakeLock && !wakeLock.released) {
         wakeLock.release();
       }
@@ -258,26 +194,6 @@ export const useWakeLock = () => {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   }, [timeRemaining]);
 
-  // Format duration for history display
-  const formatDuration = useCallback(seconds => {
-    const hours = Math.floor(seconds / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-
-    if (hours > 0) {
-      return `${hours}h ${mins}m`;
-    } else if (mins > 0) {
-      return `${mins}m ${secs}s`;
-    }
-    return `${secs}s`;
-  }, []);
-
-  // Clear history
-  const clearHistory = useCallback(() => {
-    setHistory([]);
-    window.localStorage.removeItem(HISTORY_KEY);
-  }, []);
-
   return {
     isActive,
     isSupported,
@@ -288,6 +204,5 @@ export const useWakeLock = () => {
     startTimer,
     history,
     formatDuration,
-    clearHistory,
   };
 };
