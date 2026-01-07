@@ -16,7 +16,6 @@ function App() {
     startTimer,
     history,
     formatDuration,
-    clearHistory,
   } = useWakeLock();
   const {
     level,
@@ -51,11 +50,7 @@ function App() {
           startTimer={startTimer}
         />
 
-        <History
-          history={history}
-          formatDuration={formatDuration}
-          clearHistory={clearHistory}
-        />
+        <History history={history} formatDuration={formatDuration} />
       </section>
     </main>
   );

@@ -1,7 +1,7 @@
 import './History.less';
 import { FaHistory } from 'react-icons/fa';
 
-function History({ history, formatDuration, clearHistory }) {
+function History({ history, formatDuration }) {
   const formatDate = timestamp => {
     const date = new Date(timestamp);
     return date.toLocaleDateString('en-US', {
@@ -16,16 +16,9 @@ function History({ history, formatDuration, clearHistory }) {
 
   return (
     <article className='card history-card'>
-      <header className='history-header'>
-        <h2 className='card-title'>
-          <FaHistory /> Recent Sessions
-        </h2>
-        {history.length > 0 && (
-          <button className='clear-btn' onClick={clearHistory}>
-            Clear
-          </button>
-        )}
-      </header>
+      <h2 className='card-title'>
+        <FaHistory /> Recent Sessions
+      </h2>
       <div className='card-content'>
         {history.length > 0 && (
           <p className='total-time'>Total: {formatDuration(totalTime)}</p>
