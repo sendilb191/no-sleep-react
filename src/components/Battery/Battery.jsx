@@ -1,5 +1,5 @@
 import './Battery.less';
-import { FaBatteryFull, FaBolt, FaPlug, FaTimesCircle } from 'react-icons/fa';
+import { FaBatteryFull, FaBolt, FaTimesCircle } from 'react-icons/fa';
 
 function Battery({ level, charging, isSupported, getBatteryColor }) {
   return (
@@ -9,34 +9,22 @@ function Battery({ level, charging, isSupported, getBatteryColor }) {
       </h2>
       <div className='card-content'>
         {isSupported ? (
-          <>
-            <figure className='battery-visual'>
-              <div className='battery-icon'>
-                <div className='battery-body'>
-                  <div
-                    className='battery-fill'
-                    style={{
-                      width: `${level}%`,
-                      backgroundColor: getBatteryColor(),
-                    }}
-                  />
-                </div>
-                <div className='battery-tip' />
+          <figure className='battery-visual'>
+            <div className='battery-icon'>
+              <div className={`battery-body ${charging ? 'charging' : ''}`}>
+                <div
+                  className='battery-fill'
+                  style={{
+                    width: `${level}%`,
+                    backgroundColor: getBatteryColor(),
+                  }}
+                />
+                {charging && <FaBolt className='charging-bolt' />}
               </div>
-              <figcaption className='battery-level'>{level}%</figcaption>
-            </figure>
-            <p className='charging-status'>
-              {charging ? (
-                <>
-                  <FaBolt /> Charging
-                </>
-              ) : (
-                <>
-                  <FaPlug /> Not Charging
-                </>
-              )}
-            </p>
-          </>
+              <div className='battery-tip' />
+            </div>
+            <figcaption className='battery-level'>{level}%</figcaption>
+          </figure>
         ) : (
           <>
             <p>

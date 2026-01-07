@@ -12,44 +12,87 @@
       align-items: center;
 
       .battery-body {
-        width: 90px;
-        height: 45px;
+        width: 120px;
+        height: 60px;
         background: var(--gray-100);
-        border: 2px solid var(--dark-grey);
-        border-radius: 6px;
+        border: 3px solid var(--dark-grey);
+        border-radius: 8px;
         overflow: hidden;
+        position: relative;
 
         .battery-fill {
           height: 100%;
           transition:
-            width 0.3s,
-            background-color 0.3s;
+            width 0.5s ease-out,
+            background-color 0.3s ease;
+          position: relative;
+          overflow: hidden;
+        }
+
+        &.charging .battery-fill::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: linear-gradient(
+            90deg,
+            transparent 40%,
+            rgba(255, 255, 255, 0.3) 50%,
+            transparent 60%
+          );
+          background-size: 300% 100%;
+          animation: charging-shimmer 2s ease-in-out infinite;
+        }
+
+        .charging-bolt {
+          font-size: 28px;
+          color: var(--black);
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          animation: pulse-bolt 1.2s ease-in-out infinite;
+          z-index: 1;
+        }
+      }
+
+      @keyframes charging-shimmer {
+        0% {
+          background-position: 100% 0;
+        }
+        100% {
+          background-position: -100% 0;
+        }
+      }
+
+      @keyframes pulse-bolt {
+        0%,
+        100% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1);
+        }
+        50% {
+          opacity: 0.7;
+          transform: translate(-50%, -50%) scale(1.15);
         }
       }
 
       .battery-tip {
-        width: 6px;
-        height: 20px;
+        width: 8px;
+        height: 26px;
         background: var(--black);
-        border-radius: 0 3px 3px 0;
+        border-radius: 0 4px 4px 0;
         margin-left: -1px;
       }
     }
 
     .battery-level {
-      font-size: var(--font-size-2xl);
+      font-size: var(--font-size-3xl);
       font-weight: 700;
       color: var(--black);
     }
-  }
-
-  .charging-status {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    font-size: var(--font-size-base);
-    font-weight: 500;
-    color: var(--black);
   }
 
   .help-text {
