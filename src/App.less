@@ -48,11 +48,11 @@
     width: 100%;
     max-width: 1200px;
 
-    @media (max-width: 1024px) {
+    @media (width <= 1024px) {
       grid-template-columns: repeat(2, 1fr);
     }
 
-    @media (max-width: 768px) {
+    @media (width <= 768px) {
       grid-template-columns: 1fr;
       max-width: 400px;
     }

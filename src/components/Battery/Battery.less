@@ -32,18 +32,19 @@
         &.charging .battery-fill::before {
           content: '';
           position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
+          inset: 0;
           background: linear-gradient(
             90deg,
-            transparent 40%,
-            rgba(255, 255, 255, 0.3) 50%,
-            transparent 60%
+            transparent 0%,
+            transparent 20%,
+            rgb(255 255 255 / 20%) 35%,
+            rgb(255 255 255 / 40%) 50%,
+            rgb(255 255 255 / 20%) 65%,
+            transparent 80%,
+            transparent 100%
           );
-          background-size: 300% 100%;
-          animation: charging-shimmer 2s ease-in-out infinite;
+          filter: blur(4px);
+          animation: charging-shimmer 2s linear infinite;
         }
 
         .charging-bolt {
@@ -60,10 +61,11 @@
 
       @keyframes charging-shimmer {
         0% {
-          background-position: 100% 0;
+          transform: translateX(-100%);
         }
+
         100% {
-          background-position: -100% 0;
+          transform: translateX(100%);
         }
       }
 
@@ -73,6 +75,7 @@
           opacity: 1;
           transform: translate(-50%, -50%) scale(1);
         }
+
         50% {
           opacity: 0.7;
           transform: translate(-50%, -50%) scale(1.15);
