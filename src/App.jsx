@@ -35,6 +35,13 @@ function App() {
       </header>
 
       <section className='cards-container'>
+        <Battery
+          level={level}
+          charging={charging}
+          isSupported={batterySupported}
+          getBatteryColor={getBatteryColor}
+        />
+
         <WakeLock
           isActive={isActive}
           isSupported={isSupported}
@@ -42,13 +49,6 @@ function App() {
           selectedTimer={selectedTimer}
           formatTimeRemaining={formatTimeRemaining}
           startTimer={startTimer}
-        />
-
-        <Battery
-          level={level}
-          charging={charging}
-          isSupported={batterySupported}
-          getBatteryColor={getBatteryColor}
         />
 
         <History
