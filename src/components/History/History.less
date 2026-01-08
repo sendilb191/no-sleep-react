@@ -2,8 +2,9 @@
 
 .history-card {
   .card-content {
-    overflow: hidden;
+    overflow: visible;
     min-height: 0;
+    padding: 1px;
   }
 
   .no-history {
@@ -23,10 +24,9 @@
     max-height: 200px;
     overflow-y: auto;
     border: 1px solid var(--dark-grey);
-    border-radius: var(--radius-sm);
 
     &::-webkit-scrollbar {
-      width: 8px;
+      width: 4px;
     }
 
     &::-webkit-scrollbar-track {
@@ -52,16 +52,16 @@
     thead {
       position: sticky;
       top: 0;
-      background: var(--white);
+      background: var(--gray-100);
 
       th {
         padding: var(--spacing-sm) var(--spacing-md);
         font-size: var(--font-size-sm);
         font-weight: 600;
-        color: var(--dark-grey);
+        color: var(--black);
         border-bottom: 1px solid var(--dark-grey);
         border-right: 1px solid var(--dark-grey);
-        background: var(--white);
+        background: var(--gray-100);
 
         &:last-child {
           text-align: right;
