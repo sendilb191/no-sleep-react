@@ -46,7 +46,8 @@ function WakeLock({
               ))}
             </nav>
             <p className='timer-countdown'>
-              <FaClock /> Turns off in: <strong>{timeDisplay || '∞'}</strong>
+              <FaClock /> Turns off in:{' '}
+              <strong>{timeDisplay || 'Never'}</strong>
             </p>
           </>
         ) : (
