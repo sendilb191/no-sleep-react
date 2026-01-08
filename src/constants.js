@@ -1,6 +1,6 @@
 // Timer presets in minutes
 export const TIMER_PRESETS = [
-  { label: 'Off', value: null },
+  { label: 'Never', value: null },
   { label: '30m', value: 30 },
   { label: '1h', value: 60 },
   { label: '2h', value: 120 },
