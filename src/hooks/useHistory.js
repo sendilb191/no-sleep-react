@@ -29,11 +29,11 @@ const saveHistoryToStorage = history => {
 };
 
 // Helper to save in-progress session
-const saveInProgressSession = startTime => {
+const saveInProgressSession = (startTime, accumulatedTime) => {
   try {
     window.localStorage.setItem(
       STORAGE_KEYS.IN_PROGRESS,
-      JSON.stringify({ startTime, lastUpdate: Date.now() })
+      JSON.stringify({ startTime, accumulatedTime, lastUpdate: Date.now() })
     );
   } catch {
     // Ignore storage errors
@@ -54,9 +54,9 @@ const recoverInProgressSession = () => {
   try {
     const stored = window.localStorage.getItem(STORAGE_KEYS.IN_PROGRESS);
     if (stored) {
-      const { startTime, lastUpdate } = JSON.parse(stored);
-      // Use lastUpdate as end time since that's when we last knew it was active
-      const duration = Math.floor((lastUpdate - startTime) / 1000);
+      const { startTime, accumulatedTime = 0 } = JSON.parse(stored);
+      // Use accumulated time plus time since last update (if tab was active)
+      const duration = Math.floor(accumulatedTime / 1000);
       clearInProgressSession();
       if (duration > MIN_SESSION_DURATION) {
         return {
@@ -87,21 +87,54 @@ export const useHistory = () => {
 
   const sessionStartRef = useRef(null);
   const autoSaveRef = useRef(null);
+  // Track accumulated active time (in milliseconds)
+  const accumulatedTimeRef = useRef(0);
+  // Track when the current active period started
+  const activeStartRef = useRef(null);
 
   // Start a new session
   const startSession = useCallback(() => {
     if (!sessionStartRef.current) {
       sessionStartRef.current = Date.now();
-      saveInProgressSession(sessionStartRef.current);
+      accumulatedTimeRef.current = 0;
+      // Only start counting if tab is visible
+      if (document.visibilityState === 'visible') {
+        activeStartRef.current = Date.now();
+      }
+      saveInProgressSession(
+        sessionStartRef.current,
+        accumulatedTimeRef.current
+      );
+    }
+  }, []);
+
+  // Pause time accumulation (when tab becomes hidden)
+  const pauseSession = useCallback(() => {
+    if (sessionStartRef.current && activeStartRef.current) {
+      accumulatedTimeRef.current += Date.now() - activeStartRef.current;
+      activeStartRef.current = null;
+      saveInProgressSession(
+        sessionStartRef.current,
+        accumulatedTimeRef.current
+      );
+    }
+  }, []);
+
+  // Resume time accumulation (when tab becomes visible)
+  const resumeSession = useCallback(() => {
+    if (sessionStartRef.current && !activeStartRef.current) {
+      activeStartRef.current = Date.now();
     }
   }, []);
 
   // End current session and save to history
   const endSession = useCallback(() => {
     if (sessionStartRef.current) {
-      const duration = Math.floor(
-        (Date.now() - sessionStartRef.current) / 1000
-      );
+      // Add any remaining active time
+      if (activeStartRef.current) {
+        accumulatedTimeRef.current += Date.now() - activeStartRef.current;
+      }
+      const duration = Math.floor(accumulatedTimeRef.current / 1000);
       // Only save if session was longer than minimum duration
       if (duration > MIN_SESSION_DURATION) {
         const newSession = {
@@ -116,6 +149,8 @@ export const useHistory = () => {
         });
       }
       sessionStartRef.current = null;
+      accumulatedTimeRef.current = 0;
+      activeStartRef.current = null;
       clearInProgressSession();
     }
   }, []);
@@ -123,7 +158,12 @@ export const useHistory = () => {
   // Update in-progress session (for auto-save)
   const updateSession = useCallback(() => {
     if (sessionStartRef.current) {
-      saveInProgressSession(sessionStartRef.current);
+      // Calculate current accumulated time including active period
+      let currentAccumulated = accumulatedTimeRef.current;
+      if (activeStartRef.current) {
+        currentAccumulated += Date.now() - activeStartRef.current;
+      }
+      saveInProgressSession(sessionStartRef.current, currentAccumulated);
     }
   }, []);
 
@@ -135,6 +175,16 @@ export const useHistory = () => {
   // Get current session start time
   const getSessionStart = useCallback(() => {
     return sessionStartRef.current;
+  }, []);
+
+  // Get current session duration in seconds (only counts active/visible time)
+  const getCurrentSessionTime = useCallback(() => {
+    if (!sessionStartRef.current) return 0;
+    let currentAccumulated = accumulatedTimeRef.current;
+    if (activeStartRef.current) {
+      currentAccumulated += Date.now() - activeStartRef.current;
+    }
+    return Math.floor(currentAccumulated / 1000);
   }, []);
 
   // Format duration for display
@@ -155,9 +205,12 @@ export const useHistory = () => {
   useEffect(() => {
     const handleBeforeUnload = () => {
       if (sessionStartRef.current) {
-        const duration = Math.floor(
-          (Date.now() - sessionStartRef.current) / 1000
-        );
+        // Add any remaining active time
+        let totalAccumulated = accumulatedTimeRef.current;
+        if (activeStartRef.current) {
+          totalAccumulated += Date.now() - activeStartRef.current;
+        }
+        const duration = Math.floor(totalAccumulated / 1000);
         if (duration > MIN_SESSION_DURATION) {
           const newSession = {
             id: Date.now(),
@@ -181,7 +234,11 @@ export const useHistory = () => {
     if (!autoSaveRef.current) {
       autoSaveRef.current = setInterval(() => {
         if (sessionStartRef.current) {
-          saveInProgressSession(sessionStartRef.current);
+          let currentAccumulated = accumulatedTimeRef.current;
+          if (activeStartRef.current) {
+            currentAccumulated += Date.now() - activeStartRef.current;
+          }
+          saveInProgressSession(sessionStartRef.current, currentAccumulated);
         }
       }, AUTO_SAVE_INTERVAL);
     }
@@ -207,9 +264,12 @@ export const useHistory = () => {
     history,
     startSession,
     endSession,
+    pauseSession,
+    resumeSession,
     updateSession,
     isSessionActive,
     getSessionStart,
+    getCurrentSessionTime,
     formatDuration,
     startAutoSave,
     stopAutoSave,
