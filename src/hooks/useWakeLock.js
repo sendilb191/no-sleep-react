@@ -17,6 +17,9 @@ export const useWakeLock = () => {
     history,
     startSession,
     endSession,
+    pauseSession,
+    resumeSession,
+    getCurrentSessionTime,
     formatDuration,
     startAutoSave,
     stopAutoSave,
@@ -157,6 +160,8 @@ export const useWakeLock = () => {
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
+        // Resume session time tracking
+        resumeSession();
         // Mark that we're reactivating to prevent glitch
         isReactivating.current = true;
         console.log('Tab focused, requesting wake lock');
@@ -166,6 +171,9 @@ export const useWakeLock = () => {
             isReactivating.current = false;
           }, 100);
         });
+      } else {
+        // Pause session time tracking when tab is hidden
+        pauseSession();
       }
     };
 
@@ -204,5 +212,6 @@ export const useWakeLock = () => {
     startTimer,
     history,
     formatDuration,
+    getCurrentSessionTime,
   };
 };

@@ -1,7 +1,28 @@
 import './History.less';
 import { FaHistory } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
 
-function History({ history, formatDuration }) {
+function History({ history, formatDuration, getCurrentSessionTime, isActive }) {
+  const [currentSessionTime, setCurrentSessionTime] = useState(0);
+
+  // Update current session time every second when active
+  useEffect(() => {
+    if (!isActive) {
+      setCurrentSessionTime(0);
+      return;
+    }
+
+    // Update immediately
+    setCurrentSessionTime(getCurrentSessionTime());
+
+    // Then update every second
+    const interval = setInterval(() => {
+      setCurrentSessionTime(getCurrentSessionTime());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isActive, getCurrentSessionTime]);
+
   const formatDate = timestamp => {
     const date = new Date(timestamp);
     return date.toLocaleDateString('en-US', {
@@ -12,7 +33,14 @@ function History({ history, formatDuration }) {
     });
   };
 
-  const totalTime = history.reduce((sum, session) => sum + session.duration, 0);
+  // Total time from completed sessions
+  const completedSessionsTime = history.reduce(
+    (sum, session) => sum + session.duration,
+    0
+  );
+
+  // Total time including current session
+  const totalTime = completedSessionsTime + currentSessionTime;
 
   return (
     <article className='card history-card'>
@@ -20,7 +48,12 @@ function History({ history, formatDuration }) {
         <FaHistory /> Recent Sessions
       </h2>
       <div className='card-content'>
-        {history.length > 0 && (
+        {isActive && (
+          <p className='current-session-time'>
+            Current Session: {formatDuration(currentSessionTime)}
+          </p>
+        )}
+        {(history.length > 0 || currentSessionTime > 0) && (
           <p className='total-time'>Total: {formatDuration(totalTime)}</p>
         )}
 

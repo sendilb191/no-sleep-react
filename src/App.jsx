@@ -16,6 +16,7 @@ function App() {
     startTimer,
     history,
     formatDuration,
+    getCurrentSessionTime,
   } = useWakeLock();
   const {
     level,
@@ -50,7 +51,12 @@ function App() {
           startTimer={startTimer}
         />
 
-        <History history={history} formatDuration={formatDuration} />
+        <History
+          history={history}
+          formatDuration={formatDuration}
+          getCurrentSessionTime={getCurrentSessionTime}
+          isActive={isActive}
+        />
       </section>
     </main>
   );
